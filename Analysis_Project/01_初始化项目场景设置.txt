@@ -1,0 +1,23 @@
+1、导入资源：
+
+导入1_ExportSceneLogin.unitypackage
+
+其中：
+Compond：所有原始资源
+Resource：Resource/ResScenes/SceneLogin里Login预制体直接使用于创建场景
+
+2、设置场景
+Resource/ResScenes里新建场景：SceneLogin
+删除Directional Light场景灯光，设置MainCamera相机；
+打开菜单栏：Window-Rendering-Lighting，设置Environment关闭天空盒；
+将Resource/ResScenes/SceneLogin里Login预制体拖放到场景中；
+
+Login的灯光渲染层丢失，选择longRoot的Layer，新建Layers：DynamicItem；
+longRoot的Layer设置为DynamicItem；
+Directional light long和Point light两个灯光的Light-Culling Mask选择DynamicItem；
+
+Game的分辨率设置为：Label：DarkGod		Width & Height 1334*750
+
+3、调整MainCamera摄像机位置和设置Window-Rendering-Lighting灯光
+
+
