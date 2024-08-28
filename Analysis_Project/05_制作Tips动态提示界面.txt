@@ -1,0 +1,59 @@
+Tips动态弹窗，这里就简单做个效果；
+
+新建放置动态UI的根节点DynamicWnd
+选择Canvas，新建空节点DynamicWnd，用于放置动态经常变化的UI；
+设置DynamicWnd位置锚点，并拖到Assets/Resources/PrefabUI里做成预制体；
+
+制作Tips
+一、先建Tips定位
+DynamicWnd下新建空物体CenterPin，置于场景中间；
+
+二、在CenterPin下新建Text：txtTips 作为提示弹窗；
+txtTips 内容有长有短，为了兼容，这里将txtTips长度设置长一点，内容居中；
+
+三、为了引起注意，给提示弹窗添加动画
+记录弹窗设置变化作为关键帧，作为弹窗显示动画；
+1、txtTips身上添加Animation；
+2、Window--Animation--Animation，打开动画制作窗口；
+点击Create，在打开的文件夹里，选择Assets/Resources，新建ResUIAnim文件夹，
+新建的Animation，命名为TipsShowAnim，存放到ResUIAnim文件夹中；
+3、把Assets/Resources/ResUIAnim里的ResUIAnim，
+拖拽放到txtTips身上的Animation组件的Animation里；
+4、制作提示弹窗的动画
+方法一：点AddProperty，一个个设置关键帧；（不太建议使用，比较繁琐麻烦）
+方法二：点击Preview，然后拖动时间轴。
+在不同时间点修改txtTips面板属性，会自动记录下修改的信息；
+修改完成后，再次点击Preview关闭关键帧记录；（比较简单省事）
+
+使用第二种方法：
+（1）点击Preview开始录制设置；
+（2）设置采样Sample为30；
+有的在面板上就可以直接看到Sample设置；
+面板上没有的可以在时间轴右边，点击 三个点 的按钮，
+选择 Set Sample Rate，选择 30；
+选择 Show Sample Rate，则可在面板上看到Sample选项；
+（3）设置关键帧：
+打开Preview后，在
+1）透明度：
+0、60帧时，设置Color透明度为0；
+15、45帧时，设置Color透明度为255，100%
+2）位置：
+0帧时，位置PosY设置为-150；
+60帧时，位置PosY设置为150；
+15、45帧时，位置PosY设置为0；
+3）缩放：
+0、60帧时，设置Scale的X和Y为0.75；
+15、45帧时，设置Scale的X和Y为1
+（4）再次点击Preview，关闭录制设置；
+txtTips动画制作完成；
+
+现在动画还是设置为自动播放，之后改为代码控制；
+
+
+
+
+
+
+
+
+
