@@ -1,0 +1,25 @@
+
+1、导入资源
+将角色创建的资源导入到项目中，和之前的登录界面UI统一放到Assets/Resource/ResImage里；
+并设置导入的资源为Sprite(2D and UI)格式；
+
+2、创建角色登录界面
+在Canvas下新建空节点CreateWnd，调整锚点，然后在下面搭建登录界面；
+（1）这里主要是功能展示，画面细节就没做那么仔细，
+角色创建界面的背景图片直接做拉伸处理来去除边角、贴满画面；
+
+（2）做界面自适应
+CreateWnd里新建空物体LeftPin，设置位置锚点，
+然后将左边的titlebg和imgChar放入；
+
+CreateWnd里新建空物体RightPin，设置位置锚点，
+然后将除bg外剩下的右边UI放入；
+
+3、将做好的CreateWnd拖到Assets/Resource/PrefabUI里做成预制体；
+
+
+
+
+
+
+
