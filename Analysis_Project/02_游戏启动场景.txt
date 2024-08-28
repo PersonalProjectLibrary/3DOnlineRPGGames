@@ -1,0 +1,27 @@
+游戏启动场景--登录注册场景
+
+1、新建游戏启动场景
+Resource/ResScenes里新建游戏启动场景：GameRoot
+
+2、设置启动场景：
+删除Directional Light场景灯光，设置MainCamera相机；
+打开菜单栏：Window-Rendering-Lighting，设置Environment关闭天空盒；
+
+3、搭建UI界面
+场景下建立整个游戏的根节点：空物体GameRoot
+GameRoot下新建Canvas，作为UI的根节点
+
+添加Login界面UI资源：Assets/Resource/ResImage/Login；
+设置Login里的资源为Sprite(2D and UI)
+
+Canvas下新建空节点LoginWnd，并在LoginWnd下搭建登录界面；
+
+
+
+
+
+
+
+
+
+
