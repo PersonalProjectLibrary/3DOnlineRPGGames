@@ -1,0 +1,12 @@
+当前VA插件是适用于VS2022版
+
+课程VA使用教程：https://www.cnblogs.com/planezhong/p/10050094.html
+
+csdn最新教程：https://blog.csdn.net/weixin_43784914/article/details/135456518
+
+知乎原教程：https://zhuanlan.zhihu.com/p/661815368
+
+其他教程：https://zhuanlan.zhihu.com/p/534926497
+
+
+VA_X_Setup2440_0.exe因过大，就不上传github上了

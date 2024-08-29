@@ -1,0 +1,34 @@
+
+一、Unity脚本添加头部注释
+
+1、替换81-C# Script-NewBehaviourScript.cs.txt文件：
+脚本替换地址：Unity安装目录文件夹D:\Unity\Editor\2021.3.39f1c1里
+
+D:\Unity\Editor\2021.3.39f1c1\Editor\Data\Resources\ScriptTemplates\81-C# Script-NewBehaviourScript.cs.txt
+
+2、Unity项目里添加编辑器插件脚本ScriptsInfoRecoder.cs：
+
+Unity项目Assets文件夹里新建Plugins/Editor文件夹，将ScriptsInfoRecoder.cs和UnityToSVN.cs文件放入；
+
+ScriptsInfoRecoder.cs是必须的文件夹，项目新建脚本会用到；
+UnityToSVN.cs可有可无，项目里不会用到；完成项目上传SVN管理才用到；
+
+
+二、VS脚本添加头部注释
+
+1、替换Class.cs文件：
+脚本替换文件地址：VS安装目录文件夹D:\VStudio\Community里
+
+D:\VStudio\Community\VS-C-2022\IDE\Common7\IDE\ItemTemplates\CSharp\Code\2052\Class.cs
+
+替换后，VS项目里直接新建脚本，新脚本就自带头部注释；
+
+2、其他Class.cs模板
+文件夹里的Class_0.cs、Origin_Class.cs也可以把文件名改为Class.cs，然后替换VS里的Class.cs使用；
+其中：
+Origin_Class.cs是最初VS的Class.cs文件；
+Class_0.cs是网上找的有很多注释的Class.cs文件；
+
+三、VA工具——VS代码辅助工具
+VA工具里也有自动设置脚本头部注释的功能，以及各种方便脚本编写的辅助功能；
+文件夹里的VA Snaippet.txt就是通过VA设置头部注释使用的相关语句，直接复制到相关设置处即可；
