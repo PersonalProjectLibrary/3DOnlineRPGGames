@@ -32,6 +32,10 @@ public class LoginSystem : MonoBehaviour
     /// </summary>
     public void EnterLogin()
     {
-        ResService.Instance.AsyncLoadScene(Constants.SceneLogin, () => { loginWnd.SetWndState(); });
+        ResService.Instance.AsyncLoadScene(Constants.SceneLogin, () => 
+        {
+            loginWnd.SetWndState();//加载登录界面
+            AudioService.Instance.PlayBgMusic(Constants.BgAudioLogin);//播放登录界面背景音乐
+        });
     }
 }

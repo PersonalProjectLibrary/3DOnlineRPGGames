@@ -35,6 +35,10 @@ public class GameRoot : MonoBehaviour
         ResService res = GetComponent<ResService>();
         res.InitService();
 
+        //声音播放服务初始化
+        AudioService audio = GetComponent<AudioService>();
+        audio.InitService();
+
         //业务系统初始化
         LoginSystem login = GetComponent<LoginSystem>();
         login.InitSystem();

@@ -17,4 +17,7 @@ public class Constants
     //场景名称
     public const string SceneLogin = "SceneLogin";//登录场景
 
+    //音效名称
+    public const string BgAudioLogin = "bgLogin";//登录界面的背景音乐
+
 }
