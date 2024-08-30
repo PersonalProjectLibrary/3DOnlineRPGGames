@@ -12,7 +12,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LoginWnd : MonoBehaviour
+public class LoginWnd : WindowRoot
 {
     public InputField iptAcct;
     public InputField iptPass;
@@ -22,18 +22,20 @@ public class LoginWnd : MonoBehaviour
     /// <summary>
     /// 界面打开时初始化
     /// </summary>
-    public void InitWnd()
+    protected override void InitWnd()
     {
+        base.InitWnd();
+
         //获取本地存储的账号和密码
         if (PlayerPrefs.HasKey("Acct") && PlayerPrefs.HasKey("Pass"))
         {
-            iptAcct.text = PlayerPrefs.GetString("Acct");
-            iptPass.text = PlayerPrefs.GetString ("Pass");
+            SetText(iptAcct, PlayerPrefs.GetString("Acct"));
+            SetText(iptPass, PlayerPrefs.GetString("Pass"));
         }
         else
         {
-            iptAcct.text = "";
-            iptPass.text = "";
+            SetText(iptAcct, "");
+            SetText(iptPass, "");
         }
     }
 

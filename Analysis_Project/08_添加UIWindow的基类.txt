@@ -1,0 +1,75 @@
+
+相同类型功能类里有很多重复执行的操作；
+相同功能类里不少功能操作都会执行，脚本里会重复编写同样的执行语句，就很繁琐；
+如打开加载界面和登录界面，都要执行：界面显示、界面初始化操作；
+同样打开其他窗口也是需要执行：界面显示、界面初始化，这样相同的操作；
+
+这里给相同的类添加基类，把相同、繁琐的操作统一放到基类里进行封装；
+
+一、在Common文件夹里新建基类脚本
+WindowRoot.cs：UI窗口基类
+SystemRoot.cs：系统类基类
+
+二、设置WindowRoot.cs类
+1、添加设置窗口状态的方法SetWndState()、以及显示掩藏窗口时方法InitWnd()、ClearWnd()；
+在窗口显示时执行InitWnd()，在窗口掩藏时执行ClearWnd()；
+
+2、窗口使用，经常需要资源加载，使用ResSerive.cs；
+在WindowRoots添加对ResSerive.cs的获取引用：
+窗口显示初始化时，获取ResSerive.cs；
+窗口掩藏关闭时，取消对ResSerive.cs的引用；
+这样子类使用ResSerive.cs时，就不必再设置获取，可直接使用了；也减少了ResSerive.cs的引用次数
+
+3、针对子类UI窗口，添加常用公共方法，减少子类繁琐设置
+关于文字的显示：SetText();及其重载；
+对物体的激活：SetActive();及其重载；
+
+三、将子类继承WindowRoot.cs
+1、修改脚本LoadingWnd.cs、LoginWnd.cs
+（1）继承的父类，把MonoBehaviour替换成WindowRoot
+（2）将脚本里原来的InitWnd()：
+添加关键词override；方法修饰词public 改为 protected；
+添加继承基类功能的语句：base.InitWnd();
+
+2、修改使用WindowRoot子类的脚本方法语句
+（1）修改ResService.cs的AsyncLoadScene()：
+1）GameRoot.Instance.loadingWnd.gameObject.SetActive(true);
+     GameRoot.Instance.loadingWnd.InitWnd();
+改为：GameRoot.Instance.loadingWnd.SetWndState();//默认 true 打开窗口
+
+2）GameRoot.Instance.loadingWnd.gameObject.SetActive(false);
+改为：GameRoot.Instance.loadingWnd.SetWndState(false);
+
+（2）修改LoginSystem.cs的EnterLogin()
+     loginWnd.gameObject.SetActive(true);
+     loginWnd.InitWnd();
+改为：loginWnd.SetWndState();
+
+（3）修改LodingWnd.cs代码
+原：txtTips.text = "这是一条游戏Tips";
+       txtPrg.text = "0%";
+       txtPrg.text = (int)(progress * 100) + "%";
+改：SetText(txtTips, "这是一条游戏Tips");
+       SetText(txtPrg,"0%");
+      SetText(txtPrg, (int)(progress * 100) + "%");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

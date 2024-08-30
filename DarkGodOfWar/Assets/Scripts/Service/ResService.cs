@@ -36,8 +36,7 @@ public class ResService : MonoBehaviour
     /// <param name="sceneName"></param>
     public void AsyncLoadScene(string sceneName,Action loaded)
     {
-        GameRoot.Instance.loadingWnd.gameObject.SetActive(true);//打开场景加载界面
-        GameRoot.Instance.loadingWnd.InitWnd();//重置加载界面
+        GameRoot.Instance.loadingWnd.SetWndState();
 
         AsyncOperation sceneAsync = SceneManager.LoadSceneAsync(sceneName);//执行和获取异步加载场景的操作
 
@@ -49,7 +48,7 @@ public class ResService : MonoBehaviour
             {
                 progressAction = null;//结束更新进度条事件
                 sceneAsync = null;//置空异步操作
-                GameRoot.Instance.loadingWnd.gameObject.SetActive(false);//关闭加载界面
+                GameRoot.Instance.loadingWnd.SetWndState(false);//关闭加载界面
                 if (loaded != null) loaded();//场景加载完成后，有回调事件，执行回调事件
             }
         };

@@ -12,7 +12,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LoadingWnd : MonoBehaviour
+public class LoadingWnd : WindowRoot
 {
     public Text txtTips;
     public Image loadingFg;
@@ -24,12 +24,15 @@ public class LoadingWnd : MonoBehaviour
     /// <summary>
     /// 界面打开时初始化
     /// </summary>
-    public void InitWnd()
+    protected override void InitWnd()
     {
+        base.InitWnd();
+
         fgWidth = loadingFg.GetComponent<RectTransform>().sizeDelta.x;//获取进度条宽度
 
-        txtTips.text = "这是一条游戏Tips";
-        txtPrg.text = "0%";
+        SetText(txtTips, "这是一条游戏Tips");
+        SetText(txtPrg, "0%");
+
         loadingFg.fillAmount = 0;
         loadingPoint.transform.localPosition = new Vector3(-545f,0,0);
     }
@@ -40,7 +43,7 @@ public class LoadingWnd : MonoBehaviour
     /// <param name="progress"></param>
     public void SetProgress(float progress)
     {
-        txtPrg.text = (int)(progress * 100) + "%";
+        SetText(txtPrg, (int)(progress * 100) + "%");
         loadingFg.fillAmount = progress;
 
         float pointPox = progress* fgWidth - 545;//545是imgPoint在进度条0位置上的偏移量

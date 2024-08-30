@@ -32,10 +32,6 @@ public class LoginSystem : MonoBehaviour
     /// </summary>
     public void EnterLogin()
     {
-        ResService.Instance.AsyncLoadScene(Constants.SceneLogin, () => 
-        {
-            loginWnd.gameObject.SetActive(true);//打开登录界面
-            loginWnd.InitWnd();//对登录界面进行初始化
-        });
+        ResService.Instance.AsyncLoadScene(Constants.SceneLogin, () => { loginWnd.SetWndState(); });
     }
 }
