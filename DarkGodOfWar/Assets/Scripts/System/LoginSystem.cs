@@ -1,0 +1,41 @@
+
+#region 脚本功能、创建时间和文件作者
+/**************************************
+    文件：System_LoginSystem.cs
+    作者：LoriaRujoy
+    邮箱：2659635618@qq.com
+    时间：2024/8/30 10:58
+    功能：登录注册业务系统
+***************************************/
+#endregion
+
+using UnityEngine;
+
+public class LoginSystem : MonoBehaviour
+{
+    public static LoginSystem Instance =null;
+
+    public LoginWnd loginWnd;
+
+    /// <summary>
+    /// 初始化登录注册系统
+    /// </summary>
+    public void InitSystem()
+    {
+        Instance=this;
+
+        Debug.Log("Init LoginSystem...");
+    }
+
+    /// <summary>
+    /// 进入登录场景
+    /// </summary>
+    public void EnterLogin()
+    {
+        ResService.Instance.AsyncLoadScene(Constants.SceneLogin, () => 
+        {
+            loginWnd.gameObject.SetActive(true);//打开登录界面
+            loginWnd.InitWnd();//对登录界面进行初始化
+        });
+    }
+}

@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 8632983324231884644}
   - component: {fileID: 8632983324231884645}
   m_Layer: 0
-  m_Name: ipPass
+  m_Name: iptPass
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -247,7 +247,7 @@ GameObject:
   - component: {fileID: 8632983324320297998}
   - component: {fileID: 8632983324320297999}
   m_Layer: 0
-  m_Name: ipbg2
+  m_Name: iptbg2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -880,7 +880,7 @@ GameObject:
   - component: {fileID: 8632983325279972454}
   - component: {fileID: 8632983325279972455}
   m_Layer: 0
-  m_Name: ipbg1
+  m_Name: iptbg1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -955,6 +955,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8632983325451465391}
+  - component: {fileID: 1852380495}
   m_Layer: 0
   m_Name: LoginWnd
   m_TagString: Untagged
@@ -984,6 +985,22 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1852380495
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8632983325451465388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 790c03b26bfef2b4cbf7dc005a6fa17d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  iptAcct: {fileID: 8632983325922848604}
+  iptPass: {fileID: 8632983324231884645}
+  btnEnter: {fileID: 8632983324937059894}
+  btnNotice: {fileID: 8632983325249959051}
 --- !u!1 &8632983325922848602
 GameObject:
   m_ObjectHideFlags: 0
@@ -996,7 +1013,7 @@ GameObject:
   - component: {fileID: 8632983325922848606}
   - component: {fileID: 8632983325922848604}
   m_Layer: 0
-  m_Name: ipAccount
+  m_Name: iptAcct
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
