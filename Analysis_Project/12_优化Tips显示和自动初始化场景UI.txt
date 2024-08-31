@@ -1,0 +1,174 @@
+
+一、Tips显示存在问题：解决多条信息时，最后一条直接覆盖之前所有信息的bug；
+
+解决方法：在DynamicWnd.cs里添加信息对列；
+
+将原来直接使用SetTips()，直接显示Tips，
+改为先把信息添加到信息队列中去AddTips()，
+然后在Update()里，根据队列里的信息条数，来调用SetTips()显示Tips；
+
+由于存在多线程里访问，注意在添加信息到信息队列时，添加锁；
+
+修改：
+1、DynamicWnd.cs里添加信息对列tipsQueue，和添加信息，提取信息显示的方法函数；
+原：
+public class DynamicWnd : WindowRoot
+{
+    public Animation tipsAnim;
+    public Text txtTips;
+    protected override void InitWnd()
+    {
+        base.InitWnd();
+        SetActive(txtTips, false);//默认关闭，需要时再显示
+    }
+    public void SetTips(string tips)// 显示Tips
+    {
+        SetActive(txtTips, true);
+        SetText(txtTips, tips);
+        AnimationClip clip = tipsAnim.GetClip("TipsShowAnim");
+        tipsAnim.Play();
+        StartCoroutine(AnimPlayDone(clip.length, () => { SetActive(txtTips, false); }));
+    }
+    private IEnumerator AnimPlayDone(float sec,Action callback)// 延时执行callback
+    {
+        yield return new WaitForSeconds(sec);
+        if(callback != null) callback();
+    }
+}
+改：
+public class DynamicWnd : WindowRoot
+{
+    ... ...
+    private Queue<string> tipsQueue = new Queue<string>();
+    protected override void InitWnd(){... ... }
+    private void Update()
+    {
+        if (tipsQueue.Count > 0)
+        {
+            lock (tipsQueue)
+            {
+                string tips = tipsQueue.Dequeue();
+                SetTips(tips);
+            }
+        }
+    }
+    public void AddTips(string tips)// 添加要显示的Tips信息
+    {
+        lock (tipsQueue) tipsQueue.Enqueue(tips);
+    }
+    private void SetTips(string tips) {... ...}
+    private IEnumerator AnimPlayDone(float sec,Action callback){... ...}
+}
+
+2、更新GameRoots.cs：
+原：dynamicWnd.SetTips("Test Tips");
+改：
+dynamicWnd.AddTips("Test 第一条 Tips");
+dynamicWnd.AddTips("Test Tips");
+dynamicWnd.AddTips("第三条 Tips");
+dynamicWnd.AddTips("Tips。。。。");
+dynamicWnd.AddTips("最后一条 Tips");
+
+二、Tips显示存在问题：Update运行速度特别快，多条信息，第一条信息还没怎么显示，就开始显示队列里的下一条信息了；
+
+解决方法：添加变量isTipsShow，当前有tips显示时，不允许显示下一条；
+改：
+public class DynamicWnd : WindowRoot
+{
+    ... ...
+    private Queue<string> tipsQueue = new Queue<string>();
+    private bool isTipsShow = false;
+
+    protected override void InitWnd(){ ... ... }
+    private void Update()
+    {
+        if (tipsQueue.Count > 0&& !isTipsShow)
+        {
+            lock (tipsQueue)
+            {
+                string tips = tipsQueue.Dequeue();
+                isTipsShow = true;
+                SetTips(tips);
+            }
+        }
+    }
+    public void AddTips(string tips) { lock (tipsQueue) tipsQueue.Enqueue(tips); }
+    private void SetTips(string tips)// 显示Tips
+    {
+        SetActive(txtTips, true);
+        SetText(txtTips, tips);
+        AnimationClip clip = tipsAnim.GetClip("TipsShowAnim");
+        tipsAnim.Play();
+        StartCoroutine(AnimPlayDone(clip.length, () =>
+        {
+            SetActive(txtTips, false);
+            isTipsShow = false;
+        }));
+    }
+    private IEnumerator AnimPlayDone(float sec,Action callback){ ... ... }
+}
+
+三、优化Tips显示设置
+在GameRoot.cs里将Tips信息显示封装，简化使用操作；
+原：
+private void Init()
+{
+    ... ...
+    login.EnterLogin();
+
+    //显示Tips弹窗
+    dynamicWnd.AddTips("Tips。。。。");
+    dynamicWnd.AddTips("最后一条 Tips");
+}
+改：
+private void Init()
+{
+    ... ...
+    login.EnterLogin();
+
+    //显示Tips弹窗
+    AddTips("Tips。。。。");
+    AddTips("最后一条 Tips");
+}
+public static void AddTips(string tips){ Instance.dynamicWnd.AddTips(tips); }
+
+在LoginSystem.cs的EnterLogin里使用Tips提示：
+原：
+public void EnterLogin()
+{
+    resService.AsyncLoadScene(Constants.SceneLogin, () => 
+    {
+        ... ...
+    });
+}
+改：
+public void EnterLogin()
+{
+    resService.AsyncLoadScene(Constants.SceneLogin, () => 
+    {
+        ... ...
+        GameRoot.AddTips("Load......");
+        GameRoot.AddTips("Load 显示xxx");
+        GameRoot.AddTips("Load Done");
+    });
+}
+
+四、优化场景中GameRoot及其子物体设置
+如：游戏里DynamicWnd默认打开；
+但做开发时，调整场景，DynamicWnd常显影响；
+每次都要还原游戏初始状态，就很麻烦；
+
+在GameRoot里做场景初始化操作：在Start()里执行；
+游戏运行时，将GameRoot下除DynamicWnd，其他UI对象都关闭；
+
+
+
+
+
+
+
+
+
+
+
+

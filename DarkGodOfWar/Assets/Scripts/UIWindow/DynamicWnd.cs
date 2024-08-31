@@ -11,6 +11,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,6 +20,9 @@ public class DynamicWnd : WindowRoot
     public Animation tipsAnim;
     public Text txtTips;
 
+    private Queue<string> tipsQueue = new Queue<string>();
+    private bool isTipsShow = false;
+
     protected override void InitWnd()
     {
         base.InitWnd();
@@ -26,11 +30,33 @@ public class DynamicWnd : WindowRoot
         SetActive(txtTips, false);//默认关闭，需要时再显示
     }
 
+    private void Update()
+    {
+        if (tipsQueue.Count > 0&& !isTipsShow)
+        {
+            lock (tipsQueue)
+            {
+                string tips = tipsQueue.Dequeue();
+                isTipsShow = true;
+                SetTips(tips);
+            }
+        }
+    }
+
     /// <summary>
-    /// 外部使用Tips显示的接口
+    /// 添加要显示的Tips信息
+    /// </summary>
+    /// <param name="tips"></param>
+    public void AddTips(string tips)
+    {
+        lock (tipsQueue) tipsQueue.Enqueue(tips);
+    }
+
+    /// <summary>
+    /// 显示Tips
     /// </summary>
     /// <param name="tips">显示的内容</param>
-    public void SetTips(string tips)
+    private void SetTips(string tips)
     {
         SetActive(txtTips, true);
         SetText(txtTips, tips);
@@ -38,7 +64,11 @@ public class DynamicWnd : WindowRoot
         //设置tips的动画
         AnimationClip clip = tipsAnim.GetClip("TipsShowAnim");
         tipsAnim.Play();
-        StartCoroutine(AnimPlayDone(clip.length, () => { SetActive(txtTips, false); }));
+        StartCoroutine(AnimPlayDone(clip.length, () =>
+        {
+            SetActive(txtTips, false);
+            isTipsShow = false;
+        }));
     }
 
     /// <summary>

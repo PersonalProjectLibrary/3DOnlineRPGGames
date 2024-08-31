@@ -22,9 +22,21 @@ public class GameRoot : MonoBehaviour
     {
         Instance = this;
         DontDestroyOnLoad(this);//游戏中一直不销毁GameRoot
-
         Debug.Log("Game Start...");
+        ClearUIRoot();
         Init();
+    }
+    /// <summary>
+    /// 初始化场景UI显示状态
+    /// </summary>
+    private void ClearUIRoot()
+    {
+        Transform canvas = transform.Find("Canvas");
+        for (int i = 0; i < canvas.childCount; i++)
+        {
+            canvas.GetChild(i).gameObject.SetActive(false);
+        }
+        dynamicWnd.SetWndState();
     }
 
     /// <summary>
@@ -46,14 +58,10 @@ public class GameRoot : MonoBehaviour
 
         //进入登录场景
         login.EnterLogin();
-
-        //显示Tips弹窗
-        dynamicWnd.SetTips("Test Tips");
     }
 
-    // Update is called once per frame
-    void Update()
+    public static void AddTips(string tips)
     {
-        
+        Instance.dynamicWnd.AddTips(tips);
     }
 }

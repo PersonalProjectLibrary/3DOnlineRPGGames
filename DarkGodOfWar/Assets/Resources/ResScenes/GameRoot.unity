@@ -900,6 +900,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: DynamicWnd
       objectReference: {fileID: 0}
+    - target: {fileID: 6152271618386660544, guid: 53ef31acaa62cd340a93d28dfd34fc54, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6152271618386660551, guid: 53ef31acaa62cd340a93d28dfd34fc54, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

@@ -38,6 +38,9 @@ public class LoginSystem : SystemRoot
         {
             loginWnd.SetWndState();//加载登录界面
             audioService.PlayBgMusic(Constants.BgAudioLogin);//播放登录界面背景音乐
+            GameRoot.AddTips("Load......");
+            GameRoot.AddTips("Load 显示xxx");
+            GameRoot.AddTips("Load Done");
         });
     }
 }
