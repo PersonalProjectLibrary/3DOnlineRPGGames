@@ -1,0 +1,48 @@
+
+添加业务系统System的基类和对登录界面龙的动画进行优化
+
+一、在Common文件夹下创建业务系统的基类SystemRoot.cs
+
+二、设置SystemRoot.cs里，
+1、把相关服务类，如AudioService.cs、ResService.cs的引用，
+缓存放到SystemRoot.cs里，然后让子业务系统继承使用；
+
+2、添加系统初始化函数InitSystem()
+
+三、修改继承SystemRoot.cs的子类LoginSystem.cs
+1、继承的父类，把MonoBehaviour替换成SystemRoot
+2、将脚本里原来的InitSystem()：
+添加关键词override；
+添加继承基类功能的语句：base.InitSystem();
+3、修改使用SystemRoot子类LoginSystem.cs的EnterLogin()：
+ResService.Instance.AsyncLoadScene(Constants.SceneLogin, () => 
+{
+    loginWnd.SetWndState();
+    AudioService.Instance.PlayBgMusic(Constants.BgAudioLogin);
+});
+改为：
+resService.AsyncLoadScene(Constants.SceneLogin, () => 
+{
+    loginWnd.SetWndState();
+    audioService.PlayBgMusic(Constants.BgAudioLogin);
+});
+
+四、更新WindowRoot，添加对AudioService.cs的引用，更新InitWnd()和ClearWnd()里的使用
+
+五、对登录场景中的龙的动画播放进行优化
+1、控制龙动画的物体组件是Login预制体里longRoot身上的Animation；
+
+2、在Common文件夹里新建控制龙动画的脚本：LoopDragonAnim.cs；
+并挂载到longRoot身上
+
+
+
+
+
+
+
+
+
+
+
+

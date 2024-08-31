@@ -15,6 +15,7 @@ using UnityEngine.UI;
 public class WindowRoot : MonoBehaviour
 {
     public ResService resService = null;
+    public AudioService audioService = null;
 
     /// <summary>
     /// 设置UI界面显示状态
@@ -33,6 +34,7 @@ public class WindowRoot : MonoBehaviour
     protected virtual void InitWnd()
     {
         resService = ResService.Instance;
+        audioService = AudioService.Instance;
     }
 
     /// <summary>
@@ -41,6 +43,7 @@ public class WindowRoot : MonoBehaviour
     protected void ClearWnd()
     {
         resService = null;
+        audioService = null;
     }
 
     #region Tools Functions

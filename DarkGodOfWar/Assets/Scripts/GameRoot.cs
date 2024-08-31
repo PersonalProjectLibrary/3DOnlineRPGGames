@@ -43,7 +43,7 @@ public class GameRoot : MonoBehaviour
         LoginSystem login = GetComponent<LoginSystem>();
         login.InitSystem();
 
-        //进入登录场景并加载相应的UI
+        //进入登录场景
         login.EnterLogin();
     }
 

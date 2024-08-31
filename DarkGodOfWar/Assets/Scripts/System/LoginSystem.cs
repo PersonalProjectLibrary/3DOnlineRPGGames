@@ -11,7 +11,7 @@
 
 using UnityEngine;
 
-public class LoginSystem : MonoBehaviour
+public class LoginSystem : SystemRoot
 {
     public static LoginSystem Instance =null;
 
@@ -20,8 +20,10 @@ public class LoginSystem : MonoBehaviour
     /// <summary>
     /// 初始化登录注册系统
     /// </summary>
-    public void InitSystem()
+    public override void InitSystem()
     {
+        base.InitSystem();
+
         Instance=this;
 
         Debug.Log("Init LoginSystem...");
@@ -32,10 +34,10 @@ public class LoginSystem : MonoBehaviour
     /// </summary>
     public void EnterLogin()
     {
-        ResService.Instance.AsyncLoadScene(Constants.SceneLogin, () => 
+        resService.AsyncLoadScene(Constants.SceneLogin, () => 
         {
             loginWnd.SetWndState();//加载登录界面
-            AudioService.Instance.PlayBgMusic(Constants.BgAudioLogin);//播放登录界面背景音乐
+            audioService.PlayBgMusic(Constants.BgAudioLogin);//播放登录界面背景音乐
         });
     }
 }
