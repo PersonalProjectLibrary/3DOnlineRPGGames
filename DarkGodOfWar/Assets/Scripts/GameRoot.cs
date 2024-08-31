@@ -16,6 +16,7 @@ public class GameRoot : MonoBehaviour
     public static GameRoot Instance=null;
 
     public LoadingWnd loadingWnd;
+    public DynamicWnd dynamicWnd;
 
     void Start()
     {
@@ -45,6 +46,9 @@ public class GameRoot : MonoBehaviour
 
         //进入登录场景
         login.EnterLogin();
+
+        //显示Tips弹窗
+        dynamicWnd.SetTips("Test Tips");
     }
 
     // Update is called once per frame

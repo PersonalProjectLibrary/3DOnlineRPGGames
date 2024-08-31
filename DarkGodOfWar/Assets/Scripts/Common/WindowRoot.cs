@@ -14,8 +14,8 @@ using UnityEngine.UI;
 
 public class WindowRoot : MonoBehaviour
 {
-    public ResService resService = null;
-    public AudioService audioService = null;
+    protected ResService resService = null;
+    protected AudioService audioService = null;
 
     /// <summary>
     /// 设置UI界面显示状态
