@@ -1,0 +1,70 @@
+
+1、UIWindow里新建：创建角色的脚本CreateWnd.cs，
+继承WindowRoot，进行初始化；
+并挂载到场景里CreateWnd身上；
+
+2、在LoginWnd.cs里添加进入创建角色界面功能方法ClickEntBtn()；
+
+3、场景里的LoginWnd对CreateWnd进行关联；
+LoginWnd里的btnEnter身上的Button的Onclick()里，添加对ClickEntBtn()方法的绑定；
+
+4、给登录按钮触发添加音效
+点击登录属于重大操作，不同于普通点击按钮，所以专门添加登录音效；
+（1）在Constants.cs里定义登录音效的变量：UiLoginBtn
+顺便也添加普通点击音效变量：UiClickBtn
+注：这里将登录界面背景音效变量重命名：原BgAudioLogin，改BgLogin；
+
+（2）LoginWnd.cs的ClickEntBtn()里执行点击播放音效功能
+audioService.PlayUIAudio(Constants.UiLoginBtn);
+
+5、LoginSystem.cs里，添加对角色创建界面的引用：对网络消息回复后执行的方法RespondLogin()
+获取服务器回应登录注册的消息，打开角色创建界面；
+这里先默认是新账号，执行角色创建界面，而不是进入游戏；
+public CreateWnd createWnd;
+public void RespondLogin()
+{
+    GameRoot.AddTips("登录成功");
+    createWnd.SetWndState();
+    loginWnd.SetWndState(false);
+}
+
+6、LoginWnd.cs的ClickEntBtn()里模拟请求成功，
+调用LoginSystem.cs里服务器回应登录请求的RespondLogin()方法；
+这里模拟网络请求成功，后续做网络服务功能；
+public void ClickEntBtn()
+{
+    string acct = iptAcct.text;
+    string pass = iptPass.text;
+    audioService.PlayUIAudio(Constants.UiLoginBtn);
+    if (acct != "" && pass != "")//更新本地存储和账号密码
+    {
+        PlayerPrefs.SetString("Acct", acct);
+        PlayerPrefs.SetString("Pass", pass);
+        //发送网络消息请求登录
+        //这里模拟请求成功，当前是新账号，打开创建角色面板
+        LoginSystem.Instance.RespondLogin();
+        //已有的账号时，直接进入游戏
+    }
+    else GameRoot.AddTips("账号或密码为空");
+}
+
+7、登录界面公告按钮功能也进行添加简单实现和绑定
+public void ClickNoticeBtn()
+{
+    audioService.PlayUIAudio(Constants.UiClickBtn);
+    GameRoot.AddTips("功能正在开发中...");
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

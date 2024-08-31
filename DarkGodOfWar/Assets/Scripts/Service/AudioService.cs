@@ -50,12 +50,12 @@ public class AudioService : MonoBehaviour
         }
     }
 
-    public void PlayUIAudio(string uiAudioName)
+    public void PlayUIAudio(string audioName)
     {
         //UI音乐也经常触发，对其进行缓存
-        AudioClip audio = ResService.Instance.LoadAudio("ResAudio/" + uiAudioName, true);
+        AudioClip audio = ResService.Instance.LoadAudio("ResAudio/" + audioName, true);
         //直接触发UI音效
-        bgAudio.clip = audio;
-        bgAudio.Play();
+        uiAudio.clip = audio;
+        uiAudio.Play();
     }
 }

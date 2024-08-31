@@ -590,6 +590,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   loginWnd: {fileID: 1852380495}
+  createWnd: {fileID: 4771135717146910935}
 --- !u!114 &1031753736
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -696,7 +697,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 0.05
+  m_Volume: 0.5
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -879,12 +880,19 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4771135716884737576, guid: c556c9242b7f6ca409561d44b2603a85, type: 3}
-      propertyPath: m_Placeholder
-      value: 
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c556c9242b7f6ca409561d44b2603a85, type: 3}
+--- !u!114 &4771135717146910935 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3246983216220627373, guid: c556c9242b7f6ca409561d44b2603a85, type: 3}
+  m_PrefabInstance: {fileID: 4771135717146910934}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 873d2edc25ce6344fa8b948e3aa25796, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &6152271617110386083
 PrefabInstance:
   m_ObjectHideFlags: 0

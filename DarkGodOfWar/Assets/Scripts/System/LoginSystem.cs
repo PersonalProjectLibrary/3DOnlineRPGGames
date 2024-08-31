@@ -16,6 +16,7 @@ public class LoginSystem : SystemRoot
     public static LoginSystem Instance =null;
 
     public LoginWnd loginWnd;
+    public CreateWnd createWnd;
 
     /// <summary>
     /// 初始化登录注册系统
@@ -37,10 +38,18 @@ public class LoginSystem : SystemRoot
         resService.AsyncLoadScene(Constants.SceneLogin, () => 
         {
             loginWnd.SetWndState();//加载登录界面
-            audioService.PlayBgMusic(Constants.BgAudioLogin);//播放登录界面背景音乐
-            GameRoot.AddTips("Load......");
-            GameRoot.AddTips("Load 显示xxx");
-            GameRoot.AddTips("Load Done");
+            audioService.PlayBgMusic(Constants.BgLogin);//播放登录界面背景音乐
         });
+    }
+
+    /// <summary>
+    /// 接收网络回应
+    /// </summary>
+    public void RespondLogin()
+    {
+        GameRoot.AddTips("登录成功");
+
+        createWnd.SetWndState();
+        loginWnd.SetWndState(false);
     }
 }

@@ -39,5 +39,31 @@ public class LoginWnd : WindowRoot
         }
     }
 
-    //TODO 更新本地存储和账号密码
+    /// <summary>
+    /// 点击进入游戏按钮
+    /// </summary>
+    public void ClickEntBtn()
+    {
+        string acct = iptAcct.text;
+        string pass = iptPass.text;
+
+        audioService.PlayUIAudio(Constants.UiLoginBtn);
+        if (acct != "" && pass != "")//更新本地存储和账号密码
+        {
+            PlayerPrefs.SetString("Acct", acct);
+            PlayerPrefs.SetString("Pass", pass);
+            //发送网络消息请求登录
+
+            //这里模拟请求成功，当前是新账号，打开创建角色面板
+            LoginSystem.Instance.RespondLogin();
+            //已有的账号时，直接进入游戏
+        }
+        else GameRoot.AddTips("账号或密码为空");
+    }
+
+    public void ClickNoticeBtn()
+    {
+        audioService.PlayUIAudio(Constants.UiClickBtn);
+        GameRoot.AddTips("功能正在开发中...");
+    }
 }
