@@ -11,6 +11,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Xml;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -24,8 +25,8 @@ public class ResService : MonoBehaviour
     public void InitService()
     {
         Instance = this;
-
         Debug.Log("Init ResService...");
+        InitRdNameCfg();
     }
 
     #region LoadScene
@@ -89,6 +90,58 @@ public class ResService : MonoBehaviour
         }
         return audioClip;
     }
+    #endregion
+
+
+    #region InitConfigs
+    private List<string> surNameList = new List<string>();
+    private List<string> manList = new List<string>();
+    private List<string> womanList = new List<string>(); 
+
+    /// <summary>
+    /// 生成随机姓名的配置文件初始化
+    /// </summary>
+    private void InitRdNameCfg()
+    {
+        TextAsset nameXml =Resources.Load<TextAsset>(PathDefine.RdNameCfg);
+        if (!nameXml) Debug.LogError("Xml file:" + PathDefine.RdNameCfg + "not exist!");
+        else
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(nameXml.text);
+            XmlNodeList nodeList = doc.SelectSingleNode("root").ChildNodes;
+            for (int i = 0; i < nodeList.Count; i++)
+            {
+                XmlElement element = nodeList[i] as XmlElement;
+                if (element.GetAttributeNode("ID") == null) continue;
+                int id = Convert.ToInt32(element.GetAttributeNode("ID").InnerText);
+                foreach (XmlElement e in nodeList[i].ChildNodes)
+                {
+                    switch (e.Name)
+                    {
+                        case "surname": surNameList.Add(e.InnerText); break;
+                        case "man": manList.Add(e.InnerText); break;
+                        case "woman": womanList.Add(e.InnerText); break;
+                    }
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// 获取随机姓名
+    /// </summary>
+    /// <param name="woman">是否是女性</param>
+    /// <returns></returns>
+    public string GetRdNameData(bool woman = true)
+    {
+        System.Random rd = new System.Random();
+        string rdName = surNameList[PETools.RandomInt(0, surNameList.Count - 1)];
+        if (woman) rdName += womanList[PETools.RandomInt(0, womanList.Count - 1)];
+        else rdName += manList[PETools.RandomInt(0, manList.Count - 1)];
+        return rdName;
+    }
+
     #endregion
 
 }

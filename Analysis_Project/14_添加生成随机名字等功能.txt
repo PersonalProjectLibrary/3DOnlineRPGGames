@@ -1,0 +1,122 @@
+
+名字的随机生成功能实现
+
+一、生成xml配置文件
+使用office，配合xml格式文件，将excel数据文件转为xml配置文件；
+1、office打开excel数据文件；
+
+2、菜单栏：开发工具--Xml模块里的 源 --Xml映射--添加xml格式文件
+
+3、右边XML源的映射框里，选中文件，右键--映射元素
+在映射处理的excel表格里填入数据（最少两条数据）
+
+4、当前带有数据的excel表格的菜单栏：开发工具--Xml模块里的 导出，选择导出位置后点确认；
+就可以在导出位置看到生成的xml配置文件；
+
+二、项目里添加配置文件
+Assets/Resources里新建ResConfigs文件夹，将做好的随机姓名的xml配置文件放入；
+
+三、在Common文件夹下，新建PathDefine.cs，用于记录所有地址信息；
+添加随机姓名xml配置文件的加载路径：RdNameCfg；
+
+四、解析xml配置文件，获取随机姓名
+1、在Common文件夹下，新建工具类PETools
+获取随机姓名，需要随机数，其他很多地方也会用到获取随机数的功能；
+这里直接做一个随机数工具类；
+public class PETools
+{
+    public static int RandomInt(int min,int max,System.Random rd =null)// 获取随机整数
+    {
+        if (rd == null) rd = new System.Random();
+        int val = rd.Next(min, max + 1);
+        return val;
+    }
+}
+
+配置文件也是一种资源，所以放到ResService.cs里处理；
+2、添加存储随机姓名的List：
+private List<string> surNameList = new List<string>();
+private List<string> manList = new List<string>();
+private List<string> womanList = new List<string>();
+
+3、添加随机姓名配置文件初始化方法InitRdNameCfg()；
+将Resource/ResConfigs里的rdName.xml加载读取出来，并存到List里；
+在InitService()里进行调用初始化；
+
+private void InitRdNameCfg()
+{
+    TextAsset nameXml =Resources.Load<TextAsset>(PathDefine.RdNameCfg);
+    if (!nameXml) Debug.LogError("Xml file:" + PathDefine.RdNameCfg + "not exist!");
+    else
+    {
+        XmlDocument doc = new XmlDocument();
+        doc.LoadXml(nameXml.text);
+        XmlNodeList nodeList = doc.SelectSingleNode("root").ChildNodes;
+        for (int i = 0; i < nodeList.Count; i++)
+        {
+            XmlElement element = nodeList[i] as XmlElement;
+            if (element.GetAttributeNode("ID") == null) continue;
+            int id = Convert.ToInt32(element.GetAttributeNode("ID").InnerText);
+            foreach (XmlElement e in nodeList[i].ChildNodes)
+            {
+                switch (e.Name)
+                {
+                    case "surname": surNameList.Add(e.InnerText); break;
+                    case "man": manList.Add(e.InnerText); break;
+                    case "woman": womanList.Add(e.InnerText); break;
+                }
+            }
+        }
+    }
+}
+
+4、添加外部使用获取随机姓名的方法函数
+public string GetRdNameData(bool woman = true)
+{
+    System.Random rd = new System.Random();
+    string rdName = surNameList[PETools.RandomInt(0, surNameList.Count - 1)];
+    if (woman) rdName += womanList[PETools.RandomInt(0, womanList.Count - 1)];
+    else rdName += manList[PETools.RandomInt(0, manList.Count - 1)];
+    return rdName;
+}
+
+五、在CreateWnd.cs里添加生成随机姓名、进入游戏的按钮事件
+1、初始化时，默认生成一个女性随机姓名；
+public InputField iptName;
+protected override void InitWnd()
+{
+    base.InitWnd();
+    iptName.text = resService.GetRdNameData();
+}
+
+2、点击生成一个随机姓名的按钮事件ClickRandomBtn()
+
+3、点击进入游戏的按钮事件ClickEnterBtn()
+
+4、绑定名字输入框、按钮事件
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
