@@ -12,3 +12,5 @@ E:\GitLibrary\PersonalProjectLibrary\3DOnlineRPGGames\DarkGodOfWar\Libs\PEProtoc
 E:\GitLibrary\PersonalProjectLibrary\3DOnlineRPGGames\DarkGodOfWar\Libs\PEProtocol.pdb
 E:\GitLibrary\PersonalProjectLibrary\3DOnlineRPGGames\DarkGodOfWar\Server\Protocol\obj\Debug\PEProtocol.dll
 E:\GitLibrary\PersonalProjectLibrary\3DOnlineRPGGames\DarkGodOfWar\Server\Protocol\obj\Debug\PEProtocol.pdb
+E:\GitLibrary\PersonalProjectLibrary\3DOnlineRPGGames\DarkGodOfWar\Client\Assets\Scripts\Net\PEProtocol.dll
+E:\GitLibrary\PersonalProjectLibrary\3DOnlineRPGGames\DarkGodOfWar\Client\Assets\Scripts\Net\PEProtocol.pdb

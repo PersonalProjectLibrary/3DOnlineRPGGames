@@ -45,6 +45,8 @@ public class GameRoot : MonoBehaviour
     private void Init()
     {
         //优先服务模块初始化
+        NetService net = GetComponent<NetService>();
+        net.InitService();
         ResService res = GetComponent<ResService>();
         res.InitService();
 

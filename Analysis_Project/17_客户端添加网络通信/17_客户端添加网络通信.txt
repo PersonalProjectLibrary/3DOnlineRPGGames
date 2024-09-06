@@ -1,0 +1,96 @@
+
+客户端添加网络通信
+参考网络库PESocket的Example示例，对客户端进行搭建网络通信；
+注，主要还是参考个人工具库里根据示例搭建的客户端，进行迁移进项目；
+
+一、关于服务器工程生成dll
+将服务器的PEProtocol生成导出成dll
+获得dll方法1——生成：选中PEProtocol项目--右键--生成（可从属性--生成里设置查看输出位置，然后找到dll文件）
+获得dll方法2——调试：选中ServerClient项目--右键--调试，然后在生成里设置输出文件夹里找到PEProtocol.dll
+第一种方法：直接生成dll文件；
+第二种方法：ServerClient里引用了PEProtocol解决方案/dll，
+在运行ServerClient时，调试--启动新示例时，
+会自动在输出文件夹里生成/更新PEProtocol.dll、ServerClient.dll以及ServerClient.exe文件；
+
+但上面两种方法都很低效，因为后面会反复修改更新服务器工程，导致dll不断被修改，需要不断被更新；
+这里，直接修改服务器工程的输出位置，直接输出到Unity客户端项目中；
+并且PEProtocol项目有引用PESocket.dll，PEProtocol生成dll的输出位置设置到Unity中后，
+PESocket.dll也会自动生成导入到Unity中
+
+二、Unity客户端导入dll
+1、在Unity客户端的Assets/Scripts文件夹下，新建文件夹Net，作为PEProtocol项目的输出位置；
+
+2、选中PEProtocol项目--右键--属性--生成--输出位置，修改为Unity工程的Assets/Scripts/Net文件夹
+
+3、选中PEProtocol项目--右键--生成，
+可以看到Unity工程的Assets/Scripts/Net文件夹里有PEProtocol.dll和PESocket.dll
+
+三、Unity客户端搭建网络通信
+1、Scripts/Service文件夹下新建NetService.cs，参照AudioService.cs进行初始化设置
+public static NetService Instance = null;
+public void InitService()// 网络服务初始化
+{
+    Instance = this;
+    Debug.Log("Init NetService...");
+}
+然后在GameRoot.cs里初始化服务模块那里调用进行初始化；
+场景里记得关联物体，将NetService.cs挂到GameRoot上；
+
+2、Assets/Scripts/Net文件夹下新建ClientSession.cs
+参考示例里的客户端的写法，将GameStart.cs和ClientSession.cs迁移到项目的NetService.cs和ClientSession.cs里；
+using PENet;
+using PEProtocol;
+using UnityEngine;
+public class ClientSession : PESession<GameMsg>
+{
+    protected override void OnConnected(){ Debug.Log("Server Connect"); }// 和服务端建立连接
+    protected override void OnReciveMsg(GameMsg msg){ Debug.Log("Server Rsp：" + msg.text);}// 接收消息时处理
+    protected override void OnDisConnected(){ Debug.Log("Server DisConnect");}// 和服务端断开连接
+}
+
+using PENet;
+using PEProtocol;
+using UnityEngine;
+public class NetService : MonoBehaviour
+{
+    public static NetService Instance = null;
+    PESocket<ClientSession, GameMsg> client;
+    public void InitService()// 网络服务初始化
+    {
+        Instance = this;
+        Debug.Log("Init NetService...");
+        client = new PESocket<ClientSession, GameMsg>();
+        client.SetLog(true, (string msg, int lv) => //设置客户端日志接口
+        {
+            switch (lv)
+            {
+                case 0: msg = "Log：" + msg;   Debug.Log(msg);  break;
+                case 1: msg = "Warn：" + msg;   Debug.LogWarning(msg);  break;
+                case 2: msg = "Error：" + msg;  Debug.LogError(msg);  break;
+                case 3: msg = "Info：" + msg;  Debug.Log(msg);  break;
+            }
+        });
+        client.StartAsClient(SrvCfg.srvIP, SrvCfg.srvPort); //启动客户端
+    }
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))//测试和服务器通信
+        { 
+               client.session.SendMsg(new GameMsg { text = "hello unity" }); 
+         }
+     }
+}
+
+四、测试
+1、运行服务器
+2、运行游戏
+
+
+
+
+
+
+
+
+
+
