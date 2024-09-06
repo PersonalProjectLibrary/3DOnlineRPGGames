@@ -1,0 +1,86 @@
+重点是实现服务器客户端，这里仅讲解实现单服服务器客户端工程；
+实现服务器不是重点，不讲解服务器全集，多台服务器通信、负载均衡等；
+
+一、新建服务器项目
+打开VS，新建项目--控制台应用(.NetFramework)--Server，
+存放位置，和Unity客户端放同一个文件夹里，...\PersonalProjectLibrary\3DOnlineRPGGames里
+
+二、添加初始化项目
+1、自动生成的项目，重命名ServerClient，删除命名空间，这里没必要使用命名空间；
+public class ServerClient
+{
+    static void Main(string[] args) { }
+}
+
+2、创建设置服务器初始化的类：ServerRoot.cs
+类似Unity客户端的GameRoot，项目根节点；
+同样的删除命名空间；并设置成单例模式，方便ServerClient调用；并添加初始化服务器的方法Init
+public class ServerRoot
+{
+    private static ServerRoot instance = null;
+    public static ServerRoot Instance
+    {
+        get
+        {
+            if (instance == null) instance = new ServerRoot();
+            return instance;
+        }
+    }
+    // 初始化方法
+    public void Init(){ }
+}
+
+3、添加设置服务器项目初始化
+（1）ServerClient里调用ServerRoot.cs里的Init()方法进行初始化；
+（2）避免执行完Init()就退出结束，再添加While死循环，保持服务器运行
+public class ServerClient
+{
+    static void Main(string[] args)
+    {
+        ServerRoot.Instance.Init();
+        while (true){ }//保持服务器一直运行，不退出
+    }
+}
+
+三、整理项目
+1、新建存放公共类的文件夹00Common，将ServerStart.cs和ServerRoot.cs放入
+2、新建存放各种服务类的文件夹01Service，并在01Service里新建01NetSvc文件夹，用于存放网络服务的代码
+3、新建存放各种业务系统的文件夹02System，并在02System里新建01LoginSys文件夹，存放登录系统的代码
+4、新建Libs文件夹，专门放相关的dll，如PESocket.dll、PEProtocol.dll等
+然后设置项目属性，导出位置为此文件夹
+
+四、添加功能模块：
+1、01NetSvc文件夹里新建网络服务NetSvc.cs
+2、01LoginSys文件夹里新建服务器登录LoginSys.cs
+同ServerRoot.cs，都设置为单例模式，添加初始化方法Init()
+3、ServerRoot.cs的Init()里对各个模块进行初始化操作
+public void Init()
+{
+    //数据层TODO
+    NetSvc.Instance.Init();//服务层
+    LoginSys.Instance.Init();//业务系统层
+}
+
+五、服务端代码移植，迁移到ServerClient控制台服务器中；
+将之前测试PEScoket的ConsoleProjects控制台项目使用的示例代码，迁移到ServerClient控制台服务器中；
+
+1、添加网络通信协议PEProtocol项目
+点击ServerClient解决方案，新建PEProtocol类库(.NetFramework)项目，
+这里保留命名空间，避免重名，并将自动生成的类重命名为GameMsg；
+参照网络库PESocket示例使用里的Protocal项目的NetMsg，设置PEProtocol；
+
+2、Server项目添加和客户端建立连接的Session类
+在01Service/01NetSvc文件夹里新建ServerSession类
+这里不保留命名空间
+参考ConsoleProjects里的Server项目的ServerSession，设置ServerSession；
+
+3、完善NetSvc和LoginSys里的Init()
+
+4、运行测试
+选中ServerClient，右键--调试--运行新实例，可看到运行的服务器窗口，显示如下：
+Server Start Success!
+Waiting for Connecting......
+19:20:21 >> NetSvc Init Done
+19:20:21 >> LoginSys Init Done      
+
+项目服务器端初步完成
