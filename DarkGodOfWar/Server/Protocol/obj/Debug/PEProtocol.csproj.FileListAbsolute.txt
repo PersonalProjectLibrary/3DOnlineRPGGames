@@ -1,0 +1,14 @@
+E:\GitLibrary\PersonalProjectLibrary\3DOnlineRPGGames\Libs\Protocol.dll
+E:\GitLibrary\PersonalProjectLibrary\3DOnlineRPGGames\Libs\Protocol.pdb
+E:\GitLibrary\PersonalProjectLibrary\3DOnlineRPGGames\Server\Protocol\obj\Debug\PEProtocol.csproj.AssemblyReference.cache
+E:\GitLibrary\PersonalProjectLibrary\3DOnlineRPGGames\Server\Protocol\obj\Debug\PEProtocol.csproj.CoreCompileInputs.cache
+E:\GitLibrary\PersonalProjectLibrary\3DOnlineRPGGames\Server\Protocol\obj\Debug\PEProtocol.csproj.Up2Date
+E:\GitLibrary\PersonalProjectLibrary\3DOnlineRPGGames\Server\Protocol\obj\Debug\Protocol.dll
+E:\GitLibrary\PersonalProjectLibrary\3DOnlineRPGGames\Server\Protocol\obj\Debug\Protocol.pdb
+E:\GitLibrary\PersonalProjectLibrary\3DOnlineRPGGames\DarkGodOfWar\Server\Protocol\obj\Debug\PEProtocol.csproj.AssemblyReference.cache
+E:\GitLibrary\PersonalProjectLibrary\3DOnlineRPGGames\DarkGodOfWar\Server\Protocol\obj\Debug\PEProtocol.csproj.CoreCompileInputs.cache
+E:\GitLibrary\PersonalProjectLibrary\3DOnlineRPGGames\DarkGodOfWar\Server\Protocol\obj\Debug\PEProtocol.csproj.Up2Date
+E:\GitLibrary\PersonalProjectLibrary\3DOnlineRPGGames\DarkGodOfWar\Libs\PEProtocol.dll
+E:\GitLibrary\PersonalProjectLibrary\3DOnlineRPGGames\DarkGodOfWar\Libs\PEProtocol.pdb
+E:\GitLibrary\PersonalProjectLibrary\3DOnlineRPGGames\DarkGodOfWar\Server\Protocol\obj\Debug\PEProtocol.dll
+E:\GitLibrary\PersonalProjectLibrary\3DOnlineRPGGames\DarkGodOfWar\Server\Protocol\obj\Debug\PEProtocol.pdb

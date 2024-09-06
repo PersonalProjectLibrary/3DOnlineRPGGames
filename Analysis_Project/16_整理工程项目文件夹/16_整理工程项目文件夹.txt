@@ -1,0 +1,5 @@
+整理游戏工程文件夹分类
+1、将Unity工程重命名为Client
+2、新建DarkGodOfWar文件夹，将Client、Server、Lib移到DarkGodOfWar文件夹里
+3、更新Server里项目的输出位置、dll位置；以及对应程序集和默认命名空间更新；
+之前重命名了项目、类名，但对应程序集名、命名空间没有更改；
