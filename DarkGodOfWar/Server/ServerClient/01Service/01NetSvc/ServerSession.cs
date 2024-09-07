@@ -13,18 +13,17 @@
 using PENet;
 using PEProtocol;
 
-public class ServerSession:PESession<GameMsg>
+public class ServerSession : PESession<GameMsg>
 {
     protected override void OnConnected()
     {
         PECommon.Log("Client Connect");
-        //SendMsg(new GameMsg { text = "Welcome to connect." });
     }
 
     protected override void OnReciveMsg(GameMsg msg)
     {
         PECommon.Log("RcvPack CMD：" + ((CMD)msg.cmd).ToString());
-        //SendMsg(new GameMsg { text = "SrvRsp：" + msg.text });
+        NetSvc.Instance.AddMsgQue(new MsgPack(this,msg));
     }
 
     protected override void OnDisConnected()

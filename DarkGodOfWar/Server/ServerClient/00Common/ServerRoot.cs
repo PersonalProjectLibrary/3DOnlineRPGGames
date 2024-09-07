@@ -30,4 +30,12 @@ public class ServerRoot
         NetSvc.Instance.Init();//服务层
         LoginSys.Instance.Init();//业务系统层
     }
+
+    /// <summary>
+    /// 服务器里要一直执行的功能
+    /// </summary>
+    public void Update()
+    {
+        NetSvc.Instance.Update();
+    }
 }

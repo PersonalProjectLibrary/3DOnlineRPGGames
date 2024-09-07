@@ -1,0 +1,204 @@
+
+服务器对接收的登录消息进行分发处理
+
+一、添加服务器对接收消息的处理
+1、NetSvc里添加把接收的消息传到消息队列中的函数AddMsgQue()，
+一个服务器对应多个客户端，这里用个队列将信息存起来；然后依次处理队列里的消息；
+这里队列使用，需要引用进System库；使用System里的System.Collections.Generic;
+
+2、在ServerSession里进行调用，将接收到的消息传到NetSvc的消息队列中；
+public class ServerSession:PESession<GameMsg>
+{
+    ... ...
+    protected override void OnReciveMsg(GameMsg msg)
+    {
+        PECommon.Log("RcvPack CMD：" + ((CMD)msg.cmd).ToString());
+        NetSvc.Instance.AddMsgQue(msg);
+    }
+    ... ...
+}
+
+3、PESocket是异步多线程的网络库，可以在不同的线程里接收到消息；
+为了安全，对NetSvc里添加锁
+对添加消息操作进行加锁处理
+public static readonly string lockObj = "lock";
+private Queue<GameMsg> msgPackQue = new Queue<GameMsg>();
+public void AddMsgQue(GameMsg msg)
+{
+    lock (lockObj) { msgPackQue.Enqueue(msg); }
+}
+
+3、添加处理数据的函数，HandOutMsg()
+根据信息的cmd，将不同类型消息，分发到各个业务系统中；
+
+4、在Update里进行对消息队列里消息的处理
+注意这里取数据，也是在锁里进行取数据
+public void Update()
+{
+    if (msgPackQue.Count > 0)
+    {
+        PECommon.Log("PackCount：" + msgPackQue.Count);
+        lock (lockObj)
+        {
+            GameMsg msg = msgPackQue.Dequeue();
+            HandOutMsg(msg);
+        }
+    }
+}
+
+二、在服务器的LoginSys.cs里添加对登录信息处理的函数ReqLogin()里执行的逻辑：
+ReqLogin()处理NetSvc.cs分发过来的登录消息
+1、判断账号是否已上线
+（1）已上线：返回错误信息
+（2）未上线：判断账号是否存在；
+	1）如果不存在，创建默认的账号密码；
+	（使用sdk接第三方的登录，进行自行注册创建一个新的账号，避免用户进行很繁琐的注册流程）
+	2）如果存在，检测密码；
+2、给客户端回应消息
+这里要拿到服务端与客户端连接的Session，才能通过Session给客户端发送消息；
+
+三、更新消息相关设置，将原来传递的消息，改为传递带Session的消息包
+1、添加消息包类，原本消息队列存的是消息，改为存消息包MsgPack
+public class MsgPack
+{
+    public ServerSession m_Session;
+    public GameMsg m_Msg;
+    public MsgPack(ServerSession session,GameMsg msg)
+    {
+        m_Session = session;
+        m_Msg = msg;
+    }
+}
+public class NetSvc
+{
+    ... ...
+    private Queue<MsgPack> msgPackQue = new Queue<MsgPack>();
+    public void AddMsgQue(MsgPack msgPack)
+    {
+        lock (lockObj) { msgPackQue.Enqueue(msgPack); }
+    }
+    public void Update()
+    {
+        if (msgPackQue.Count > 0)
+        {
+            PECommon.Log("PackCount：" + msgPackQue.Count);
+            lock (lockObj)
+            {
+                MsgPack msgPack = msgPackQue.Dequeue();
+                HandOutMsg(msgPack);
+            }
+        }
+    }
+    private void HandOutMsg(MsgPack msgPack)
+    {
+        switch ((CMD)msgPack.m_Msg.cmd)
+        {
+            case CMD.ReqLogin:
+                LoginSys.Instance.ReqLogin(msgPack);
+                break;
+        }
+    }
+}
+2、更新ServerSession里的OnReciveMsg()
+在将消息添加到NetSvc的消息队列时，也把Session传递进去
+public class ServerSession : PESession<GameMsg>
+{
+    ... ...
+    protected override void OnReciveMsg(GameMsg msg)
+    {
+        PECommon.Log("RcvPack CMD：" + ((CMD)msg.cmd).ToString());
+        NetSvc.Instance.AddMsgQue(new MsgPack(this,msg));
+    }
+    ... ...
+}
+
+3、更新LoginSys.cs里的ReqLogin()
+public class LoginSys
+{
+    ... ...
+    public void ReqLogin(MsgPack msgPack) {  ... ... }
+}
+
+四、给客户端回应消息
+1、GameMsg.cs的脚本里添加回应登录下消息方法RspLogin()，并在GameMsg.cs里添加对RspLogin()的引用
+namespace PEProtocol
+{
+    ... ...
+
+    [Serializable]
+    public class GameMsg : PEMsg
+    {
+        public ReqLogin reqLogin;
+        public RspLogin rspLogin;
+    }
+
+    public enum CMD {  ... ... }
+    [Serializable]
+    public class ReqLogin { ... ... }
+    [Serializable]
+    public class RspLogin { //TODO }
+}
+
+2、完善LoginSys.cs的ReqLogin()
+public void ReqLogin(MsgPack msgPack)
+{
+    //TODO，检测当前账号是否以及上线
+    //回应客户端
+    GameMsg msg = new GameMsg
+    {
+        cmd = (int)CMD.RspLogin,
+        rspLogin = new RspLogin { }
+    };
+    msgPack.m_Session.SendMsg(msg);
+}
+
+五、执行对客户端消息的回应
+服务器里执行信息处理，分发消息的NetSvc.cs里的Update()，并没有像Unity里的Update自动执行；
+这里要进行关联执行Update，来执行对消息的处理；
+1、在ServerRoot里添加Update()方法
+2、Update()里调用NetSvc.cs里的Update;
+3、然后将Update放到ServerClient的Main方法里的While死循环里调用；
+4、Unity客户端也对收到的服务器回应进行处理下，
+ClientSession.cs的OnReciveMsg()，对收到的消息做日志输出：
+protected override void OnReciveMsg(GameMsg msg)
+{
+    PECommon.Log("RcvPack CMD：" + ((CMD)msg.cmd).ToString());
+}
+
+六、测试
+1、重新生成PEProtocol.dll
+2、运行服务器、Unity客户端
+3、点击登录按钮，进行登录测试
+4、可看到输出
+服务器：
+Server Start Success! 
+Waiting for Connecting......
+21:40:57 >> NetSvc Init Done. 
+21:40:57 >> LoginSys Init Done. 
+21:41:10 >> Client Connect 
+21:41:22 >> RcvPack CMD：ReqLogin
+21:41:22 >> PackCount：1 
+
+对应Unity控制台：
+Log：21:41:22 >> RcvPack CMD：RspLogin
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

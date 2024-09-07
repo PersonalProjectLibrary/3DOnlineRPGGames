@@ -27,6 +27,7 @@ namespace PEProtocol
     public class GameMsg : PEMsg
     {
         public ReqLogin reqLogin;
+        public RspLogin rspLogin;
     }
 
     /// <summary>
@@ -50,4 +51,14 @@ namespace PEProtocol
         public string acct;
         public string pass;
     }
+
+    /// <summary>
+    /// 发送回应客户端登录的消息
+    /// </summary>
+    [Serializable]
+    public class RspLogin
+    {
+        //TODO
+    }
+
 }

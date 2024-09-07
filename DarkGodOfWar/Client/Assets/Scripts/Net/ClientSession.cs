@@ -11,7 +11,6 @@
 
 using PENet;
 using PEProtocol;
-using UnityEngine;
 
 public class ClientSession : PESession<GameMsg>
 {
@@ -20,7 +19,8 @@ public class ClientSession : PESession<GameMsg>
     /// </summary>
     protected override void OnConnected()
     {
-        PECommon.Log("Server Connect");
+        GameRoot.AddTips("连接服务器成功");
+        PECommon.Log("Connect To Server Succ");
     }
 
     /// <summary>
@@ -29,7 +29,7 @@ public class ClientSession : PESession<GameMsg>
     /// <param name="msg"></param>
     protected override void OnReciveMsg(GameMsg msg)
     {
-        PECommon.Log("Server Rsp");
+        PECommon.Log("RcvPack CMD：" + ((CMD)msg.cmd).ToString());
     }
 
     /// <summary>
@@ -37,6 +37,7 @@ public class ClientSession : PESession<GameMsg>
     /// </summary>
     protected override void OnDisConnected()
     {
-        PECommon.Log("Server DisConnect");
+        GameRoot.AddTips("服务器断开连接");
+        PECommon.Log("DisConnect To Server");
     }
 }

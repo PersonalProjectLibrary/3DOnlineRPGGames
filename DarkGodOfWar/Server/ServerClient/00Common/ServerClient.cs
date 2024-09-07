@@ -14,6 +14,10 @@ public class ServerClient
     static void Main(string[] args)
     {
         ServerRoot.Instance.Init();
-        while (true) { }//保持服务器一直运行，不退出
+        //死循环保持服务器一直运行，不退出，同时执行服务器上要一直执行的功能
+        while (true)
+        {
+            ServerRoot.Instance.Update();
+        }
     }
 }
