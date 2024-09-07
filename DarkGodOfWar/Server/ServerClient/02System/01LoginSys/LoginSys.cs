@@ -24,11 +24,14 @@ public class LoginSys
         }
     }
 
+    private CacheSvc cacheSvc = null;
+
     /// <summary>
     /// 登录业务系统初始化
     /// </summary>
     public void Init()
     {
+        cacheSvc = CacheSvc.Instance;
         PECommon.Log("LoginSys Init Done.");
     }
 
@@ -38,18 +41,24 @@ public class LoginSys
     /// <param name="msg"></param>
     public void ReqLogin(MsgPack msgPack)
     {
-        //TODO，检测当前账号是否以及上线
-        /* 已上线：返回错误信息
-         * 未上线：检测账号是否存在
-         *      存在：检测密码
-         *      不存在：创建默认的账号密码（使用sdk，接第三方登录创建账号）
-         */
-        //回应客户端
-        GameMsg msg = new GameMsg
+        //设置回应客户端的消息
+        GameMsg msg = new GameMsg { cmd = (int)CMD.RspLogin };
+        //检测当前账号信息
+        ReqLogin data = msgPack.m_Msg.reqLogin;
+        if (cacheSvc.IsAcctOnLine(data.acct))
+            msg.err = (int)ErrorCode.AcctIsOnline;//已上线：返回错误信息
+        else
         {
-            cmd = (int)CMD.RspLogin,
-            rspLogin = new RspLogin { }
-        };
+            PlayerData pData = cacheSvc.GetPlayerData(data.acct, data.pass);
+            if (pData == null)//密码错误，返回错误码
+                msg.err = (int)ErrorCode.PassWrong;
+            else//账号存在,进行缓存，并返回玩家信息
+            {
+                msg.rspLogin = new RspLogin { playerData = pData };
+                cacheSvc.AcctOnline(data.acct, msgPack.m_Session, pData);
+            }
+        }
+        //向对应客户端回应
         msgPack.m_Session.SendMsg(msg);
     }
 }

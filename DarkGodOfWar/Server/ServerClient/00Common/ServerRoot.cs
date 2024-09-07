@@ -27,8 +27,11 @@ public class ServerRoot
     public void Init()
     {
         //数据层TODO
-        NetSvc.Instance.Init();//服务层
-        LoginSys.Instance.Init();//业务系统层
+        //服务层
+        NetSvc.Instance.Init();
+        CacheSvc.Instance.Init();
+        //业务系统层
+        LoginSys.Instance.Init();
     }
 
     /// <summary>

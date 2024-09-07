@@ -1,0 +1,68 @@
+
+完善服务器上LoginSys.cs的对登录信息的响应处理ReqLogin()
+要判断当前账号是否已上线，我们需要从缓存里获取当前服务器里已上线玩家账号，然后判断是否有当前账号
+
+一、GameMsg里添加玩家账号相关数据PlayerData
+1、玩家信息包括：id、name、lv、exp、power、coin、diamond等等
+2、然后在回应玩家登录信息时RspLogin()，把玩家数据返回回去；
+[Serializable]
+public class RspLogin { public PlayerData playerData; }
+
+二、添加账号的缓存
+1、服务器项目里新建03Cache缓存文件夹，并在下面新建缓存层CacheSvc.cs
+2、初始化CacheSvc.cs
+去除命名空间，设置为单例；添加初始化方法Init()，
+然后在ServerRoot.cs里调用，CacheSvc属于服务层，和NetSvc.cs放在一起初始化
+3、CacheSvc.cs里添加供业务系统调用的API
+（1）定义字典
+onLineAcctDic存储已上线的账号，以及对应账号进行连接的Session；
+onLineSessionDic存储已上线的账号的玩家信息及Session；
+（2）添加判断账号是否已存在的方法IsAcctOnline()
+（3）添加获取玩家账号信息的函数GetPlayerData()，数据库还没有做，这里先返回个空；
+（4）添加进行缓存玩家账号信息的函数AcctOnline()
+（5）LoginSys.cs里添加对CacheSvc.cs的引用
+
+三、使用PENet.PEMsg里的err错误码返回登录错误信息
+这里使用返回错误码的方式，告诉客户端，账号已经上线过了，或账号密码错误等错误信息；
+错误码：PENet.PEMsg里的err字段
+1、GameMsg里添加err相关的枚举
+public enum ErrorCode
+{
+    None = 0,// 没有错误
+    AcctIsOnline,// 账号已经上线(重复登录)
+    PassWrong,// 账号密码错误
+}
+2、LoginSys.cs的ReqLogin()里，在检测到账号已上线，返回错误码
+3、未上线，密码错误，也返回对应错误码
+4、账号未上线，且密码正确，返回玩家信息，也要对当前账号信息进行缓存；
+public void ReqLogin(MsgPack msgPack)
+{
+    GameMsg msg = new GameMsg { cmd = (int)CMD.RspLogin };
+    ReqLogin data = msgPack.m_Msg.reqLogin;
+    if (cacheSvc.IsAcctOnLine(data.acct)) msg.err = (int)ErrorCode.AcctIsOnline;//已上线：返回错误信息
+    else
+    {
+        PlayerData pData = cacheSvc.GetPlayerData(data.acct, data.pass);
+        if (pData == null) msg.err = (int)ErrorCode.PassWrong;//密码错误，返回错误码
+        else//账号存在,进行缓存，并返回玩家信息
+        {
+            msg.rspLogin = new RspLogin { playerData = pData };
+            cacheSvc.AcctOnline(data.acct, msgPack.m_Session, pData);
+        }
+    }
+    msgPack.m_Session.SendMsg(msg); //向对应客户端回应
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

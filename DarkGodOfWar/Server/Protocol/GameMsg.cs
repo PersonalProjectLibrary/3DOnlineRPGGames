@@ -23,23 +23,43 @@ namespace PEProtocol
         public const int srvPort = 17666;//服务器端口
     }
 
-    [Serializable]
-    public class GameMsg : PEMsg
-    {
-        public ReqLogin reqLogin;
-        public RspLogin rspLogin;
-    }
-
     /// <summary>
     /// 网络通信的命令号, 消息类型
     /// </summary>
     /// 对应PEMsg里的cmd字段
     public enum CMD
     {
-        None =0,
+        None = 0,
         //登录相关 100
-        ReqLogin =101,//登录请求
-        RspLogin =102,//登录回应
+        ReqLogin = 101,//登录请求
+        RspLogin = 102,//登录回应
+    }
+
+    /// <summary>
+    /// 错误码，告诉客户端当前有什么问题
+    /// </summary>
+    /// 对应PEMsg里的err字段
+    public enum ErrorCode
+    {
+        /// <summary>
+        /// 没有错误
+        /// </summary>
+        None = 0,
+        /// <summary>
+        /// 账号已经上线(重复登录)
+        /// </summary>
+        AcctIsOnline,
+        /// <summary>
+        /// 账号密码错误
+        /// </summary>
+        PassWrong,
+    }
+
+    [Serializable]
+    public class GameMsg : PEMsg
+    {
+        public ReqLogin reqLogin;
+        public RspLogin rspLogin;
     }
 
     /// <summary>
@@ -58,7 +78,42 @@ namespace PEProtocol
     [Serializable]
     public class RspLogin
     {
-        //TODO
+        public PlayerData playerData;
     }
 
+    /// <summary>
+    /// 玩家信息
+    /// </summary>
+    [Serializable]
+    public class PlayerData
+    {
+        /// <summary>
+        /// ID
+        /// </summary>
+        public int id;
+        /// <summary>
+        /// 玩家名
+        /// </summary>
+        public string name;
+        /// <summary>
+        /// 等级
+        /// </summary>
+        public int lv;
+        /// <summary>
+        /// 经验值
+        /// </summary>
+        public int exp;
+        /// <summary>
+        /// 体力
+        /// </summary>
+        public int power;
+        /// <summary>
+        /// 金币
+        /// </summary>
+        public int coin;
+        /// <summary>
+        /// 钻石
+        /// </summary>
+        public int diamond;
+    }
 }
