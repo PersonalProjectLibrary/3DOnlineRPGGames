@@ -9,6 +9,7 @@
 ***************************************/
 #endregion
 
+using PEProtocol;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -44,18 +45,29 @@ public class LoginWnd : WindowRoot
     /// </summary>
     public void ClickEntBtn()
     {
-        string acct = iptAcct.text;
-        string pass = iptPass.text;
+        string _acct = iptAcct.text;
+        string _pass = iptPass.text;
 
         audioService.PlayUIAudio(Constants.UiLoginBtn);
-        if (acct != "" && pass != "")//更新本地存储和账号密码
+        if (_acct != "" && _pass != "")//更新本地存储和账号密码
         {
-            PlayerPrefs.SetString("Acct", acct);
-            PlayerPrefs.SetString("Pass", pass);
+            PlayerPrefs.SetString("Acct", _acct);
+            PlayerPrefs.SetString("Pass", _pass);
             //发送网络消息请求登录
+            GameMsg msg = new GameMsg
+            {
+                cmd = (int)CMD.ReqLogin,//消息类型
+                reqLogin = new ReqLogin//消息内容
+                {
+                    acct = _acct,
+                    pass = _pass
+                }
+            };
+
+            netService.SendMsg(msg);
 
             //这里模拟请求成功，当前是新账号，打开创建角色面板
-            LoginSystem.Instance.RespondLogin();
+            //LoginSystem.Instance.RespondLogin();
             //已有的账号时，直接进入游戏
         }
         else GameRoot.AddTips("账号或密码为空");

@@ -1,0 +1,73 @@
+实现客户端传递登录信息，服务器正确区分和接收登录信息
+
+一、NetService.cs里添加具体的信息发送函数SendMsg()
+其他模块就可以利用这个封装函数进行调用发送信息；
+
+二、根模块里添加网络服务
+1、WindowRoot.cs里添加网络登录服务
+2、SystemRoot.cs里添加网络登录服务，系统里也是需要发送数据的
+
+三、登录消息进行通信
+1、更新服务器端GameMsg；
+（1）GameMsg脚本里添加ReqLogin登录请求类；
+（2）GameMsg脚本里定义信息类型的枚举变量CMD，
+作为网络通信的命令号；用于确认接收的信息是什么类型，干什么用的；
+（3）GameMsg里对ReqLogin进行引用;
+public class GameMsg : PEMsg { public ReqLogin reqLogin; }
+（4）对应之前使用GameMsg的方法进行修改，解决报错
+（5）更新PEProtocol.dll
+
+2、完善客户端LoginWnd.cs的ClickEnterBtn()里发送登录消息的网络请求
+public void ClickEntBtn()
+{
+    string _acct = iptAcct.text;
+    string _pass = iptPass.text;
+    audioService.PlayUIAudio(Constants.UiLoginBtn);
+    if (_acct != "" && _pass != "")//更新本地存储和账号密码
+    {
+        PlayerPrefs.SetString("Acct", _acct);
+        PlayerPrefs.SetString("Pass", _pass);
+        //发送网络消息请求登录
+        GameMsg msg = new GameMsg
+        {
+            cmd = (int)CMD.ReqLogin,//消息类型
+            reqLogin = new ReqLogin//消息内容
+            {
+                acct = _acct,
+                pass = _pass
+            }
+        };
+        netService.SendMsg(msg);
+    }
+    else GameRoot.AddTips("账号或密码为空");
+}
+
+四、测试
+1、服务端ServerSession里，接收消息里，打印消息的命令行CMD
+protected override void OnReciveMsg(GameMsg msg)
+{
+    PECommon.Log("RcvPack CMD：" + ((CMD)msg.cmd).ToString());
+}
+2、更新PEProtocol
+3、运行服务器，运行Unity客户端，点击进入游戏按钮
+可以看到服务器窗口输出：
+Server Start Success! 
+Waiting for Connecting...... 
+16:07:13 >> NetSvc Init Done. 
+16:07:13 >> LoginSys Init Done. 
+16:07:28 >> Client Connect
+16:07:57 >> RcvPack CMD：ReqLogin
+在服务器，接收登录消息出，进行断点测试，可以看到登录的账号和密码信息，传输成功；
+
+
+
+
+
+
+
+
+
+
+
+
+

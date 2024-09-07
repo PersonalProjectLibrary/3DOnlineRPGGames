@@ -13,6 +13,9 @@ using PENet;
 using PEProtocol;
 using UnityEngine;
 
+/// <summary>
+/// 网络服务
+/// </summary>
 public class NetService : MonoBehaviour
 {
     public static NetService Instance = null;
@@ -55,9 +58,21 @@ public class NetService : MonoBehaviour
         client.StartAsClient(SrvCfg.srvIP, SrvCfg.srvPort);//启动客户端
     }
 
-    private void Update()
+    /// <summary>
+    /// 具体的发送函数
+    /// </summary>
+    /// <param name="msg"></param>
+    public void SendMsg(GameMsg msg)
     {
-        if (Input.GetKeyDown(KeyCode.Space))//测试和服务器通信
-            client.session.SendMsg(new GameMsg { text = "hello unity" });
+        if (client.session != null)
+        {
+            client.session.SendMsg(msg);
+            //client.session.SendMsg(new GameMsg { text = "hello unity" });
+        }
+        else
+        {
+            GameRoot.AddTips("服务器未连接");
+            InitService();
+        }
     }
 }

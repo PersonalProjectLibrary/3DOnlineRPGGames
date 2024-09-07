@@ -29,7 +29,7 @@ public class ClientSession : PESession<GameMsg>
     /// <param name="msg"></param>
     protected override void OnReciveMsg(GameMsg msg)
     {
-        PECommon.Log("Server Rsp：" + msg.text);
+        PECommon.Log("Server Rsp");
     }
 
     /// <summary>

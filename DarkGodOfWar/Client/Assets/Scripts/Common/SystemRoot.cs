@@ -15,11 +15,12 @@ public class SystemRoot : MonoBehaviour
 {
     protected ResService resService;
     protected AudioService audioService;
+    protected NetService netService;
 
     public virtual void InitSystem()
     {
         resService = ResService.Instance;
         audioService = AudioService.Instance;
-
+        netService = NetService.Instance;
     }
 }

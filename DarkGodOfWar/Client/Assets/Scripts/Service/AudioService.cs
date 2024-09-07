@@ -9,12 +9,11 @@
 ***************************************/
 #endregion
 
-using System;
-using System.IO;
 using UnityEngine;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
+/// <summary>
+/// 声音播放服务
+/// </summary>
 public class AudioService : MonoBehaviour
 {
     public static AudioService Instance =null;

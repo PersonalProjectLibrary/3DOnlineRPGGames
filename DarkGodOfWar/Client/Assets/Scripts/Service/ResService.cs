@@ -15,6 +15,9 @@ using System.Xml;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// 资源加载服务
+/// </summary>
 public class ResService : MonoBehaviour
 {
     public static ResService Instance = null;

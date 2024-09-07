@@ -16,6 +16,7 @@ public class WindowRoot : MonoBehaviour
 {
     protected ResService resService = null;
     protected AudioService audioService = null;
+    protected NetService netService = null;
 
     /// <summary>
     /// 设置UI界面显示状态
@@ -35,6 +36,7 @@ public class WindowRoot : MonoBehaviour
     {
         resService = ResService.Instance;
         audioService = AudioService.Instance;
+        netService = NetService.Instance;
     }
 
     /// <summary>
@@ -44,6 +46,7 @@ public class WindowRoot : MonoBehaviour
     {
         resService = null;
         audioService = null;
+        netService = null;
     }
 
     #region Tools Functions

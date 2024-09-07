@@ -21,6 +21,7 @@ public class LoginSys
             return instance;
         }
     }
+
     /// <summary>
     /// 登录业务系统初始化
     /// </summary>

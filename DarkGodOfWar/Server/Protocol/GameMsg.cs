@@ -14,12 +14,6 @@ using System;
 
 namespace PEProtocol
 {
-    [Serializable]
-    public class GameMsg : PEMsg
-    {
-        public string text;//网络通信内容
-    }
-
     /// <summary>
     /// 服务器配置类
     /// </summary>
@@ -27,5 +21,33 @@ namespace PEProtocol
     {
         public const string srvIP = "127.0.0.1";//服务器IP
         public const int srvPort = 17666;//服务器端口
+    }
+
+    [Serializable]
+    public class GameMsg : PEMsg
+    {
+        public ReqLogin reqLogin;
+    }
+
+    /// <summary>
+    /// 网络通信的命令号, 消息类型
+    /// </summary>
+    /// 对应PEMsg里的cmd字段
+    public enum CMD
+    {
+        None =0,
+        //登录相关 100
+        ReqLogin =101,//登录请求
+        RspLogin =102,//登录回应
+    }
+
+    /// <summary>
+    /// 发送请求登录的消息
+    /// </summary>
+    [Serializable]
+    public class ReqLogin
+    {
+        public string acct;
+        public string pass;
     }
 }
