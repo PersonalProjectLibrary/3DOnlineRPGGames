@@ -3,28 +3,32 @@
   "WorkspaceRootPath": "E:\\GitLibrary\\PersonalProjectLibrary\\3DOnlineRPGGames\\DarkGodOfWar\\Server\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{620855EB-6405-4F7A-8633-FE53F22D22F4}|Protocol\\PEProtocol.csproj|e:\\gitlibrary\\personalprojectlibrary\\3donlinerpggames\\darkgodofwar\\server\\protocol\\gamemsg.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{620855EB-6405-4F7A-8633-FE53F22D22F4}|Protocol\\PEProtocol.csproj|solutionrelative:protocol\\gamemsg.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{E207CA50-89CC-460B-AB12-C3AA5BF7EC3F}|ServerClient\\ServerClient.csproj|E:\\GitLibrary\\PersonalProjectLibrary\\3DOnlineRPGGames\\DarkGodOfWar\\Server\\serverclient\\02system\\01loginsys\\loginsys.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E207CA50-89CC-460B-AB12-C3AA5BF7EC3F}|ServerClient\\ServerClient.csproj|solutionrelative:serverclient\\02system\\01loginsys\\loginsys.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E207CA50-89CC-460B-AB12-C3AA5BF7EC3F}|ServerClient\\ServerClient.csproj|E:\\GitLibrary\\PersonalProjectLibrary\\3DOnlineRPGGames\\DarkGodOfWar\\Server\\serverclient\\00common\\serverclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E207CA50-89CC-460B-AB12-C3AA5BF7EC3F}|ServerClient\\ServerClient.csproj|solutionrelative:serverclient\\00common\\serverclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{E207CA50-89CC-460B-AB12-C3AA5BF7EC3F}|ServerClient\\ServerClient.csproj|E:\\GitLibrary\\PersonalProjectLibrary\\3DOnlineRPGGames\\DarkGodOfWar\\Server\\serverclient\\00common\\serverroot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E207CA50-89CC-460B-AB12-C3AA5BF7EC3F}|ServerClient\\ServerClient.csproj|solutionrelative:serverclient\\00common\\serverroot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{E207CA50-89CC-460B-AB12-C3AA5BF7EC3F}|ServerClient\\ServerClient.csproj|E:\\GitLibrary\\PersonalProjectLibrary\\3DOnlineRPGGames\\DarkGodOfWar\\Server\\serverclient\\01service\\01netsvc\\serversession.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{E207CA50-89CC-460B-AB12-C3AA5BF7EC3F}|ServerClient\\ServerClient.csproj|e:\\gitlibrary\\personalprojectlibrary\\3donlinerpggames\\darkgodofwar\\server\\serverclient\\01service\\01netsvc\\serversession.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{E207CA50-89CC-460B-AB12-C3AA5BF7EC3F}|ServerClient\\ServerClient.csproj|solutionrelative:serverclient\\01service\\01netsvc\\serversession.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E207CA50-89CC-460B-AB12-C3AA5BF7EC3F}|ServerClient\\ServerClient.csproj|E:\\GitLibrary\\PersonalProjectLibrary\\3DOnlineRPGGames\\DarkGodOfWar\\Server\\serverclient\\01service\\01netsvc\\netsvc.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{E207CA50-89CC-460B-AB12-C3AA5BF7EC3F}|ServerClient\\ServerClient.csproj|e:\\gitlibrary\\personalprojectlibrary\\3donlinerpggames\\darkgodofwar\\server\\serverclient\\01service\\01netsvc\\netsvc.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{E207CA50-89CC-460B-AB12-C3AA5BF7EC3F}|ServerClient\\ServerClient.csproj|solutionrelative:serverclient\\01service\\01netsvc\\netsvc.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E207CA50-89CC-460B-AB12-C3AA5BF7EC3F}|ServerClient\\ServerClient.csproj|E:\\GitLibrary\\PersonalProjectLibrary\\3DOnlineRPGGames\\DarkGodOfWar\\Server\\serverclient\\02system\\01loginsys\\loginsys.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E207CA50-89CC-460B-AB12-C3AA5BF7EC3F}|ServerClient\\ServerClient.csproj|solutionrelative:serverclient\\02system\\01loginsys\\loginsys.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{E207CA50-89CC-460B-AB12-C3AA5BF7EC3F}|ServerClient\\ServerClient.csproj|e:\\gitlibrary\\personalprojectlibrary\\3donlinerpggames\\darkgodofwar\\server\\serverclient\\00common\\serverroot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E207CA50-89CC-460B-AB12-C3AA5BF7EC3F}|ServerClient\\ServerClient.csproj|solutionrelative:serverclient\\00common\\serverroot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E207CA50-89CC-460B-AB12-C3AA5BF7EC3F}|ServerClient\\ServerClient.csproj|e:\\gitlibrary\\personalprojectlibrary\\3donlinerpggames\\darkgodofwar\\server\\serverclient\\00common\\serverclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E207CA50-89CC-460B-AB12-C3AA5BF7EC3F}|ServerClient\\ServerClient.csproj|solutionrelative:serverclient\\00common\\serverclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{620855EB-6405-4F7A-8633-FE53F22D22F4}|Protocol\\PEProtocol.csproj|e:\\gitlibrary\\personalprojectlibrary\\3donlinerpggames\\darkgodofwar\\server\\protocol\\pecommon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{620855EB-6405-4F7A-8633-FE53F22D22F4}|Protocol\\PEProtocol.csproj|solutionrelative:protocol\\pecommon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{620855EB-6405-4F7A-8633-FE53F22D22F4}|Protocol\\PEProtocol.csproj|e:\\gitlibrary\\personalprojectlibrary\\3donlinerpggames\\darkgodofwar\\server\\protocol\\gamemsg.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{620855EB-6405-4F7A-8633-FE53F22D22F4}|Protocol\\PEProtocol.csproj|solutionrelative:protocol\\gamemsg.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -34,35 +38,37 @@
       "DocumentGroups": [
         {
           "DockedWidth": 262,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 6,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "NetSvc.cs",
-              "DocumentMoniker": "E:\\GitLibrary\\PersonalProjectLibrary\\3DOnlineRPGGames\\DarkGodOfWar\\Server\\ServerClient\\01Service\\01NetSvc\\NetSvc.cs",
-              "RelativeDocumentMoniker": "ServerClient\\01Service\\01NetSvc\\NetSvc.cs",
-              "ToolTip": "E:\\GitLibrary\\PersonalProjectLibrary\\3DOnlineRPGGames\\DarkGodOfWar\\Server\\ServerClient\\01Service\\01NetSvc\\NetSvc.cs",
-              "RelativeToolTip": "ServerClient\\01Service\\01NetSvc\\NetSvc.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAAPAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-06T14:14:39.837Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 1,
               "Title": "ServerSession.cs",
               "DocumentMoniker": "E:\\GitLibrary\\PersonalProjectLibrary\\3DOnlineRPGGames\\DarkGodOfWar\\Server\\ServerClient\\01Service\\01NetSvc\\ServerSession.cs",
               "RelativeDocumentMoniker": "ServerClient\\01Service\\01NetSvc\\ServerSession.cs",
               "ToolTip": "E:\\GitLibrary\\PersonalProjectLibrary\\3DOnlineRPGGames\\DarkGodOfWar\\Server\\ServerClient\\01Service\\01NetSvc\\ServerSession.cs",
               "RelativeToolTip": "ServerClient\\01Service\\01NetSvc\\ServerSession.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABwAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAA4AAAAAAAAAAAAUwB8AAAAUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-06T14:14:40.833Z"
+              "WhenOpened": "2024-09-07T04:59:01.838Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
+              "Title": "NetSvc.cs",
+              "DocumentMoniker": "E:\\GitLibrary\\PersonalProjectLibrary\\3DOnlineRPGGames\\DarkGodOfWar\\Server\\ServerClient\\01Service\\01NetSvc\\NetSvc.cs",
+              "RelativeDocumentMoniker": "ServerClient\\01Service\\01NetSvc\\NetSvc.cs",
+              "ToolTip": "E:\\GitLibrary\\PersonalProjectLibrary\\3DOnlineRPGGames\\DarkGodOfWar\\Server\\ServerClient\\01Service\\01NetSvc\\NetSvc.cs",
+              "RelativeToolTip": "ServerClient\\01Service\\01NetSvc\\NetSvc.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACEAAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-09-07T04:58:58.136Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "ServerRoot.cs",
               "DocumentMoniker": "E:\\GitLibrary\\PersonalProjectLibrary\\3DOnlineRPGGames\\DarkGodOfWar\\Server\\ServerClient\\00Common\\ServerRoot.cs",
               "RelativeDocumentMoniker": "ServerClient\\00Common\\ServerRoot.cs",
@@ -70,44 +76,60 @@
               "RelativeToolTip": "ServerClient\\00Common\\ServerRoot.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-06T14:14:34.472Z"
+              "WhenOpened": "2024-09-07T04:58:49.128Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 4,
               "Title": "ServerClient.cs",
               "DocumentMoniker": "E:\\GitLibrary\\PersonalProjectLibrary\\3DOnlineRPGGames\\DarkGodOfWar\\Server\\ServerClient\\00Common\\ServerClient.cs",
               "RelativeDocumentMoniker": "ServerClient\\00Common\\ServerClient.cs",
               "ToolTip": "E:\\GitLibrary\\PersonalProjectLibrary\\3DOnlineRPGGames\\DarkGodOfWar\\Server\\ServerClient\\00Common\\ServerClient.cs",
               "RelativeToolTip": "ServerClient\\00Common\\ServerClient.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-06T14:14:30.196Z"
+              "WhenOpened": "2024-09-07T04:58:46.912Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 6,
               "Title": "GameMsg.cs",
               "DocumentMoniker": "E:\\GitLibrary\\PersonalProjectLibrary\\3DOnlineRPGGames\\DarkGodOfWar\\Server\\Protocol\\GameMsg.cs",
               "RelativeDocumentMoniker": "Protocol\\GameMsg.cs",
               "ToolTip": "E:\\GitLibrary\\PersonalProjectLibrary\\3DOnlineRPGGames\\DarkGodOfWar\\Server\\Protocol\\GameMsg.cs",
               "RelativeToolTip": "Protocol\\GameMsg.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-06T13:07:51.202Z",
+              "WhenOpened": "2024-09-07T04:58:41.894Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 5,
+              "Title": "PECommon.cs",
+              "DocumentMoniker": "E:\\GitLibrary\\PersonalProjectLibrary\\3DOnlineRPGGames\\DarkGodOfWar\\Server\\Protocol\\PECommon.cs",
+              "RelativeDocumentMoniker": "Protocol\\PECommon.cs",
+              "ToolTip": "E:\\GitLibrary\\PersonalProjectLibrary\\3DOnlineRPGGames\\DarkGodOfWar\\Server\\Protocol\\PECommon.cs",
+              "RelativeToolTip": "Protocol\\PECommon.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAAB0AAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-09-07T03:08:49.401Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
               "Title": "LoginSys.cs",
               "DocumentMoniker": "E:\\GitLibrary\\PersonalProjectLibrary\\3DOnlineRPGGames\\DarkGodOfWar\\Server\\ServerClient\\02System\\01LoginSys\\LoginSys.cs",
               "RelativeDocumentMoniker": "ServerClient\\02System\\01LoginSys\\LoginSys.cs",
               "ToolTip": "E:\\GitLibrary\\PersonalProjectLibrary\\3DOnlineRPGGames\\DarkGodOfWar\\Server\\ServerClient\\02System\\01LoginSys\\LoginSys.cs",
               "RelativeToolTip": "ServerClient\\02System\\01LoginSys\\LoginSys.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAAAOAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-06T14:14:43.846Z"
+              "WhenOpened": "2024-09-06T14:14:43.846Z",
+              "EditorCaption": ""
             }
           ]
         }

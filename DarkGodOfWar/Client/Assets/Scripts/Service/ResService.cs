@@ -25,7 +25,7 @@ public class ResService : MonoBehaviour
     public void InitService()
     {
         Instance = this;
-        Debug.Log("Init ResService...");
+        PECommon.Log("Init ResService...");
         InitRdNameCfg();
     }
 
@@ -104,7 +104,7 @@ public class ResService : MonoBehaviour
     private void InitRdNameCfg()
     {
         TextAsset nameXml =Resources.Load<TextAsset>(PathDefine.RdNameCfg);
-        if (!nameXml) Debug.LogError("Xml file:" + PathDefine.RdNameCfg + "not exist!");
+        if (!nameXml) PECommon.Log("Xml file:" + PathDefine.RdNameCfg + "not exist!",LogType.Error);
         else
         {
             XmlDocument doc = new XmlDocument();

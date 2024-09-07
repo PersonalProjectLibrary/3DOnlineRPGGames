@@ -20,7 +20,7 @@ public class ClientSession : PESession<GameMsg>
     /// </summary>
     protected override void OnConnected()
     {
-        Debug.Log("Server Connect");
+        PECommon.Log("Server Connect");
     }
 
     /// <summary>
@@ -29,7 +29,7 @@ public class ClientSession : PESession<GameMsg>
     /// <param name="msg"></param>
     protected override void OnReciveMsg(GameMsg msg)
     {
-        Debug.Log("Server Rsp：" + msg.text);
+        PECommon.Log("Server Rsp：" + msg.text);
     }
 
     /// <summary>
@@ -37,6 +37,6 @@ public class ClientSession : PESession<GameMsg>
     /// </summary>
     protected override void OnDisConnected()
     {
-        Debug.Log("Server DisConnect");
+        PECommon.Log("Server DisConnect");
     }
 }

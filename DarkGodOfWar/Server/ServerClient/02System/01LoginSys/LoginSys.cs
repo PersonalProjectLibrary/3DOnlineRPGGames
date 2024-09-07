@@ -9,7 +9,6 @@
 ***************************************/
 #endregion
 
-using PENet;
 
 public class LoginSys
 {
@@ -27,6 +26,6 @@ public class LoginSys
     /// </summary>
     public void Init()
     {
-        PETool.LogMsg("LoginSys Init Done.");
+        PECommon.Log("LoginSys Init Done.");
     }
 }

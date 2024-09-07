@@ -22,7 +22,7 @@ public class GameRoot : MonoBehaviour
     {
         Instance = this;
         DontDestroyOnLoad(this);//游戏中一直不销毁GameRoot
-        Debug.Log("Game Start...");
+        PECommon.Log("Game Start...");
         ClearUIRoot();
         Init();
     }

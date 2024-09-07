@@ -28,7 +28,7 @@ public class AudioService : MonoBehaviour
     public void InitService()
     {
         Instance = this;
-        Debug.Log("Init AudioService...");
+        PECommon.Log("Init AudioService...");
     }
 
     /// <summary>

@@ -25,7 +25,7 @@ public class NetService : MonoBehaviour
     public void InitService()
     {
         Instance = this;
-        Debug.Log("Init NetService...");
+        PECommon.Log("Init NetService...");
 
         client = new PESocket<ClientSession, GameMsg>();
         
