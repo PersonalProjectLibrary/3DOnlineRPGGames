@@ -9,6 +9,7 @@
 ***************************************/
 #endregion
 
+using PEProtocol;
 using UnityEngine;
 
 public class GameRoot : MonoBehaviour
@@ -26,6 +27,7 @@ public class GameRoot : MonoBehaviour
         ClearUIRoot();
         Init();
     }
+
     /// <summary>
     /// 初始化场景UI显示状态
     /// </summary>
@@ -62,8 +64,32 @@ public class GameRoot : MonoBehaviour
         login.EnterLogin();
     }
 
+    /// <summary>
+    /// 显示弹窗提示
+    /// </summary>
+    /// <param name="tips"></param>
     public static void AddTips(string tips)
     {
         Instance.dynamicWnd.AddTips(tips);
     }
+
+    #region PlayerData
+    private PlayerData playerData = null;
+    /// <summary>
+    /// 获取玩家数据
+    /// </summary>
+    public PlayerData PlayerData
+    {
+        get { return playerData; }
+    }
+    /// <summary>
+    /// 更新修改玩家数据
+    /// </summary>
+    /// <param name="data"></param>
+    public void SetPlayerData(RspLogin data)
+    {
+        playerData = data.playerData;
+    }
+    #endregion
+
 }

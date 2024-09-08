@@ -11,6 +11,7 @@
 
 using PENet;
 using PEProtocol;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -21,6 +22,9 @@ public class NetService : MonoBehaviour
     public static NetService Instance = null;
 
     PESocket<ClientSession, GameMsg> client;
+
+    private static readonly string lockObj = "lock";
+    private Queue<GameMsg> msgQue = new Queue<GameMsg>();
 
     /// <summary>
     /// 网络服务初始化
@@ -58,21 +62,62 @@ public class NetService : MonoBehaviour
         client.StartAsClient(SrvCfg.srvIP, SrvCfg.srvPort);//启动客户端
     }
 
+    public void Update()
+    {
+        if (msgQue.Count > 0)
+        {
+            lock (lockObj)
+            {
+                ProcessMsg(msgQue.Dequeue());
+            }
+        }
+    }
+
     /// <summary>
     /// 具体的发送函数
     /// </summary>
     /// <param name="msg"></param>
     public void SendMsg(GameMsg msg)
     {
-        if (client.session != null)
-        {
-            client.session.SendMsg(msg);
-            //client.session.SendMsg(new GameMsg { text = "hello unity" });
-        }
+        if (client.session != null) client.session.SendMsg(msg);
         else
         {
             GameRoot.AddTips("服务器未连接");
             InitService();
+        }
+    }
+
+    /// <summary>
+    /// 将从服务器接收到消息放到消息队列中
+    /// </summary>
+    /// <param name="msg"></param>
+    public void AddNetPkg(GameMsg msg)
+    {
+        lock (lockObj)
+        {
+            msgQue.Enqueue(msg);
+        }
+    }
+
+    /// <summary>
+    /// 对消息进行分发
+    /// </summary>
+    /// <param name="msg"></param>
+    public void ProcessMsg(GameMsg msg)
+    {
+        if (msg.err != (int)ErrorCode.None)//返回的是错误信息
+        {
+            switch ((ErrorCode)msg.err)
+            {
+                case ErrorCode.AcctIsOnline: GameRoot.AddTips("当前账号已经上线"); break;
+                case ErrorCode.PassWrong: GameRoot.AddTips("密码错误"); break;
+            }
+            return;
+        }
+        switch ((CMD)msg.cmd)//将信息分发出去
+        {
+            case CMD.ReqLogin: break;
+            case CMD.RspLogin: LoginSystem.Instance.RespondLogin(msg); break;
         }
     }
 }

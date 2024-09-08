@@ -9,6 +9,7 @@
 ***************************************/
 #endregion
 
+using PEProtocol;
 using UnityEngine;
 
 public class LoginSystem : SystemRoot
@@ -45,11 +46,15 @@ public class LoginSystem : SystemRoot
     /// <summary>
     /// 接收网络回应
     /// </summary>
-    public void RespondLogin()
+    public void RespondLogin(GameMsg msg)
     {
         GameRoot.AddTips("登录成功");
-
-        createWnd.SetWndState();
-        loginWnd.SetWndState(false);
+        GameRoot.Instance.SetPlayerData(msg.rspLogin);//保存返回的玩家信息
+        if(msg.rspLogin.playerData.name=="") createWnd.SetWndState();//进入角色创建界面
+        else
+        {
+            //进入主城TODO
+        }
+        loginWnd.SetWndState(false);//关闭登录界面
     }
 }

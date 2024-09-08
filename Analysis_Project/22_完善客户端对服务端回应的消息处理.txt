@@ -1,0 +1,80 @@
+
+对比服务器的消息分发和处理来写；
+不过相比较服务器对多个客户端，客户端和服务端一一对应，
+像服务端需要记录存储和目标客户端建立的Session，客户端就可以省略记录Session；
+
+一、添加客户端对接收消息的处理
+1、在NetService.cs添加接收服务器消息的队列msgQue，以及把接收的消息传到消息队列中的函数AddMsgQue()，
+为了安全，对与消息的添加处理，需要添加锁
+
+2、对获取到的消息添加到队列和分发
+在ClientSession里进行调用，将接收到的消息传到NetService的消息队列中；
+在NetService.cs的Update里里判断，消息队列里是否有待处理的消息；
+注意这里取数据，也是在锁里进行取数据；
+public class ClientSession : PESession<GameMsg>
+{
+    ... ...
+    protected override void OnReciveMsg(GameMsg msg) // 接收消息时处理
+    {
+        PECommon.Log("RcvPack CMD：" + ((CMD)msg.cmd).ToString());
+        NetService.Instance.AddNetPkg(msg);
+    }
+}
+public class NetService : MonoBehaviour
+{
+    ... ...
+    public void Update()
+    {
+        if (msgQue.Count > 0)
+        {
+            lock (lockObj) { ProcessMsg(msgQue.Dequeue()); }
+        }
+    }
+}
+
+3、添加完善对消息分发处理的函数ProcessMsg()
+和服务器接收的消息处理，有所区别的是，
+接收的消息不一定是有意义的，可能是提示之前的操作有问题；
+所以接收的消息，先判断错误码，如果错误码内容是没有错误，才进行将消息分发出去；
+public void ProcessMsg(GameMsg msg)
+{
+    if (msg.err != (int)ErrorCode.None)//返回的是错误信息
+    {
+        switch ((ErrorCode)msg.err)
+        {
+            case ErrorCode.AcctIsOnline: GameRoot.AddTips("当前账号已经上线"); break;
+            case ErrorCode.PassWrong: GameRoot.AddTips("密码错误"); break;
+        }
+        return;
+    }
+    switch ((CMD)msg.cmd)//将信息分发出去
+    {
+        case CMD.RspLogin: LoginSystem.Instance.RespondLogin(msg); break;
+    }
+}
+
+二、RespondLogin()处理NetService.cs分发过来的登录消息
+在LoginSystem.cs里更新完善处理服务器返回的登录消息的函数RespondLogin()里执行的逻辑：
+1、在GameRoot.cs里定义一个玩家数据的变量PlayData，存储玩家返回的玩家数据
+设置未私有变量，能通过属性获取数据，修改数据通过函数赋值
+private PlayerData playerData = null;
+public PlayerData PlayerData { get { return playerData; } }// 获取玩家数据
+public void SetPlayerData(RspLogin data) { playerData = data.playerData; }
+
+2、对返回的数据进行处理
+这里设置创建账号默认数据设置，但是未起名；这里根据是否有名字判断是否是新账号；
+新账号，跳转到角色创建界面/玩家命名界面；
+已有账号，进入到主城；
+public void RespondLogin(GameMsg msg)
+{
+    GameRoot.AddTips("登录成功");
+    GameRoot.Instance.SetPlayerData(msg.rspLogin);//保存返回的玩家信息
+    if(msg.rspLogin.playerData.name=="") createWnd.SetWndState();//进入角色创建界面
+    else  { } //进入主城TODO
+    loginWnd.SetWndState(false);//关闭登录界面
+}
+
+
+
+
+

@@ -9,12 +9,11 @@
 ***************************************/
 #endregion
 
-using System;
-using System.IO;
-using UnityEngine;
-using System.Collections.Generic;
 using UnityEngine.UI;
 
+/// <summary>
+/// 角色创建界面
+/// </summary>
 public class CreateWnd : WindowRoot
 {
     public InputField iptName;
