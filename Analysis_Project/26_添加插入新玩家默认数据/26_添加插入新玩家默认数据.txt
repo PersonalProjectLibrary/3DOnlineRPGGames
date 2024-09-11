@@ -1,0 +1,85 @@
+
+一、添加插入新玩家默认数据，实现DBManager.cs的InsertNewAcctData()
+
+1、将处理数据库的语句放到try、catch里
+2、MySql的语句语法：插入语句，插入到哪里表格里，插入的是哪个/哪几个属性
+MySqlCommand cmd = new MySqlCommand("insert into userinfo set name='haha',age=66", connect);
+3、使用@变量的方式，不把数据写死，后面使用AddWithValue()替换参数，进行获取、更新数据；
+MySqlCommand cmd = new MySqlCommand("insert into userinfo set name=@name", connect);
+cmd.Parameters.AddWithValue("name","xxoo");
+4、获得插入数据的主键id号：int id = (int)cmd.LastInsertedId;
+
+private int InsertNewAcctData(string acct, string pass, PlayerData pData)
+{
+    int id = -1;//插入的玩家数据的初始id，插入到数据库里正式赋值生成
+    try
+    {
+        MySqlCommand cmd = new MySqlCommand("insert into account set acct=@acct,pass=@pass,name=@name,level=@level,exp=@exp,power=@power,coin=@coin,diamond=@diamond", SqlConnection);
+        cmd.Parameters.AddWithValue("acct", acct);
+        cmd.Parameters.AddWithValue("pass", pass);
+        cmd.Parameters.AddWithValue("name", pData.name);
+        cmd.Parameters.AddWithValue("level", pData.lv);
+        cmd.Parameters.AddWithValue("exp", pData.exp);
+        cmd.Parameters.AddWithValue("power", pData.power);
+        cmd.Parameters.AddWithValue("coin", pData.coin);
+        cmd.Parameters.AddWithValue("diamond", pData.diamond);
+        cmd.ExecuteNonQuery();
+        id = (int)cmd.LastInsertedId;
+    }
+    catch (Exception e) { PECommon.Log("Insert PlayerData Error：" + e, LogType.Error); }
+    return id;
+}
+
+二、测试
+1、在DBManager.cs的初始化时，进行查询；
+查询的数据是不存在的，则会进行创建新的账号数据；
+public void Init()
+{
+    //填写连接信息
+    SqlConnection = new MySqlConnection("server=localhost;User Id=root;password=;Database=sql_darkgod;Charset=utf8");
+    PECommon.Log("DBManager Init Done.");
+
+    //测试查询玩家数据（账号不存在则新建账号）
+    QueryPlayerData("xxx", "oooo");
+}
+
+2、运行调试ServerClient项目
+
+3、报错
+（1）数据库没有打开
+在Init()里，建立数据库连接后，没有执行数据库打开操作
+解决方法：添加数据库打开语句
+SqlConnection = new MySqlConnection("server=localhost;User Id=root;password=;Database=sql_darkgod;Charset=utf8");
+SqlConnection.Open();
+
+（2）数据库没有关闭又执行打开操作
+1）查询数据前新建reader记录数据
+2）先进行数据库获取数据：reader = cmd.ExecuteReader();
+3）新账号无数据，if (reader.Read())里reader.Read()返回为空，执行finally里的if(isNew)
+4）finally里执行把新玩家数据插入数据库里，但这时候reader 还是没有关闭的；
+这里进行数据库插入操作就好出错
+解决方法：
+在finally里添加判断reader是否关闭的判断，避免进行插入数据的操作时，重复打开数据库，导致报错；
+if (reader != null) reader.Close();
+
+4、再次运行ServerClient项目
+服务器正常运行，并且刷新数据库，可看到正确插入数据；
+
+三、注：
+1、关于建立新账号的操作放到finally里而不是直接放到if (reader.Read()){}的else{}里
+（1）可以将放到finally里创建新账号的操作，放到if (reader.Read()){}的else{}里也没有问题，
+测试可知，正常运行
+（2）放到finally里执行，出问题，可由finally里检测抛出，避免太多的错误都由catch来抛出；
+也使逻辑更清晰，try负责查询，catch抛出错误，finally进行创建；
+
+
+
+
+
+
+
+
+
+
+
+

@@ -12,6 +12,7 @@
 using MySql.Data.MySqlClient;
 using PEProtocol;
 using System;
+using System.Runtime.Remoting.Messaging;
 
 public class DBManager
 {
@@ -34,7 +35,10 @@ public class DBManager
     {
         //填写连接信息
         SqlConnection = new MySqlConnection("server=localhost;User Id=root;password=;Database=sql_darkgod;Charset=utf8");
+        SqlConnection.Open();
         PECommon.Log("DBManager Init Done.");
+
+        //QueryPlayerData("xxx", "oooo");//测试查询玩家数据（账号不存在则新建账号）
     }
 
     /// <summary>
@@ -78,7 +82,10 @@ public class DBManager
         catch (Exception e) { PECommon.Log("Query PlayerData By Acct&Pass Error：" + e, LogType.Error); }
         finally
         {
-            if (isNew)//没有旧账号，创建新账号
+            //防止前面查数据时，没有关闭reader，导致下面插入数据报错
+            if (reader != null) reader.Close();
+            //没有旧账号，创建新账号
+            if (isNew)
             {
                 playerData = new PlayerData
                 {
@@ -98,8 +105,24 @@ public class DBManager
     }
 
     //将新账号数据存到数据库中
-    private int InsertNewAcctData(string acct,string pass,PlayerData pData)
+    private int InsertNewAcctData(string acct, string pass, PlayerData pData)
     {
-        return 0;
+        int id = -1;//插入的玩家数据的初始id，插入到数据库里正式赋值生成
+        try
+        {
+            MySqlCommand cmd = new MySqlCommand("insert into account set acct=@acct,pass=@pass,name=@name,level=@level,exp=@exp,power=@power,coin=@coin,diamond=@diamond", SqlConnection);
+            cmd.Parameters.AddWithValue("acct", acct);
+            cmd.Parameters.AddWithValue("pass", pass);
+            cmd.Parameters.AddWithValue("name", pData.name);
+            cmd.Parameters.AddWithValue("level", pData.lv);
+            cmd.Parameters.AddWithValue("exp", pData.exp);
+            cmd.Parameters.AddWithValue("power", pData.power);
+            cmd.Parameters.AddWithValue("coin", pData.coin);
+            cmd.Parameters.AddWithValue("diamond", pData.diamond);
+            cmd.ExecuteNonQuery();
+            id = (int)cmd.LastInsertedId;
+        }
+        catch (Exception e) { PECommon.Log("Insert PlayerData Error：" + e, LogType.Error); }
+        return id;
     }
 }

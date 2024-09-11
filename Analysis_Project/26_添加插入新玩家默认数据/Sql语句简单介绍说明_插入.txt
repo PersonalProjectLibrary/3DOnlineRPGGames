@@ -1,0 +1,19 @@
+
+
+简单介绍相关Sql语句——实现增加、插入数据的函数功能
+
+1、MySql的语句语法：插入语句，插入到哪里表格里，插入的是哪个/哪几个属性
+MySqlCommand cmd = new MySqlCommand("insert into userinfo set name='haha',age=66", connect);
+cmd.ExecuteNonQuery();
+
+2、使用@变量的方式，不把数据写死，后面使用AddWithValue()替换参数，进行获取、更新数据；
+MySqlCommand cmd = new MySqlCommand("insert into userinfo set name=@name", connect);
+cmd.Parameters.AddWithValue("name","xxoo");
+cmd.ExecuteNonQuery();
+
+3、获得插入数据的主键id号：int id = (int)cmd.LastInsertedId;
+当数据表里插入一条数据后，一般还需要知道插入数据的主键；
+所以这里插入数据后，要返回数据的id号；
+MySqlCommand cmd = new MySqlCommand("insert into userinfo set name='xixi',age=96", connect);
+cmd.ExecuteNonQuery();
+int id = (int)cmd.LastInsertedId;
