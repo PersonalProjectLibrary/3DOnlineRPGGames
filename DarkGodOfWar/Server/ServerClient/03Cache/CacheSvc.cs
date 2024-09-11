@@ -25,21 +25,25 @@ public class CacheSvc
     }
 
     /// <summary>
-    /// 缓存层初始化
-    /// </summary>
-    public void Init()
-    {
-        PECommon.Log("CacheSvc Init Done.");
-    }
-
-    /// <summary>
     /// 已上线的账号及其Session
     /// </summary>
     private Dictionary<string, ServerSession> onLineAcctDic = new Dictionary<string, ServerSession>();
+
     /// <summary>
     /// 已上线的账号的玩家信息及Session
     /// </summary>
     private Dictionary<ServerSession, PlayerData> onLineSessionDic = new Dictionary<ServerSession, PlayerData>();
+
+    private DBManager dbManager;
+
+    /// <summary>
+    /// 缓存层初始化
+    /// </summary>
+    public void Init()
+    {
+        dbManager = DBManager.Instance;
+        PECommon.Log("CacheSvc Init Done.");
+    }
 
     /// <summary>
     /// 判断账号是否已上线
@@ -60,7 +64,7 @@ public class CacheSvc
     public PlayerData GetPlayerData(string acct,string pass)
     {
         //当前账号还未上线，故缓存里不存在，要去数据库里进行查找
-        return null;
+        return dbManager.QueryPlayerData(acct, pass);
     }
 
     /// <summary>

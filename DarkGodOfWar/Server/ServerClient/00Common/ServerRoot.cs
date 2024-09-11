@@ -26,7 +26,8 @@ public class ServerRoot
     /// </summary>
     public void Init()
     {
-        //数据层TODO
+        //数据层
+        DBManager.Instance.Init();
         //服务层
         NetSvc.Instance.Init();
         CacheSvc.Instance.Init();

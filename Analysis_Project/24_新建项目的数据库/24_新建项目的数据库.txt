@@ -1,0 +1,51 @@
+
+一、Navicat里新建数据库添加玩家账号信息
+参考同层的Pic文件夹里的”数据库里的操作“文件夹里的截屏，
+对照着在Navicat里新建包含玩家账号属性信息的数据库
+
+二、服务器添加数据（库）层
+打开Sever工程，在ServerClient项目里新建04DataBase文件夹，用于存放数据、数据库相关内容；
+在04DataBase文件夹里新建DBManager.cs，用于管理数据库；
+1、初始化DBManager.cs
+去除命名空间和无关引用，设置为单例类；添加初始化函数Init
+
+2、在ServerRoot.cs执行DBManager.cs的初始化；
+
+3、添加对数据库的dll的引用
+（1）将工程里GamePlugins/数据库_Wamp里的MySql.Data.dll，
+复制到DarkGodOfWar/Libs里；
+（2）ServerClient项目里添加对MySql.Data.dll的引用
+
+三、建立数据库连接和初始化
+1、新建服务器连接对象：private MySqlConnection sqlConnect;
+
+2、DBManager.cs的Init()里实现数据库连接
+对照数据库的连接信息，填写指定数据库信息
+public void Init()
+{
+    //填写连接信息
+    SqlConnection = new MySqlConnection("server=localhost;User Id=root;password=;Database=sql_darkgod;Charset=utf8");
+    PECommon.Log("DBManager Init Done.");
+}
+
+三、添加查询数据库函数
+1、新增查询玩家信息的函数QueryPlayerData()
+
+2、在数据缓存层CacheSvc.cs里调用QueryPlayerData()查询玩家信息
+（1）添加对DBManager的引用，并在Init初始化引用
+（2）在GetPlayerData()里调用QueryPlayerData()，获取返回玩家信息；
+public PlayerData GetPlayerData(string acct,string pass)
+{
+    //当前账号还未上线，缓存里不存在，去数据库里进行查找
+    return dbManager.QueryPlayerData(acct, pass);
+}
+
+
+
+
+
+
+
+
+
+
