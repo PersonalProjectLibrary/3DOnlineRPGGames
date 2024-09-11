@@ -55,6 +55,7 @@
       <HintPath>..\..\Libs\PESocket.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PEProtocol\PEProtocol.csproj">

@@ -1,0 +1,77 @@
+
+添加使用数据库查询玩家数据功能模块
+
+一、继续完善DBManager.cs里QueryPlayerData()的功能
+（1）MySql的选择语句：选择指令，查找的数据是什么，从哪里查找，选择条件
+查找的数据是什么用*表示，表示所有满足条件的数据；
+选择条件 不写的话，就是将表中所有数据列出来；
+MySqlCommand cmd = new MySqlCommand("select * from userinfo", connect);
+
+（2）使用@变量的方式，不把数据写死，后面使用AddWithValue()替换参数，进行获取、更新数据；
+MySqlCommand cmd = new MySqlCommand("select * from account where acct = @acct", SqlConnection);
+cmd.Parameters.AddWithValue("acct", acct);//获取acct对应的数据
+
+（3）数据库操作是很容易出错的，这里把数据处理语句放到try，catch里执行；
+1）如果获取到账号对应的玩家数据，对照数据库属性名，获取玩家数据
+2）如果获取到的账号信息为空，创建新账号，
+这里放到try/catch/finally的finally里；然后用isNew布尔变量来区分新旧账号；
+
+（4）新账号的初始化
+一般是读取默认设置配置表设置；这里直接对属性设置简单实现新账号的初始化；
+1）设置id为-1，真正的id值在存到数据库里时，作为主键自动生成赋值；
+后面获取生成的真正id值，返回出来；
+2）name默认为空
+3）其他数据自定义设置某个值等
+
+（5）将新账号数据存到数据库中
+这里新增方法，用于将数据存到数据库里InsertNewAcctData()
+public PlayerData QueryPlayerData(string acct,string pass)
+{
+    PlayerData playerData = null;
+    MySqlDataReader reader = null;//存储查询出来的数据
+    bool isNew = true;//区分新旧账号
+    try
+    {
+        MySqlCommand cmd = new MySqlCommand("select * from account where acct = @acct", SqlConnection);
+        cmd.Parameters.AddWithValue("acct", acct);//获取acct对应的数据
+        reader = cmd.ExecuteReader();//执行Sql语句
+        if (reader.Read())//处理数据
+        {
+            isNew = false;//有旧账号
+            string _pass = reader.GetString("pass");
+            if (_pass.Equals(pass))
+            {
+                playerData = new PlayerData//密码正确，返回玩家数据
+                {
+                    id = reader.GetInt32("id"),
+                    name = reader.GetString("name"),
+                    lv = reader.GetInt32("level"),
+                    exp = reader.GetInt32("exp"),
+                    power = reader.GetInt32("power"),
+                    coin = reader.GetInt32("coin"),
+                    diamond = reader.GetInt32("diamond")
+                };
+            }
+        }
+    }
+    catch (Exception e) { PECommon.Log("Query PlayerData By Acct&Pass Error：" + e, LogType.Error); }
+    finally
+    {
+        if (isNew)//没有旧账号，创建新账号
+        {
+            playerData = new PlayerData
+            {
+                id = -1,
+                name = "",
+                lv = 1,
+                exp = 0,
+                power = 150,
+                coin = 5000,
+                diamond = 500
+            };
+            //新账号存到数据库，并将返回的id更新到playerData里
+            playerData.id = InsertNewAcctData(acct, pass, playerData);
+        }
+    }
+    return playerData;
+}

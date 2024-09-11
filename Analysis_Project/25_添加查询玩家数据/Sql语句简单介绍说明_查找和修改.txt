@@ -1,0 +1,49 @@
+
+简单介绍相关Sql语句
+
+1、MySql的选择语句：选择指令，查找的数据是什么，从哪里查找，选择条件
+查找的数据是什么用*表示，表示所有满足条件的数据；
+选择条件 不写的话，就是将表中所有数据列出来；
+
+如：
+（1）无‘选择条件’的查询表里所有数据
+MySqlCommand cmd = new MySqlCommand("select * from userinfo", connect);
+MySqlDataReader reader = cmd.ExecuteReader();//执行语句，获取数据
+
+（2）有‘选择条件’的查询指定数据
+MySqlCommand cmd = new MySqlCommand("select * from userinfo where age=66", connect);
+MySqlDataReader reader = cmd.ExecuteReader();
+
+2、MySql的修改语句：修改指令，数据表名字，设置的属性，限定的条件
+MySqlCommand cmd = new MySqlCommand("update userinfo set name='xxx',age=666 where id=1", connect);
+MySqlDataReader reader = cmd.ExecuteReader();
+
+3、使用@变量的方式，不把数据写死，后面使用AddWithValue()替换参数，进行获取、更新数据；
+MySqlCommand cmd = new MySqlCommand("update userinfo set name=@name,age=@age where id=@id", connect);
+
+如：
+（1）获取数据
+MySqlCommand cmd = new MySqlCommand("select * from account where acct = @acct", SqlConnection);
+cmd.Parameters.AddWithValue("acct", acct);//获取acct对应的数据
+cmd.ExecuteNonQuery();
+（2）更新数据
+    MySqlCommand cmd = new MySqlCommand("update userinfo set name=@name,age=@age where id=@id", connect);
+    cmd.Parameters.AddWithValue("name","xxoo");
+    cmd.Parameters.AddWithValue("age", 123);
+    cmd.Parameters.AddWithValue("id", 1);
+    cmd.ExecuteNonQuery();
+这种方式，有利于对数据进行修改，不用写很多很长，不容易出错；
+且安全性更高，可以防止sql注入；
+
+4、显示获取到的数据
+（1）只显示一条数据
+使用的是if判断，查到第一条符合的数据就输出后面停止查询了；
+    if (reader.Read())//返回的是false，表示没有符合的数据
+    {
+        int id = reader.GetInt32("id");
+        ... ...
+    }
+
+（2）显示所有满足条件的数据
+使用while循环，将所有满足条件都输出；
+    while (reader.Read()) { ... ... }
