@@ -62,7 +62,7 @@ namespace PEProtocol
         /// <summary>
         /// 数据库数据更新错误
         /// </summary>
-        UpdateDataBase,
+        UpdateDBaseError,
     }
 
     [Serializable]

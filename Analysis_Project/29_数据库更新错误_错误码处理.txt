@@ -1,0 +1,58 @@
+
+一、在登录的时候，如果服务器的数据库更新出错，会把错误码发送给客户端，客户端要做个处理；
+
+在Unity客户端的NetService.cs的ProcessMsg()里添加对数据库更新数据错误的处理
+注这里将错误码里的UpdateDataBase改为UpdateDBaseError；
+
+public void ProcessMsg(GameMsg msg)
+{
+    if (msg.err != (int)ErrorCode.None)//返回的是错误信息
+    {
+        switch ((ErrorCode)msg.err)
+        {
+            case ErrorCode.AcctIsOnline: GameRoot.AddTips("当前账号已经上线"); break;
+            case ErrorCode.PassWrong: GameRoot.AddTips("密码错误"); break;
+            case ErrorCode.UpdateDBaseError: GameRoot.AddTips("数据库更新异常"); break;
+        }
+        return;
+    }
+}
+
+二、非技术性处理
+在客户端处理这些错误，弹出的提示，玩家用户是能看到的，如果直接写”数据库更新异常“，
+会显的游戏不行之类的负面影响；
+这里优化：将”数据库更新异常“改为”网络不稳定“
+
+三、对于数据库更新错误这个问题也不能不处理
+客户端这里将错误信息打印到日志里，然后上传到服务器里。
+日志是只有程序员自己能看到；
+public void ProcessMsg(GameMsg msg)
+{
+    if (msg.err != (int)ErrorCode.None)//返回的是错误信息
+    {
+        switch ((ErrorCode)msg.err)
+        {
+            ... ...
+            case ErrorCode.UpdateDBaseError:
+                PECommon.Log("数据库更新异常", LogType.Error);
+                GameRoot.AddTips("网络不稳定");
+                break;
+        }
+        return;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

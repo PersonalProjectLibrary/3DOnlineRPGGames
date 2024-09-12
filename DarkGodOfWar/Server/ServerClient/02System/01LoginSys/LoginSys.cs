@@ -78,7 +78,7 @@ public class LoginSys
             PlayerData playerData = cacheSvc.GetPlayDataBySession(pack.m_Session);//获取数据
             playerData.name = data.name;//更新缓存里玩家的名字
             if (!cacheSvc.UpdatePlayerData(playerData.id, playerData))
-                msg.err = (int)ErrorCode.UpdateDataBase;
+                msg.err = (int)ErrorCode.UpdateDBaseError;
             else msg.rspReName = new RspReName { name = data.name };
         }
         pack.m_Session.SendMsg(msg);//将数据返回客户端

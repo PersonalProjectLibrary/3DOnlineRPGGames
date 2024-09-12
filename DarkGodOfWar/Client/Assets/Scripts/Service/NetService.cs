@@ -111,6 +111,10 @@ public class NetService : MonoBehaviour
             {
                 case ErrorCode.AcctIsOnline: GameRoot.AddTips("当前账号已经上线"); break;
                 case ErrorCode.PassWrong: GameRoot.AddTips("密码错误"); break;
+                case ErrorCode.UpdateDBaseError:
+                    PECommon.Log("数据库更新异常", LogType.Error);
+                    GameRoot.AddTips("网络不稳定");
+                    break;
             }
             return;
         }
