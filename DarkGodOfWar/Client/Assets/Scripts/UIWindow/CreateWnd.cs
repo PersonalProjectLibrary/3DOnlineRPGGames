@@ -9,6 +9,7 @@
 ***************************************/
 #endregion
 
+using PEProtocol;
 using UnityEngine.UI;
 
 /// <summary>
@@ -37,8 +38,14 @@ public class CreateWnd : WindowRoot
         if (iptName.text == "") GameRoot.AddTips("当前名字不合法");
         else
         {
-            //TODO 发送名字数据到服务器，登录主城
-            GameRoot.AddTips("登录主城");
+            //发送名字数据到服务器，登录主城
+            GameMsg msg = new GameMsg
+            {
+                cmd = (int)CMD.ReqReName,
+                reqReName = new ReqReName { name = iptName.text }
+            };
+            netService.SendMsg(msg);
+            //GameRoot.AddTips("登录主城");
         }
     }
 }

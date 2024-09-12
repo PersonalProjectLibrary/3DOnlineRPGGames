@@ -1,0 +1,192 @@
+
+一、现在实现了：
+1、清空数据库数据后，运行服务器，点击运行游戏，进入登录场景；
+2、点击登录场景，向服务器发送登录请求，从服务器的玩家缓存字典查找；
+3、当前玩家还未上线，缓存里无玩家信息，从数据库里查找玩家信息；
+4、数据库无玩家信息，服务器创建新玩家默认账号存到数据库里，
+默认账号玩家名为空，id号默认-1，数据库里自动生成，其他信息默认数据；
+5、数据库新增玩家信息后，向服务器返回新玩家的id，并把服务器里对应的id更新为数据库里的实际id；
+6、服务器的数据库管理脚本再把新建的默认玩家信息返回给缓存层；
+7、服务器缓存层再把玩家信息返回给服务器的登录系统，并把玩家信息进行缓存；
+8、服务器把创建的玩家信息返回给客户端；
+9、客户端发现玩家信息里名字为空，确认是新账号，然后跳转到创建角色界面；
+10、选择设置角色名后，点击创建按钮，界面提示登录游戏；
+
+二、还没有做：玩家重命名操作
+角色创建后，把玩家自定义名字，传回给服务器，把服务器缓存层和数据库里的玩家信息里的name改为玩家自定义的名字；
+玩家信息里的name一直还是空的；
+
+三、添加设置玩家名字的请求和回应
+1、在服务器工程的GameMsg.cs里定义一个改名相关的协议
+（1）客户端向服务器发送重命名的名字信息public class ReqReName { public string name; }
+（2）服务器判断是否重名后，处理名字进行返回public class RspReName { public string name; }
+如：没重名，返回名字；重名，添加前后缀返回名字
+（3）在错误码枚举里添加名字重复的错误码
+public enum ErrorCode
+{
+    ... ...
+    
+    NameIsExist,// 名字已经存在
+}
+（4）在cmd里添加重命名的命令号
+public enum CMD
+{
+    ... ...
+    ReqReName = 103,//重命名请求
+    RspReName = 104,//重命名回应
+}
+（5）GameMsg里添加重命名请求
+public class GameMsg : PEMsg
+{
+    ... ...
+    public ReqReName reqReName;
+    public RspReName rspReName;
+}
+
+2、更新重新生成编译PEProtocol.dll
+
+3、实现Unity客户端创建角色界面CreateWnd.cs里的点击进入游戏ClickEnterBtn()
+点击进入游戏，把玩家创建角色设置的名字发送到服务端；
+玩家名字在服务端检测是否使用过，没有使用过则服务器返回玩家名字，然后进入主城；
+玩家名字有过，服务器返回带错误码的消息，客户端提示玩家已重名；
+public void ClickEnterBtn()
+{
+    audioService.PlayUIAudio(Constants.UiClickBtn);
+    if (iptName.text == "") GameRoot.AddTips("当前名字不合法");
+    else
+    {
+        GameMsg msg = new GameMsg //发送名字数据到服务器，登录主城
+        {
+            cmd = (int)CMD.ReqReName,
+            reqReName = new ReqReName { name = iptName.text }
+        };
+        netService.SendMsg(msg);
+    }
+}
+
+4、消息分发和处理
+（1）服务器登录系统LoginSys.cs里添加对重命名消息的处理ReqReName();
+（2）添加完善服务器的NetSvc.cs里分发消息HandOutMsg()对重命名消息的分发处理
+private void HandOutMsg(MsgPack msgPack)
+{
+    switch ((CMD)msgPack.m_Msg.cmd)
+    {
+        ... ...
+        case CMD.ReqReName: LoginSys.Instance.ReqReName(msgPack); break;
+        default: break;
+    }
+}
+
+四、服务器添加更新玩家名字信息的模块
+1、数据库管理层脚本DataBaseManager.cs添加相关函数
+（1）添加函数QueryNameData()，用于检测整个数据库玩家是否存在某一个名字
+public bool QueryNameData(string name)
+{
+    bool exist = false;
+    MySqlDataReader reader = null;
+    try //名字是否已经存在 
+    {
+        MySqlCommand cmd = new MySqlCommand("select * from account where name= @name", SqlConnection);
+        cmd.Parameters.AddWithValue("name", name);
+        reader = cmd.ExecuteReader();
+        if (reader.Read()) exist = true;
+    }
+    catch(Exception e) { PECommon.Log("Query Name State Error：" + e, LogType.Error); }
+    finally { if (reader != null) reader.Close(); }
+    return exist;
+}
+（2）添加将数据更新到数据库的函数
+public bool UpdatePlayerData(int id,PlayerData playerData)
+{
+    try
+    {
+        MySqlCommand cmd = new MySqlCommand(
+"update account set name=@name,level=@level,exp=@exp,power=@power,coin=@coin,diamond=@diamond where id =@id", SqlConnection);
+        cmd.Parameters.AddWithValue("id", id);
+        cmd.Parameters.AddWithValue("name", playerData.name);
+        cmd.Parameters.AddWithValue("level", playerData.lv);
+        cmd.Parameters.AddWithValue("exp", playerData.exp);
+        cmd.Parameters.AddWithValue("power", playerData.power);
+        cmd.Parameters.AddWithValue("coin", playerData.coin);
+        cmd.Parameters.AddWithValue("diamond", playerData.diamond);
+        cmd.ExecuteNonQuery();
+    }
+    catch (Exception e)
+    {
+        PECommon.Log("Update PlayerData Error：" + e, LogType.Error);
+        return false;
+    }
+    return true;
+}
+
+2、缓存层添加相关函数
+（1）判断数据是否存在的函数IsNameExist()
+public bool IsNameExist(string name) { return DBManager.Instance.QueryNameData(name); }
+（2）添加获取指定连接的玩家数据GetPlayDataBySession()
+public PlayerData GetPlayDataBySession(ServerSession session)
+{
+    if (onLineSessionDic.TryGetValue(session, out PlayerData playerData)) return playerData;
+    else return null;
+}
+（3）添加函数UpdatePlayerData()，将缓存层里玩家更新数据同步到数据库
+public bool UpdatePlayerData(int id,PlayerData playerData){ return dbManager.UpdatePlayerData(id, playerData); }
+
+3、GameMsg.cs的错误码ErrorCode里添加新类型UpdateDataBasee：数据库数据更新错误
+在将玩家信息更新到数据库时，出错的话，报此错误类型
+
+4、完善实现服务器的LoginSys.cs里的ReqReName()
+判断客户端传来的玩家名是否已经存在：
+存在：返回错误码
+不存在：更新缓存，以及数据库，再返回给客户端
+关于更新完缓存里的玩家信息后，根据游戏需求考虑是否立即把玩家信息同步存到数据库；
+有的游戏需要快速反馈给玩家，这时候会考虑先把数据返回给玩家，仅修改缓存信息，等后面加载游戏时再存到数据库；
+缺点可能会存在数据库和玩家信息不同步情况；
+这里做简单处理，把数据存到数据库后，再返回给玩家，保证数据库和玩家信息是一直同步的；
+public void ReqReName(MsgPack pack)
+{
+    ReqReName data = pack.m_Msg.reqReName;
+    GameMsg msg = new GameMsg { cmd = (int)CMD.RspReName };
+    if (cacheSvc.IsNameExist(data.name)) msg.err = (int)ErrorCode.NameIsExist;//名字已经存在，返回错误码
+    else //名字不存在：更新缓存，以及数据库，再返回给客户端
+    {
+        //通过pack的Session，拿到对应玩家的缓存数据（之前创建新账号时，有把数据存到缓存里）
+        PlayerData playerData = cacheSvc.GetPlayDataBySession(pack.m_Session);//获取数据
+        playerData.name = data.name;//更新缓存里玩家的名字
+        if (!cacheSvc.UpdatePlayerData(playerData.id, playerData))
+            msg.err = (int)ErrorCode.UpdateDataBase;
+        else msg.rspReName = new RspReName { name = data.name };
+    }
+    pack.m_Session.SendMsg(msg);//将数据返回客户端
+}
+
+5、更新重新生成编译PEProtocol.dll
+
+五、客户端处理服务器更新玩家信息后传回来的信息
+1、在GameRoot.cs里添加更新玩家名字的函数SetPlayerName()
+public void SetPlayerName(string name){ PlayerData.name = name; }
+
+2、在登录系统LoginSystem.cs里添加对服务器返回更新玩家名字信息的方法函数RspRename()
+（1）将服务器返回的玩家名字，更新到GameRoot.cs的玩家数据里
+（2）执行跳转场景，进入主城，打开主城、关闭当前创建界面
+public void RspRename(GameMsg msg)
+{
+    GameRoot.Instance.SetPlayerName(msg.rspReName.name);
+
+    //TODO：执行跳转场景，进入主城，打开主城、关闭当前创建界面
+    GameRoot.AddTips("进入主城");
+    createWnd.SetWndState(false);
+}
+
+3、在网络服务NetService.cs的ProcessMsg()里，将服务器回应消息分发到登录系统里
+public void ProcessMsg(GameMsg msg)
+{
+    ... ...
+    switch ((CMD)msg.cmd)//将信息分发出去
+    {
+        case CMD.RspLogin: LoginSystem.Instance.RespondLogin(msg); break;
+        case CMD.RspReName:LoginSystem.Instance.RspRename(msg);break;
+    }
+}
+
+六、测试
+打开数据库，运行服务器，运行游戏工程，点击登录、创建角色、进入游戏、查看数据库有对应的账号数据

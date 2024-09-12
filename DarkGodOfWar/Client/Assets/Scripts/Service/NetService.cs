@@ -116,8 +116,8 @@ public class NetService : MonoBehaviour
         }
         switch ((CMD)msg.cmd)//将信息分发出去
         {
-            case CMD.ReqLogin: break;
             case CMD.RspLogin: LoginSystem.Instance.RespondLogin(msg); break;
+            case CMD.RspReName:LoginSystem.Instance.RspRename(msg);break;
         }
     }
 }

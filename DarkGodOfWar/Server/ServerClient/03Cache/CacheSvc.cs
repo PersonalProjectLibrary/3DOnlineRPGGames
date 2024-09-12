@@ -78,4 +78,36 @@ public class CacheSvc
         onLineAcctDic.Add(acct, session);
         onLineSessionDic.Add(session, playerData);
     }
+
+    /// <summary>
+    /// 判断某个名字是否已经存在
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
+    public bool IsNameExist(string name)
+    {
+        return DBManager.Instance.QueryNameData(name);
+    }
+
+    /// <summary>
+    /// 根据玩家连接信息，获取玩家信息
+    /// </summary>
+    /// <param name="session"></param>
+    /// <returns></returns>
+    public PlayerData GetPlayDataBySession(ServerSession session)
+    {
+        if (onLineSessionDic.TryGetValue(session, out PlayerData playerData)) return playerData;
+        else return null;
+    }
+
+    /// <summary>
+    /// 将玩家数据同步更新到数据库
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="playerData"></param>
+    /// <returns></returns>
+    public bool UpdatePlayerData(int id,PlayerData playerData)
+    {
+        return dbManager.UpdatePlayerData(id, playerData);
+    }
 }

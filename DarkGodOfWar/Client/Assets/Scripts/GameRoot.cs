@@ -90,6 +90,15 @@ public class GameRoot : MonoBehaviour
     {
         playerData = data.playerData;
     }
+
+    /// <summary>
+    /// 更新玩家名字
+    /// </summary>
+    /// <param name="name"></param>
+    public void SetPlayerName(string name)
+    {
+        PlayerData.name = name;
+    }
     #endregion
 
 }

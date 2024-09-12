@@ -44,7 +44,7 @@ public class LoginSystem : SystemRoot
     }
 
     /// <summary>
-    /// 接收网络回应
+    /// 接收登录请求的服务器回应
     /// </summary>
     public void RespondLogin(GameMsg msg)
     {
@@ -56,5 +56,18 @@ public class LoginSystem : SystemRoot
             //进入主城TODO
         }
         loginWnd.SetWndState(false);//关闭登录界面
+    }
+
+    /// <summary>
+    /// 接收玩家创建角色重命名请求的服务器回应
+    /// </summary>
+    /// <param name="msg"></param>
+    public void RspRename(GameMsg msg)
+    {
+        GameRoot.Instance.SetPlayerName(msg.rspReName.name);
+
+        //TODO：执行跳转场景，进入主城，打开主城、关闭当前创建界面
+        GameRoot.AddTips("进入主城");
+        createWnd.SetWndState(false);
     }
 }

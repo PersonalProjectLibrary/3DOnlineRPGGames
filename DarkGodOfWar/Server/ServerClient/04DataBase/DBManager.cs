@@ -54,9 +54,10 @@ public class DBManager
         bool isNew = true;//区分新旧账号
         try
         {
-            //Sql查询语句：选择指令 查找的数据是什么，从哪里查找，选择条件
+            /* Sql查询语句：选择指令 查找的数据是什么，从哪里查找，选择条件
             //其中：查找的数据用*表示，表示找出所有满足条件的数据；选择条件 这里不写的话，就是将表中所有数据列出来
             //使用@变量方式，不把数据写死，后面使用AddWithValue()替换参数，进行获取、更新数据；
+            */
             MySqlCommand cmd = new MySqlCommand("select * from account where acct = @acct", SqlConnection);
             cmd.Parameters.AddWithValue("acct", acct);//获取acct对应的数据
             reader = cmd.ExecuteReader();//执行Sql语句
@@ -104,7 +105,13 @@ public class DBManager
         return playerData;
     }
 
-    //将新账号数据存到数据库中
+    /// <summary>
+    /// 将新账号数据存到数据库中
+    /// </summary>
+    /// <param name="acct"></param>
+    /// <param name="pass"></param>
+    /// <param name="pData"></param>
+    /// <returns></returns>
     private int InsertNewAcctData(string acct, string pass, PlayerData pData)
     {
         int id = -1;//插入的玩家数据的初始id，插入到数据库里正式赋值生成
@@ -124,5 +131,58 @@ public class DBManager
         }
         catch (Exception e) { PECommon.Log("Insert PlayerData Error：" + e, LogType.Error); }
         return id;
+    }
+
+    /// <summary>
+    /// 查询数据库里是否存在某个名字
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
+    public bool QueryNameData(string name)
+    {
+        bool exist = false;
+        MySqlDataReader reader = null;
+        try //名字是否已经存在 
+        {
+            MySqlCommand cmd = new MySqlCommand("select * from account where name= @name", SqlConnection);
+            cmd.Parameters.AddWithValue("name", name);
+            reader = cmd.ExecuteReader();
+            if (reader.Read()) exist = true;
+        }
+        catch(Exception e) { PECommon.Log("Query Name State Error：" + e, LogType.Error); }
+        finally
+        {
+            if (reader != null) reader.Close();
+        }
+        return exist;
+    }
+
+    /// <summary>
+    /// 更新数据库里的玩家数据
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="playerData"></param>
+    /// <returns></returns>
+    public bool UpdatePlayerData(int id,PlayerData playerData)
+    {
+        try
+        {
+            MySqlCommand cmd = new MySqlCommand(
+    "update account set name=@name,level=@level,exp=@exp,power=@power,coin=@coin,diamond=@diamond where id =@id", SqlConnection);
+            cmd.Parameters.AddWithValue("id", id);
+            cmd.Parameters.AddWithValue("name", playerData.name);
+            cmd.Parameters.AddWithValue("level", playerData.lv);
+            cmd.Parameters.AddWithValue("exp", playerData.exp);
+            cmd.Parameters.AddWithValue("power", playerData.power);
+            cmd.Parameters.AddWithValue("coin", playerData.coin);
+            cmd.Parameters.AddWithValue("diamond", playerData.diamond);
+            cmd.ExecuteNonQuery();
+        }
+        catch (Exception e)
+        {
+            PECommon.Log("Update PlayerData Error：" + e, LogType.Error);
+            return false;
+        }
+        return true;
     }
 }

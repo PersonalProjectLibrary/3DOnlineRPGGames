@@ -61,4 +61,26 @@ public class LoginSys
         //向对应客户端回应
         msgPack.m_Session.SendMsg(msg);
     }
+
+    /// <summary>
+    /// 对NetSvc里分发过来的重命名消息进行处理响应
+    /// </summary>
+    /// <param name="pack"></param>
+    public void ReqReName(MsgPack pack)
+    {
+        ReqReName data = pack.m_Msg.reqReName;
+        GameMsg msg = new GameMsg { cmd = (int)CMD.RspReName };
+        //名字已经存在，返回错误码
+        if (cacheSvc.IsNameExist(data.name)) msg.err = (int)ErrorCode.NameIsExist;
+        else //名字不存在：更新缓存，以及数据库，再返回给客户端
+        {
+            //通过pack的Session，拿到对应玩家的缓存数据（之前创建新账号时，有把数据存到缓存里）
+            PlayerData playerData = cacheSvc.GetPlayDataBySession(pack.m_Session);//获取数据
+            playerData.name = data.name;//更新缓存里玩家的名字
+            if (!cacheSvc.UpdatePlayerData(playerData.id, playerData))
+                msg.err = (int)ErrorCode.UpdateDataBase;
+            else msg.rspReName = new RspReName { name = data.name };
+        }
+        pack.m_Session.SendMsg(msg);//将数据返回客户端
+    }
 }

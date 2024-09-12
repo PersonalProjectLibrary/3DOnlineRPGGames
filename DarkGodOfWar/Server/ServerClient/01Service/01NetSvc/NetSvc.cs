@@ -77,10 +77,8 @@ public class NetSvc
         switch ((CMD)msgPack.m_Msg.cmd)
         {
             case CMD.None: break;
-            case CMD.ReqLogin:
-                LoginSys.Instance.ReqLogin(msgPack);
-                break;
-            case CMD.RspLogin: break;
+            case CMD.ReqLogin: LoginSys.Instance.ReqLogin(msgPack); break;
+            case CMD.ReqReName: LoginSys.Instance.ReqReName(msgPack); break;
             default: break;
         }
     }

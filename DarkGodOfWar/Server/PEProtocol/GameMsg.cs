@@ -33,6 +33,8 @@ namespace PEProtocol
         //登录相关 100
         ReqLogin = 101,//登录请求
         RspLogin = 102,//登录回应
+        ReqReName = 103,//重命名请求
+        RspReName = 104,//重命名回应
     }
 
     /// <summary>
@@ -53,6 +55,14 @@ namespace PEProtocol
         /// 账号密码错误
         /// </summary>
         PassWrong,
+        /// <summary>
+        /// 名字已经存在
+        /// </summary>
+        NameIsExist,
+        /// <summary>
+        /// 数据库数据更新错误
+        /// </summary>
+        UpdateDataBase,
     }
 
     [Serializable]
@@ -60,8 +70,11 @@ namespace PEProtocol
     {
         public ReqLogin reqLogin;
         public RspLogin rspLogin;
+        public ReqReName reqReName;
+        public RspReName rspReName;
     }
 
+    #region 登录相关
     /// <summary>
     /// 发送请求登录的消息
     /// </summary>
@@ -80,6 +93,28 @@ namespace PEProtocol
     {
         public PlayerData playerData;
     }
+
+    /// <summary>
+    /// 发送请求进行重命名
+    /// </summary>
+    /// 新玩家登录注册新账号起名时向服务器发送请求
+    [Serializable]
+    public class ReqReName
+    {
+        public string name;
+    }
+
+    /// <summary>
+    /// 服务器回应重命名请求
+    /// </summary>
+    /// 判断服务器上其他人有没有使用过该名字
+    [Serializable]
+    public class RspReName
+    {
+        public string name;
+    }
+    #endregion
+
 
     /// <summary>
     /// 玩家信息
