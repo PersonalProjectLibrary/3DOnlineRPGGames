@@ -16,10 +16,15 @@ public class Constants
 {
     //场景名称
     public const string SceneLogin = "SceneLogin";//登录场景
+    public const string SceneMainCity = "SceneMainCity";//主城场景
 
-    //音效名称
-    public const string BgLogin = "bgLogin";//登录界面的背景音乐
+    //背景音乐
+    public const string BgmLogin = "bgLogin";//登录界面的背景音乐
+    public const string BgmMainCity = "bgMainCity";//主城界面的背景音乐
+
+    //按钮音效
     public const string UiLoginBtn = "uiLoginBtn";//点击登录按钮的音效
     public const string UiClickBtn = "uiClickBtn";//常规UI点击音效
 
+    
 }

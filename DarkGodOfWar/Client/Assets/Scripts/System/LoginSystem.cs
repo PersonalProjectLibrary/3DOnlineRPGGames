@@ -39,7 +39,7 @@ public class LoginSystem : SystemRoot
         resService.AsyncLoadScene(Constants.SceneLogin, () => 
         {
             loginWnd.SetWndState();//加载登录界面
-            audioService.PlayBgMusic(Constants.BgLogin);//播放登录界面背景音乐
+            audioService.PlayBgMusic(Constants.BgmLogin);//播放登录界面背景音乐
         });
     }
 
@@ -50,11 +50,8 @@ public class LoginSystem : SystemRoot
     {
         GameRoot.AddTips("登录成功");
         GameRoot.Instance.SetPlayerData(msg.rspLogin);//保存返回的玩家信息
-        if(msg.rspLogin.playerData.name=="") createWnd.SetWndState();//进入角色创建界面
-        else
-        {
-            //进入主城TODO
-        }
+        if (msg.rspLogin.playerData.name == "") createWnd.SetWndState();//进入角色创建界面
+        else MainCitySystem.Instance.EnterMainCity();//进入主城
         loginWnd.SetWndState(false);//关闭登录界面
     }
 
@@ -64,10 +61,8 @@ public class LoginSystem : SystemRoot
     /// <param name="msg"></param>
     public void RspRename(GameMsg msg)
     {
-        GameRoot.Instance.SetPlayerName(msg.rspReName.name);
-
-        //TODO：执行跳转场景，进入主城，打开主城、关闭当前创建界面
-        GameRoot.AddTips("进入主城");
-        createWnd.SetWndState(false);
+        GameRoot.Instance.SetPlayerName(msg.rspReName.name);//客户端更新玩家姓名
+        MainCitySystem.Instance.EnterMainCity();//进入主城
+        createWnd.SetWndState(false);//关闭当前创建界面
     }
 }
