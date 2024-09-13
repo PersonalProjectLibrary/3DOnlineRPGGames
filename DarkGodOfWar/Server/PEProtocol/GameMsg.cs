@@ -150,5 +150,37 @@ namespace PEProtocol
         /// 钻石
         /// </summary>
         public int diamond;
+        /// <summary>
+        /// 血量
+        /// </summary>
+        public int hp;
+        /// <summary>
+        /// 物理伤害
+        /// </summary>
+        public int ad;
+        /// <summary>
+        /// 法术伤害
+        /// </summary>
+        public int ap;
+        /// <summary>
+        /// 物理防御
+        /// </summary>
+        public int addef;
+        /// <summary>
+        /// 法术防御
+        /// </summary>
+        public int apdef;
+        /// <summary>
+        /// 闪避概率
+        /// </summary>
+        public int dodge;
+        /// <summary>
+        /// 穿透比率
+        /// </summary>
+        public int pierce;
+        /// <summary>
+        /// 暴击概率
+        /// </summary>
+        public int critical;
     }
 }

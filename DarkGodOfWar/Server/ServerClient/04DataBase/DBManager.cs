@@ -74,7 +74,15 @@ public class DBManager
                         exp = reader.GetInt32("exp"),
                         power = reader.GetInt32("power"),
                         coin = reader.GetInt32("coin"),
-                        diamond = reader.GetInt32("diamond")
+                        diamond = reader.GetInt32("diamond"),
+                        hp = reader.GetInt32("hp"),
+                        ad = reader.GetInt32("ad"),
+                        ap = reader.GetInt32("ap"),
+                        addef = reader.GetInt32("addef"),
+                        apdef = reader.GetInt32("apdef"),
+                        dodge = reader.GetInt32("dodge"),
+                        pierce = reader.GetInt32("pierce"),
+                        critical = reader.GetInt32("critical")
                     };
                 }
             }
@@ -95,7 +103,15 @@ public class DBManager
                     exp = 0,
                     power = 150,
                     coin = 5000,
-                    diamond = 500
+                    diamond = 500,
+                    hp = 2000,
+                    ad = 275,
+                    ap = 265,
+                    addef = 67,
+                    apdef = 43,
+                    dodge = 7,
+                    pierce = 5,
+                    critical = 2
                 };
                 //新账号存到数据库，并将返回的id更新到playerData里
                 playerData.id = InsertNewAcctData(acct, pass, playerData);
@@ -116,7 +132,7 @@ public class DBManager
         int id = -1;//插入的玩家数据的初始id，插入到数据库里正式赋值生成
         try
         {
-            MySqlCommand cmd = new MySqlCommand("insert into account set acct=@acct,pass=@pass,name=@name,level=@level,exp=@exp,power=@power,coin=@coin,diamond=@diamond", SqlConnection);
+            MySqlCommand cmd = new MySqlCommand("insert into account set acct=@acct,pass=@pass,name=@name,level=@level,exp=@exp,power=@power,coin=@coin,diamond=@diamond,hp=@hp,ad=@ad,ap=@ap,addef=@addef,apdef=@apdef,dodge=@dodge,pierce=@pierce,critical=@critical", SqlConnection);
             cmd.Parameters.AddWithValue("acct", acct);
             cmd.Parameters.AddWithValue("pass", pass);
             cmd.Parameters.AddWithValue("name", pData.name);
@@ -125,6 +141,14 @@ public class DBManager
             cmd.Parameters.AddWithValue("power", pData.power);
             cmd.Parameters.AddWithValue("coin", pData.coin);
             cmd.Parameters.AddWithValue("diamond", pData.diamond);
+            cmd.Parameters.AddWithValue("hp", pData.hp);
+            cmd.Parameters.AddWithValue("ad", pData.ad);
+            cmd.Parameters.AddWithValue("ap", pData.ap);
+            cmd.Parameters.AddWithValue("addef", pData.addef);
+            cmd.Parameters.AddWithValue("apdef", pData.apdef);
+            cmd.Parameters.AddWithValue("dodge", pData.dodge);
+            cmd.Parameters.AddWithValue("pierce", pData.pierce);
+            cmd.Parameters.AddWithValue("critical", pData.critical);
             cmd.ExecuteNonQuery();
             id = (int)cmd.LastInsertedId;
         }
@@ -167,7 +191,7 @@ public class DBManager
         try
         {
             MySqlCommand cmd = new MySqlCommand(
-    "update account set name=@name,level=@level,exp=@exp,power=@power,coin=@coin,diamond=@diamond where id =@id", SqlConnection);
+    "update account set name=@name,level=@level,exp=@exp,power=@power,coin=@coin,diamond=@diamond,hp=@hp,ad=@ad,ap=@ap,addef=@addef,apdef=@apdef,dodge=@dodge,pierce=@pierce,critical=@critical where id =@id", SqlConnection);
             cmd.Parameters.AddWithValue("id", id);
             cmd.Parameters.AddWithValue("name", playerData.name);
             cmd.Parameters.AddWithValue("level", playerData.lv);
@@ -175,6 +199,14 @@ public class DBManager
             cmd.Parameters.AddWithValue("power", playerData.power);
             cmd.Parameters.AddWithValue("coin", playerData.coin);
             cmd.Parameters.AddWithValue("diamond", playerData.diamond);
+            cmd.Parameters.AddWithValue("hp", playerData.hp);
+            cmd.Parameters.AddWithValue("ad", playerData.ad);
+            cmd.Parameters.AddWithValue("ap", playerData.ap);
+            cmd.Parameters.AddWithValue("addef", playerData.addef);
+            cmd.Parameters.AddWithValue("apdef", playerData.apdef);
+            cmd.Parameters.AddWithValue("dodge", playerData.dodge);
+            cmd.Parameters.AddWithValue("pierce", playerData.pierce);
+            cmd.Parameters.AddWithValue("critical", playerData.critical);
             cmd.ExecuteNonQuery();
         }
         catch (Exception e)
