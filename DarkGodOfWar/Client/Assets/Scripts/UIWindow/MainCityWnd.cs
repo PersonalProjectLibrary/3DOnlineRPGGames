@@ -64,12 +64,24 @@ public class MainCityWnd : WindowRoot
         SetText(txtPower, "体力:" + pData.power + "/" + PECommon.GetPowerLimit(pData.lv));
         imgPowerPrg.fillAmount = pData.power * 1.0f / PECommon.GetPowerLimit(pData.lv);
 
-        //expPrg
+        //经验进度条UI自适应
         GridLayoutGroup grid = expPrgTrans.GetComponent<GridLayoutGroup>();
         //当前项目的UI自适应是基于高度做标准的，这里用高度计算缩放比；
         float globalRate = 1.0f * Constants.ScreenStandardHeight / Screen.height;
         float screenWidth = Screen.width * globalRate;//UI在自适应后，实际展现给玩家的缩放宽度
         float width = (screenWidth - 180) / 10;//每小段经验条的长度
         grid.cellSize = new Vector2(width, 7);
+        //经验进度条数值显示
+        int expPrgVal = (int)(pData.exp * 1.0f / PECommon.GetExpUpValByLv(pData.lv) * 100);
+        SetText(txtExpPrg, expPrgVal + "%");
+        //设置分段进度条哪些显示或掩藏，展示玩家经验状态
+        int index = expPrgVal / 10;
+        for (int i = 0; i < expPrgTrans.childCount; i++)
+        {
+            Image img = expPrgTrans.GetChild(i).GetComponent<Image>();
+            if (i < index) img.fillAmount = 1;
+            else if (i == index) img.fillAmount = expPrgVal % 10 * 1.0f / 10;
+            else img.fillAmount = 0;
+        }
     }
 }

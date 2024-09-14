@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50617
 File Encoding         : 65001
 
-Date: 2024-09-14 21:30:19
+Date: 2024-09-13 21:59:37
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -38,9 +38,8 @@ CREATE TABLE `account` (
   `pierce` int(11) NOT NULL,
   `critical` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of account
 -- ----------------------------
-INSERT INTO `account` VALUES ('1', '789', '789', '夏虹', '5', '750', '150', '5000', '500', '2000', '275', '265', '67', '43', '7', '5', '2');

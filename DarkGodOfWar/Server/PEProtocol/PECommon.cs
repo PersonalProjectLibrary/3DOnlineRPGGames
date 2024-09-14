@@ -25,6 +25,11 @@ public enum LogType
 
 public class PECommon
 {
+    /// <summary>
+    /// 日志输出
+    /// </summary>
+    /// <param name="msg">日志内容</param>
+    /// <param name="tp">日志类型</param>
     public static void Log(string msg="",LogType tp = LogType.Log)
     {
         LogLevel lv = (LogLevel)tp;
@@ -53,5 +58,16 @@ public class PECommon
     public static int GetPowerLimit(int lv)
     {
         return ((lv - 1) / 10) * 150 + 150;
+    }
+
+    /// <summary>
+    /// 根据等级计算下次升级所需要的经验值
+    /// </summary>
+    /// <param name="level"></param>
+    /// <returns></returns>
+    /// 实际工作也有对应的公式
+    public static int GetExpUpValByLv(int level)
+    {
+        return 100 * level * level;
     }
 }
