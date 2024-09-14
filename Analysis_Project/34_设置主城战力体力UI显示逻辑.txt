@@ -1,0 +1,54 @@
+
+对主城界面UI的显示做控制
+
+一、获取UI里的组件
+public Text txtFight;// 战斗力
+public Text txtPower;// 体力
+public Image imgPowerPrg;// 体力进度条
+public Text txtLevel;// 等级
+public Text txtName;// 名字
+public Text txtExpPrg;// 经验进度条
+
+二、在服务器的PEProtocol项目里，添加主城UI相关函数
+1、战斗力计算的方法函数GetFightByProps()
+（1）游戏的战斗力计算是有通用公式的，由策划提供；
+（2）这里简单写个战斗力计算公式：
+角色战斗力 = 等级*100+物理伤害+法术伤害+物理防御+法术防御；
+PlayerFight  = pData.lv * 100 + pData.ad + pData.ap + pData.addef + pData.apdef；
+（3）写到PEProtocol里，服务器和客户端都可以计算游戏的战斗力；
+在服务器的PEProtocol项目的PECommon.cs里添加GetFightByProps()
+
+
+2、获取体力上限函数GetPowerLimit()
+（1）体力上限，一般也是由策划提供体力公式；
+（2）这里设置随玩家等级不同，有不同的体力上限；
+这里简单设置：等级每上涨10级，体力值获得150的上涨；
+（3）写到PEProtocol里，服务器和客户端都获取玩家的体力上限；
+在服务器的PEProtocol项目的PECommon.cs里添加GetPowerLimit()
+
+3、编译更新，生成PEProtocol.dll
+
+三、客户端设置主城UI显示
+1、在客户端MainCityWnd.cs里添加对UI刷新显示的函数RefreshUI()
+（1）用于刷新所有主城UI的显示，在InitWnd()里调用；
+（2）先获取GameRoot.cs里玩家的数据；
+（3）根据玩家的数据设置UI显示
+（4）游戏场景里绑定相关的UI对象
+
+四、测试运行
+开启数据库服务器，点击游戏运行，登录进入主场景，查看主场景相关UI显示；
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
