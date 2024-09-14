@@ -1,0 +1,84 @@
+
+一、给每个和客户端连接的Session，设置一个唯一的id号
+1、在ServerRoot.cs里定义生成SessionID的函数
+避免服务器运行太久，SessionID值超出允许范围，
+这里添加判断，如果ID值超过int最大值，将ID置为0；
+在ServerSession.cs里进行使用：
+private int SessionID = 0;//默认为0，每次调用获取加一
+public int GetSessionID()// 每次调用时，生成一个唯一的id
+{
+    if (SessionID == int.MaxValue) SessionID = 0;//避免服务器运行很久后id值越界
+    return SessionID += 1;
+}
+
+2、在服务器的ServerSession.cs里添加id，在和客户端连接时，生成对应id值；
+public int sessionID = 0;
+protected override void OnConnected()
+{
+    sessionID = ServerRoot.Instance.GetSessionID();
+    PECommon.Log("SessionID：" + sessionID + " Client Connect");
+}
+
+二、在下线时清除对应缓存数据
+1、在服务器缓存层里添加清除数据的接口
+（1）foreach循环遍历 在线账号字典onLineAcctDic 清除对应信息
+（2）在线连接onLineSessionDic 字典直接移除对应Session
+public void AccOffLine(ServerSession session)
+{
+    foreach (var item in onLineAcctDic)
+    {
+        if(item.Value == session)
+        {
+            onLineAcctDic.Remove(item.Key);
+            break;
+        }
+    }
+    bool succ = onLineSessionDic.Remove(session);
+    PECommon.Log("SessionID：" + session.sessionID + " Offline Result " + succ);
+}
+
+2、在登录系统里进行中转调用清除数据的接口
+缓存层是和具体的业务层交互，不要直接和Session交互
+在LoginSys.cs里添加下线清理数据的函数ClearOfflineData()
+public void ClearOfflineData(ServerSession session){ cacheSvc.AccOffLine(session); }
+
+3、在ServerSessive.cs的OnDisConnected里调用ClearOfflineData()
+protected override void OnDisConnected()
+{
+    LoginSys.Instance.ClearOfflineData(this);
+    PECommon.Log("SessionID：" + sessionID + " Client Offline");
+}
+
+注：Unity停止运行时，服务器端并没有进行下线处理；
+因为网络通信里收发数据的网络线程，创建的连接不受Unity主线程控制；
+即使停止Unity当前运行的程序，网络线程还是连接的，
+除非直接关闭整个Unity工程，才会断开当前（上一次）网络线程；
+或者重新运行Unity程序，才会断开上一次网络线程，重新开启一个新的网络线程；
+
+优化，可自行做一个管理：增加心跳机制：
+网络消息保持5秒通信，如果5秒里，有连续三个消息没有通信/服务器没有收到消息，
+判定客户端是离线状态，然后通过服务器把对应客户端踢下线清除对应玩家信息；
+
+另外这里将服务器网络通信NetSvc.cs里之前测试任务队列数的日志提醒删除。
+原：
+public void Update()
+{
+    if (msgPackQue.Count > 0)
+    {
+        PECommon.Log("PackCount：" + msgPackQue.Count);
+        ... ...
+    }
+}
+改：
+public void Update()
+{
+    if (msgPackQue.Count > 0)
+    {
+        //PECommon.Log("PackCount：" + msgPackQue.Count);
+        ... ...
+    }
+}
+
+
+
+

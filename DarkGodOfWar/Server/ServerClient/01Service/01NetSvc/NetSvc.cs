@@ -59,7 +59,7 @@ public class NetSvc
     {
         if (msgPackQue.Count > 0)
         {
-            PECommon.Log("PackCount：" + msgPackQue.Count);
+            //PECommon.Log("PackCount：" + msgPackQue.Count);
             lock (lockObj)
             {
                 MsgPack msgPack = msgPackQue.Dequeue();

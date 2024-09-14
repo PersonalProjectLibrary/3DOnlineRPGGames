@@ -42,4 +42,15 @@ public class ServerRoot
     {
         NetSvc.Instance.Update();
     }
+
+    private int SessionID = 0;//默认为0，每次调用获取加一
+    /// <summary>
+    /// 每次调用时，生成一个唯一的id
+    /// </summary>
+    /// <returns></returns>
+    public int GetSessionID()
+    {
+        if (SessionID == int.MaxValue) SessionID = 0;//避免服务器运行很久后id值越界
+        return SessionID += 1;
+    }
 }

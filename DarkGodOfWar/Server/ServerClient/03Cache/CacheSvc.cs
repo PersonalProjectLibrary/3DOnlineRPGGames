@@ -45,6 +45,7 @@ public class CacheSvc
         PECommon.Log("CacheSvc Init Done.");
     }
 
+    #region 玩家登录注册上线
     /// <summary>
     /// 判断账号是否已上线
     /// </summary>
@@ -61,7 +62,7 @@ public class CacheSvc
     /// <param name="acct"></param>
     /// <param name="pass"></param>
     /// <returns></returns>
-    public PlayerData GetPlayerData(string acct,string pass)
+    public PlayerData GetPlayerData(string acct, string pass)
     {
         //当前账号还未上线，故缓存里不存在，要去数据库里进行查找
         return dbManager.QueryPlayerData(acct, pass);
@@ -73,7 +74,7 @@ public class CacheSvc
     /// <param name="acct"></param>
     /// <param name="session"></param>
     /// <param name="playerData"></param>
-    public void AcctOnline(string acct,ServerSession session,PlayerData playerData)
+    public void AcctOnline(string acct, ServerSession session, PlayerData playerData)
     {
         onLineAcctDic.Add(acct, session);
         onLineSessionDic.Add(session, playerData);
@@ -106,8 +107,27 @@ public class CacheSvc
     /// <param name="id"></param>
     /// <param name="playerData"></param>
     /// <returns></returns>
-    public bool UpdatePlayerData(int id,PlayerData playerData)
+    public bool UpdatePlayerData(int id, PlayerData playerData)
     {
         return dbManager.UpdatePlayerData(id, playerData);
+    }
+    #endregion
+
+    /// <summary>
+    /// 玩家下线清理数据
+    /// </summary>
+    /// <param name="session"></param>
+    public void AccOffLine(ServerSession session)
+    {
+        foreach (var item in onLineAcctDic)
+        {
+            if(item.Value == session)
+            {
+                onLineAcctDic.Remove(item.Key);
+                break;
+            }
+        }
+        bool succ = onLineSessionDic.Remove(session);
+        PECommon.Log("SessionID：" + session.sessionID + " Offline Result " + succ);
     }
 }

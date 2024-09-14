@@ -35,6 +35,7 @@ public class LoginSys
         PECommon.Log("LoginSys Init Done.");
     }
 
+    #region 玩家登录
     /// <summary>
     /// 对NetSvc里分发过来的登录消息进行处理响应
     /// </summary>
@@ -83,4 +84,16 @@ public class LoginSys
         }
         pack.m_Session.SendMsg(msg);//将数据返回客户端
     }
+
+    #endregion
+
+    /// <summary>
+    /// 玩家下线，清理缓存
+    /// </summary>
+    /// <param name="session"></param>
+    public void ClearOfflineData(ServerSession session)
+    {
+        cacheSvc.AccOffLine(session);
+    }
+
 }
