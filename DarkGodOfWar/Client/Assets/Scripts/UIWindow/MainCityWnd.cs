@@ -16,6 +16,7 @@ using UnityEngine.UI;
 
 public class MainCityWnd : WindowRoot
 {
+    #region UIDefine
     /// <summary>
     /// 战斗力
     /// </summary>
@@ -45,6 +46,22 @@ public class MainCityWnd : WindowRoot
     /// </summary>
     public Transform expPrgTrans;
 
+    /// <summary>
+    /// 主菜单显示掩藏的动画
+    /// </summary>
+    public Animation menuAnim;
+    /// <summary>
+    /// 主菜单按钮
+    /// </summary>
+    public Button btnMenu;
+    #endregion
+
+    /// <summary>
+    /// 当前主菜单激活状态
+    /// </summary>
+    public bool menuState = true;
+
+    #region MainFunctions
     protected override void InitWnd()
     {
         base.InitWnd();
@@ -84,4 +101,23 @@ public class MainCityWnd : WindowRoot
             else img.fillAmount = 0;
         }
     }
+
+    #endregion
+
+    #region ClickEvents
+    /// <summary>
+    /// 点击主菜单按钮
+    /// </summary>
+    public void ClickMenuBtn()
+    {
+        AnimationClip clip = null;//动画播放的文件
+        audioService.PlayUIAudio(Constants.UiExtenBtn);//更新音乐
+        menuState = !menuState;//每次点击都修改主菜单UI的状态
+        //根据当前状态来选择设置主菜单的显示掩藏
+        if (menuState) clip = menuAnim.GetClip("MCMenuOpenAnim");
+        else clip = menuAnim.GetClip("MCMenuCloseAnim");
+        menuAnim.Play(clip.name);
+    }
+
+    #endregion
 }

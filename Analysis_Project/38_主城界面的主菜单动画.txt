@@ -1,0 +1,83 @@
+
+一、添加主菜单动画：
+1、在MenuRoot身上加Animation组件、取消自动播放；
+2、Ctrl+6打开动画面板：选中MenuRoot，点击动画面板里的Create，创建Animation；
+
+二、创建关闭主菜单动画：
+1、动画文件保存到Resource/ResUIAnimC文件夹里，取名为：MCMenuCloseAnim.anim；
+
+2、点击动画面板上的Preview，进行动画录制：
+在10帧：设置MenuRoot下面除btnMenu的子物体
+1）子物体的xy位置设置为0、Image的透明度改为0；
+2）子物体里面的Text的透明的也改为0
+3）免点击时穿透，在10帧前一点，子物体设置为关闭不激活状态
+4）将btnMenu的z轴设置旋转-45度
+
+3、关闭Preview，动画保存
+
+然后将MenuRoot身上加Animation组件的Animations数量设置为0；
+选中MenuRoot状态下，可以点击动画面板里的Create，创建第2个Animation；
+
+三、创建关闭主菜单动画：
+1、动画文件保存到Resource/ResUIAnimC文件夹里，取名为：MCMenuOpenAnim.anim；
+
+2、录制动画前操作：
+（1）将MenuRoot下面除btnMenu的子物体设置为关闭未激活状态，
+（2）包括子物体及内部text的透明度改为0；x，y位置都改为0
+（3）btnMenu的z轴设置-45度
+
+3、选中MenuRoot，点击动画面板上的Preview，进行动画录制：
+在第1帧，就让所有子物体激活显示；
+在第10帧，将子物体包括内部的text的透明的改成255，全部显示；
+并且将子物体位置改回去，btnMenu的z轴改回0；
+
+4、设置动画
+将MenuRoot身上加Animation组件里的Animations的数量改为2，
+将之前设置的关闭动画添加上去
+
+5、将MenuRoot里的子物体都改回还原为之前的状态
+
+
+四、代码控制动画显示
+1、Comstant.cs里添加点击主菜单按钮的音效UiExtenBtn；
+
+2、在MainCityWnd.cs里添加动画的组件和主菜单按钮
+public Animation menuAni;
+public Button btnMenu;
+对主场景里的按钮组件进行绑定；
+
+3、在MainCityWnd.cs里添加bool变量menuState，记录当前主菜单时显示还是掩藏状态；
+public bool menuState = true;
+
+4、在MainCityWnd.cs里添加主菜单按钮功能ClickMenuBtn，控制主菜单
+public void ClickMenuBtn()
+{
+    AnimationClip clip = null;//动画播放的文件
+    audioService.PlayBgMusic(Constants.UiExtenBtn);//更新音乐
+    menuState = !menuState;//每次点击都修改主菜单UI的状态
+    if (menuState) clip = menuAnim.GetClip("MCMenuOpenAnim");
+    else clip = menuAnim.GetClip("MCMenuCloseAnim");
+    menuAnim.Play(clip.name);
+}
+
+5、对游戏场景里的主菜单点击事件进行btn绑定
+public void ClickMenuBtn()
+{
+    AnimationClip clip = null;//动画播放的文件
+    audioService.PlayUIAudio(Constants.UiExtenBtn);//更新音乐
+    menuState = !menuState;//每次点击都修改主菜单UI的状态
+    //根据当前状态来选择设置主菜单的显示掩藏
+    if (menuState) clip = menuAnim.GetClip("MCMenuOpenAnim");
+    else clip = menuAnim.GetClip("MCMenuCloseAnim");
+    menuAnim.Play(clip.name);
+}
+
+五、运行测试
+
+
+
+
+
+
+
+

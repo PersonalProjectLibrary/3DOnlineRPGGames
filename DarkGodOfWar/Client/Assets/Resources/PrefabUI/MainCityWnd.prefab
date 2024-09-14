@@ -646,8 +646,8 @@ Animation:
   serializedVersion: 3
   m_Animation: {fileID: 0}
   m_Animations:
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 7400000, guid: a4d5ac0c9dbe60f4fbac2671b7d8b773, type: 2}
+  - {fileID: 7400000, guid: 858e7a54f2401a64bb667e8bc4d70820, type: 2}
   m_WrapMode: 0
   m_PlayAutomatically: 0
   m_AnimatePhysics: 0
@@ -2516,7 +2516,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1310228017}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 319396833}
+        m_TargetAssemblyTypeName: MainCityWnd, Assembly-CSharp
+        m_MethodName: ClickMenuBtn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1321054003
 GameObject:
   m_ObjectHideFlags: 0
@@ -4448,6 +4460,9 @@ MonoBehaviour:
   txtName: {fileID: 2090164824}
   txtExpPrg: {fileID: 808062174}
   expPrgTrans: {fileID: 81510489}
+  menuAnim: {fileID: 281875089}
+  btnMenu: {fileID: 1310228016}
+  menuState: 1
 --- !u!1 &9088962462061153138
 GameObject:
   m_ObjectHideFlags: 0
