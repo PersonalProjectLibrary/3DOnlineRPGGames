@@ -361,7 +361,7 @@ GameObject:
   - component: {fileID: 81510489}
   - component: {fileID: 81510490}
   m_Layer: 0
-  m_Name: itemLst
+  m_Name: expItemList
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4447,6 +4447,7 @@ MonoBehaviour:
   txtLevel: {fileID: 739105577}
   txtName: {fileID: 2090164824}
   txtExpPrg: {fileID: 808062174}
+  expPrgTrans: {fileID: 81510489}
 --- !u!1 &9088962462061153138
 GameObject:
   m_ObjectHideFlags: 0

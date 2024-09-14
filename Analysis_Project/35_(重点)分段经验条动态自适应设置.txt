@@ -1,0 +1,43 @@
+
+分段经验条制作好胡，要设置自适应，不论什么分辨率下拉伸，都是对应铺满底部的；
+
+根据屏幕尺寸，动态修改底部进度条的itemList身上GridLayoutGroup组件里的参数；
+
+一、获取当前玩家屏幕实际经验条的宽度
+1、在Constant.cs里定义标准屏幕宽高常量：
+public const int ScreenStandardWidth = 1334;
+public const int ScreenStandardHeight = 750;
+
+2、在MainCityWnd.cs里计算自适应后的缩放比
+要考虑UI自适应后会有缩放，不能用标准宽度或实际宽度来计算；
+当前项目的UI自适应是基于高度做标准的，这里用高度计算缩放比；
+然后标准宽度乘以缩放比，获得当前UI展示的真正宽度：
+//用高度计算自适应导致的缩放比；
+float globalRate = 1.0f * Constants.ScreenStandardHeight / Screen.height;
+//UI在自适应后，实际展现给玩家的缩放宽度
+float screenWidth = Screen.width * globalRate;
+
+3、获得经验条缩放后宽度，计算每小段经验条的长度
+float width = (screenWidth - 180) / 10;
+
+4、更新UI界面对经验条是数值设置
+public Transform expPrgTrans;
+private void RefreshUI()
+{
+    ... ...
+    GridLayoutGroup grid = expPrgTrans.GetComponent<GridLayoutGroup>();
+    float globalRate = 1.0f * Constants.ScreenStandardHeight / Screen.height;
+    float screenWidth = Screen.width * globalRate;
+    float width = (screenWidth - 180) / 10;
+    grid.cellSize = new Vector2(width, 7);
+}
+
+
+
+
+
+
+
+
+
+

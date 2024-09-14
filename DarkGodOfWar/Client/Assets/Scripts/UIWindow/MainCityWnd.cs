@@ -11,6 +11,7 @@
 
 
 using PEProtocol;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class MainCityWnd : WindowRoot
@@ -39,6 +40,10 @@ public class MainCityWnd : WindowRoot
     /// 经验进度条
     /// </summary>
     public Text txtExpPrg;
+    /// <summary>
+    /// 分段经验条的ItemList
+    /// </summary>
+    public Transform expPrgTrans;
 
     protected override void InitWnd()
     {
@@ -58,5 +63,13 @@ public class MainCityWnd : WindowRoot
         SetText(txtFight, PECommon.GetFightByProps(pData));
         SetText(txtPower, "体力:" + pData.power + "/" + PECommon.GetPowerLimit(pData.lv));
         imgPowerPrg.fillAmount = pData.power * 1.0f / PECommon.GetPowerLimit(pData.lv);
+
+        //expPrg
+        GridLayoutGroup grid = expPrgTrans.GetComponent<GridLayoutGroup>();
+        //当前项目的UI自适应是基于高度做标准的，这里用高度计算缩放比；
+        float globalRate = 1.0f * Constants.ScreenStandardHeight / Screen.height;
+        float screenWidth = Screen.width * globalRate;//UI在自适应后，实际展现给玩家的缩放宽度
+        float width = (screenWidth - 180) / 10;//每小段经验条的长度
+        grid.cellSize = new Vector2(width, 7);
     }
 }
