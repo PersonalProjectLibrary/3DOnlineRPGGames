@@ -111,6 +111,7 @@ public class WindowRoot : MonoBehaviour
     }
 
     #endregion
+    
     /// <summary>
     /// 判断物体身上有没有某个组件,有则获取，没有则添加
     /// </summary>

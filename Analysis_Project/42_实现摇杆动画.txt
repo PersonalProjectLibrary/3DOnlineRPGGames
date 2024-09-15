@@ -1,0 +1,98 @@
+
+实现摇杆动画
+
+一、UI触控按下事件
+1、记录初始点击位置startPos
+传进来的是全局坐标，使用Position；
+2、激活摇杆杆轴显示
+OnClickDown(imgTouch.gameObject, (PointerEventData evt) =>
+{
+    startPos = evt.position;
+    SetActive(imgDirPoint);
+    imgDirBg.transform.position = evt.position;//传入的是全局坐标
+});
+
+二、UI触控松开事件
+1、记录初始摇杆轮盘初始位置defaultPos，方便后面轮盘位置复原
+在初始化时，就有对其赋值
+2、摇杆杆轴位置复原，并掩藏杆轴不显示
+杆轴是相对父物体位置复原，使用localPosition；
+3、发送信息，告诉玩家已经停止不动了
+把方向信息传递出去
+OnClickUp(imgTouch.gameObject, (PointerEventData evt) =>
+{
+    imgDirBg.transform.position = defaultPos;
+    SetActive(imgDirPoint, false);
+    imgDirPoint.transform.localPosition = Vector2.zero;//相对父物体还原使用本地坐标
+    //TODO向玩家传递方向信息，设置玩家角色方向
+    Debug.Log(Vector2.zero);
+});
+
+三、UI触控拖拽事件
+1、计算拖拽方向
+拖拽后的点位置-初始点击位置，获得拖拽方向
+Vector2 dir = evt.position - startPos;
+
+2、限制摇杆杆轴的移动位置，不能离轮盘太远
+（1）在Constant.cs里新增摇杆相对轮盘可移动距离ScreenOpDis
+（2）限制摇杆杆轴移动范围
+OnDrag(imgTouch.gameObject, (PointerEventData evt) =>
+{
+    Vector2 dir = evt.position - startPos;//拖拽方向
+    float len = dir.magnitude;
+    if (len > Constants.ScreenOpDis)
+    {
+        Vector2 clampDir = Vector2.ClampMagnitude(dir, Constants.ScreenOpDis);
+        imgDirPoint.transform.position = startPos + clampDir;
+    }
+    else imgDirPoint.transform.position = evt.position;
+    //TODO向玩家传递方向信息，设置玩家角色移动
+    Debug.Log(dir.normalized);
+});
+
+三、摇杆自适应问题
+当前摇杆是固定距离限制移动范围，而Canvas是有做自适应缩放的；
+导致可能因为放缩，摇杆的移动范围很不合理；
+这里要计算摇杆的比例变化，而不是直接使用具体固定距离；
+
+1、定义摇杆杆轴距离pointDis
+这是摇杆标准距离在进行缩放后对应的距离；注意本项目UI自适应以高度进行缩放的；
+在InitWnd()里进行初始化
+pointDis = Screen.height * 1.0f / Constants.ScreenStandardHeight * Constants.ScreenOpDis;
+
+2、将摇杆注册事件里使用的Constants.ScreenOpDis替换为pointDis 
+OnDrag(imgTouch.gameObject, (PointerEventData evt) =>
+{
+    ... ...
+    if (len > pointDis)
+    {
+        Vector2 clampDir = Vector2.ClampMagnitude(dir, pointDis);
+        imgDirPoint.transform.position = startPos + clampDir;
+    }
+    ... ...
+});
+
+四、运行测试
+
+注：之前添加UI触控工具PEListener.cs里，拖拽功能的接口使用错误：
+正确接口是：DragHandler，写成了IDraopHandler接口。
+对应的接口实现方法OnDrag，也写成了OnDrop
+这里改回来了；
+
+正确写法如下：
+public class PEListener : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler
+{
+    public Action<PointerEventData> onDrag;
+    ... ...
+
+    // 拖动事件
+    public void OnDrag(PointerEventData eventData)
+    {
+        if (onDrag != null) onDrag(eventData);
+    }
+
+    ... ...
+}
+
+
+

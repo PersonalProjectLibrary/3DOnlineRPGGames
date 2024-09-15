@@ -30,4 +30,7 @@ public class Constants
     //屏幕标准宽高
     public const int ScreenStandardWidth = 1334;
     public const int ScreenStandardHeight = 750;
+
+    //摇杆点标准距离
+    public const int ScreenOpDis = 90;//摇杆杆轴可偏移距离
 }

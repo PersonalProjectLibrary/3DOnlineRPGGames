@@ -5,11 +5,11 @@
 功能单一，作为只是用于UI事件监听的插件：监听按下去、按下去后拖动、点击抬起来的操作；
 
 1、PEListener除了继承MonoBehaviour，还要继承：
-IPointerDownHandler,IPointerUpHandler,IDropHandler这三个接口，
-并实现对应的接口函数OnPointerDown、OnDrop、OnPointerUp；
+IPointerDownHandler,IPointerUpHandler,IDragHandler这三个接口，
+并实现对应的接口函数OnPointerDown、OnDrag、OnPointerUp；
 2、定义泛型的事件Action，在接口函数里执行
 当触发事件时，自动执行Action；可外部脚本里自定义设置Action里具体执行什么行为；
-public class PEListener : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDropHandler
+public class PEListener : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler
 {
     public Action<PointerEventData> onClickDown;
     public Action<PointerEventData> onDrag;
@@ -18,7 +18,7 @@ public class PEListener : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
     {
         if (onClickDown != null) onClickDown(eventData);
     }
-    public void OnDrop(PointerEventData eventData)
+    public void OnDrag(PointerEventData eventData)
     {
         if (onDrag != null) onDrag(eventData);
     }

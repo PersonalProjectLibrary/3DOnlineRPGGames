@@ -16,7 +16,7 @@ using UnityEngine.EventSystems;
 /// <summary>
 /// 点击、拖拽、松开UI的事件监听
 /// </summary>
-public class PEListener : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDropHandler
+public class PEListener : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler
 {
     public Action<PointerEventData> onClickDown;
     public Action<PointerEventData> onDrag;
@@ -37,7 +37,7 @@ public class PEListener : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
     /// </summary>
     /// <param name="eventData"></param>
     /// <exception cref="NotImplementedException"></exception>
-    public void OnDrop(PointerEventData eventData)
+    public void OnDrag(PointerEventData eventData)
     {
         if (onDrag != null) onDrag(eventData);
     }

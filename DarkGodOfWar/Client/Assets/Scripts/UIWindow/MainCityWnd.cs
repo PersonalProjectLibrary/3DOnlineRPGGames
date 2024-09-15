@@ -73,7 +73,19 @@ public class MainCityWnd : WindowRoot
     /// </summary>
     /// 初始不显示
     public Image imgDirPoint;
-
+    /// <summary>
+    /// 摇杆轮盘默认位置
+    /// </summary>
+    /// 初始化时就要赋值，摇杆复位位置
+    private Vector2 defaultPos = Vector2.zero;
+    /// <summary>
+    /// 摇杆区域起始点击位置
+    /// </summary>
+    private Vector2 startPos = Vector2.zero;
+    /// <summary>
+    /// 缩放后摇杆标准距离实际值
+    /// </summary>
+    private float pointDis;
     #endregion
 
     #region MainFunctions
@@ -84,9 +96,12 @@ public class MainCityWnd : WindowRoot
     {
         base.InitWnd();
 
+        defaultPos = imgDirBg.transform.position;
+        pointDis = Screen.height * 1.0f / Constants.ScreenStandardHeight * Constants.ScreenOpDis;
         SetActive(imgDirPoint, false);
-        RefreshUI();
         RegisterTouchEvts();
+
+        RefreshUI();
     }
 
     /// <summary>
@@ -104,14 +119,17 @@ public class MainCityWnd : WindowRoot
 
         //经验进度条UI自适应
         GridLayoutGroup grid = expPrgTrans.GetComponent<GridLayoutGroup>();
+        
         //当前项目的UI自适应是基于高度做标准的，这里用高度计算缩放比；
         float globalRate = 1.0f * Constants.ScreenStandardHeight / Screen.height;
         float screenWidth = Screen.width * globalRate;//UI在自适应后，实际展现给玩家的缩放宽度
         float width = (screenWidth - 180) / 10;//每小段经验条的长度
         grid.cellSize = new Vector2(width, 7);
+        
         //经验进度条数值显示
         int expPrgVal = (int)(pData.exp * 1.0f / PECommon.GetExpUpValByLv(pData.lv) * 100);
         SetText(txtExpPrg, expPrgVal + "%");
+        
         //设置分段进度条哪些显示或掩藏，展示玩家经验状态
         int index = expPrgVal / 10;
         for (int i = 0; i < expPrgTrans.childCount; i++)
@@ -152,10 +170,38 @@ public class MainCityWnd : WindowRoot
             imgDirBg.transform.position = evt.position;
         };
         //*/
-        
+
+        //按下摇杆
         OnClickDown(imgTouch.gameObject, (PointerEventData evt) =>
         {
-            imgDirBg.transform.position = evt.position;
+            startPos = evt.position;
+            SetActive(imgDirPoint);
+            imgDirBg.transform.position = evt.position;//传入的是全局坐标
+        });
+
+        //拖拽摇杆
+        OnDrag(imgTouch.gameObject, (PointerEventData evt) =>
+        {
+            Vector2 dir = evt.position - startPos;//拖拽方向
+            float len = dir.magnitude;
+            if (len > pointDis)
+            {
+                Vector2 clampDir = Vector2.ClampMagnitude(dir, pointDis);
+                imgDirPoint.transform.position = startPos + clampDir;
+            }
+            else imgDirPoint.transform.position = evt.position;
+            //TODO向玩家传递方向信息，设置玩家角色移动
+            Debug.Log(dir.normalized);
+        });
+
+        //松开摇杆
+        OnClickUp(imgTouch.gameObject, (PointerEventData evt) =>
+        {
+            imgDirBg.transform.position = defaultPos;
+            SetActive(imgDirPoint, false);
+            imgDirPoint.transform.localPosition = Vector2.zero;//相对父物体还原使用本地坐标
+            //TODO向玩家传递方向信息，设置玩家角色方向
+            Debug.Log(Vector2.zero);
         });
     }
     #endregion
