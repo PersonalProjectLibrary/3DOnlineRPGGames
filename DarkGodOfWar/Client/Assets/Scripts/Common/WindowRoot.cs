@@ -9,7 +9,10 @@
 ***************************************/
 #endregion
 
+using System;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class WindowRoot : MonoBehaviour
@@ -49,7 +52,7 @@ public class WindowRoot : MonoBehaviour
         netService = null;
     }
 
-    #region Tools Functions
+    #region Tools Functions：显示掩藏对象、设置文本内容
 
     /// <summary>
     /// 对物体的激活
@@ -108,4 +111,50 @@ public class WindowRoot : MonoBehaviour
     }
 
     #endregion
+    /// <summary>
+    /// 判断物体身上有没有某个组件,有则获取，没有则添加
+    /// </summary>
+    /// <typeparam name="T">所需组件</typeparam>
+    /// <param name="go">获取组件的物体</param>
+    /// <returns>所需的组件</returns>
+    protected T GetOrAddComponent<T>(GameObject go) where T : Component
+    {
+        T t = go.GetComponent<T>();
+        if (t == null) t = go.AddComponent<T>();
+        return t;
+    }
+
+    #region Click Evts
+    /// <summary>
+    /// UI触控按下
+    /// </summary>
+    /// <param name="go">触控的物体</param>
+    /// <param name="callback">回调事件</param>
+    protected void OnClickDown(GameObject go,Action<PointerEventData> callback)
+    {
+        PEListener listener = GetOrAddComponent<PEListener>(go);
+        listener.onClickDown = callback;
+    }
+    /// <summary>
+    ///  UI触控拖拽
+    /// </summary>
+    /// <param name="go"></param>
+    /// <param name="callback"></param>
+    protected void OnDrag(GameObject go, Action<PointerEventData> callback)
+    {
+        PEListener listener = GetOrAddComponent<PEListener>(go);
+        listener.onDrag = callback;
+    }
+    /// <summary>
+    ///  UI触控松开
+    /// </summary>
+    /// <param name="go"></param>
+    /// <param name="callback"></param>
+    protected void OnClickUp(GameObject go, Action<PointerEventData> callback)
+    {
+        PEListener listener = GetOrAddComponent<PEListener>(go);
+        listener.onClickUp = callback;
+    }
+    #endregion
+
 }

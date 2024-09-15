@@ -145,11 +145,18 @@ public class MainCityWnd : WindowRoot
     /// </summary>
     public void RegisterTouchEvts()
     {
+        /* old
         PEListener listener = imgTouch.gameObject.AddComponent<PEListener>();
         listener.onClickDown = (PointerEventData evt) =>
         {
             imgDirBg.transform.position = evt.position;
         };
+        //*/
+        
+        OnClickDown(imgTouch.gameObject, (PointerEventData evt) =>
+        {
+            imgDirBg.transform.position = evt.position;
+        });
     }
     #endregion
 }

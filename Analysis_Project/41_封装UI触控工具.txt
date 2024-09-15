@@ -1,0 +1,69 @@
+
+一、将UI事件监听的PEListener封装到WindowRoot.cs里，
+只要继承WindowRoot.cs就可以使用UI的事件监听；
+1、WindowRoot.cs里添加泛型方法，用于检测当前物体身上有没有挂载某个组件
+有则返回对应组件，没有则创建添加对应组件；
+注意对条件添加限定，不是所有东西都可以添加进行AddComponent；
+必须保证添加的组件是属于Component的子类
+protected T GetOrAddComponent<T>(GameObject go) where T : Component
+{
+    T t = go.GetComponent<T>();
+    if (t == null) t = go.AddComponent<T>();
+    return t;
+}
+
+2、WindowRoot.cs添加UI触控事件的方法
+（1）获取要进行触控的UI组件身上的UI触控监听脚本PEListener.cs
+（2）设置listener对应事件的回调
+protected void OnClickDown(GameObject go,Action<PointerEventData> callback)
+{
+    PEListener listener = GetOrAddComponent<PEListener>(go);
+    listener.onClickDown = callback;
+}
+protected void OnDrag(GameObject go, Action<PointerEventData> callback)
+{
+    PEListener listener = GetOrAddComponent<PEListener>(go);
+    listener.onDrag = callback;
+}
+protected void OnClickUp(GameObject go, Action<PointerEventData> callback)
+{
+    PEListener listener = GetOrAddComponent<PEListener>(go);
+    listener.onClickUp = callback;
+}
+
+3、设置MainCityWnd.cs里摇杆的触控事件
+原：
+public void RegisterTouchEvts()
+{
+    PEListener listener = imgTouch.gameObject.AddComponent<PEListener>();
+    listener.onClickDown = (PointerEventData evt) =>
+    {
+        imgDirBg.transform.position = evt.position;
+    };
+}
+改：
+public void RegisterTouchEvts()
+{
+    OnClickDown(imgTouch.gameObject, (PointerEventData evt) =>
+    {
+        imgDirBg.transform.position = evt.position;
+    });
+}
+
+4、运行测试
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
