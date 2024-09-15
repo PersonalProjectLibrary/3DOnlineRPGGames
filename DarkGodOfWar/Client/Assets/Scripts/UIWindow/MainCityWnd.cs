@@ -12,6 +12,7 @@
 
 using PEProtocol;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class MainCityWnd : WindowRoot
@@ -144,7 +145,11 @@ public class MainCityWnd : WindowRoot
     /// </summary>
     public void RegisterTouchEvts()
     {
-
+        PEListener listener = imgTouch.gameObject.AddComponent<PEListener>();
+        listener.onClickDown = (PointerEventData evt) =>
+        {
+            imgDirBg.transform.position = evt.position;
+        };
     }
     #endregion
 }

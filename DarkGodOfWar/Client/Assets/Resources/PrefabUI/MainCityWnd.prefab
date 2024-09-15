@@ -4463,6 +4463,9 @@ MonoBehaviour:
   menuAnim: {fileID: 281875089}
   btnMenu: {fileID: 1310228016}
   menuState: 1
+  imgTouch: {fileID: 1709294111}
+  imgDirBg: {fileID: 1459282338}
+  imgDirPoint: {fileID: 995558093}
 --- !u!1 &9088962462061153138
 GameObject:
   m_ObjectHideFlags: 0

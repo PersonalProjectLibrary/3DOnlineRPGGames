@@ -1,0 +1,44 @@
+
+这里没有使用额外插件实现，使用Unity提供的一些底层事件进行封装实现；
+
+一、Scripts/Common文件夹下新建PEListener.cs脚本
+功能单一，作为只是用于UI事件监听的插件：监听按下去、按下去后拖动、点击抬起来的操作；
+
+1、PEListener除了继承MonoBehaviour，还要继承：
+IPointerDownHandler,IPointerUpHandler,IDropHandler这三个接口，
+并实现对应的接口函数OnPointerDown、OnDrop、OnPointerUp；
+2、定义泛型的事件Action，在接口函数里执行
+当触发事件时，自动执行Action；可外部脚本里自定义设置Action里具体执行什么行为；
+public class PEListener : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDropHandler
+{
+    public Action<PointerEventData> onClickDown;
+    public Action<PointerEventData> onDrag;
+    public Action<PointerEventData> onClickUp;
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        if (onClickDown != null) onClickDown(eventData);
+    }
+    public void OnDrop(PointerEventData eventData)
+    {
+        if (onDrag != null) onDrag(eventData);
+    }
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        if (onClickUp != null) onClickUp(eventData);
+    }
+}
+
+二、测试：使用PEListener.cs监听摇杆事件
+1、MainCityWnd运行时，挂载PEListener.cs脚本
+在RegisterTouchEvts()里执行MainCityWnd身上挂载RegisterTouchEvts.cs组件：
+PEListener listener = imgTouch.gameObject.AddComponent<PEListener>();
+
+2、使用Lambada表达式，往监听事件里添加我们需要执行的事
+这里测试，实现，在监听区域imgTouch内，进行点击，将轮盘imgDirBg移到点击位置；
+
+
+
+
+
+
+
