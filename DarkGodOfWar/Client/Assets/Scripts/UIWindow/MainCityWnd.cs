@@ -54,18 +54,38 @@ public class MainCityWnd : WindowRoot
     /// 主菜单按钮
     /// </summary>
     public Button btnMenu;
-    #endregion
-
     /// <summary>
     /// 当前主菜单激活状态
     /// </summary>
     public bool menuState = true;
 
+    /// <summary>
+    /// 摇杆触控区域
+    /// </summary>
+    public Image imgTouch;
+    /// <summary>
+    /// 摇杆轮盘
+    /// </summary>
+    public Image imgDirBg;
+    /// <summary>
+    /// 摇杆杆轴
+    /// </summary>
+    /// 初始不显示
+    public Image imgDirPoint;
+
+    #endregion
+
     #region MainFunctions
+    /// <summary>
+    /// 主城UI初始化
+    /// </summary>
     protected override void InitWnd()
     {
         base.InitWnd();
+
+        SetActive(imgDirPoint, false);
         RefreshUI();
+        RegisterTouchEvts();
     }
 
     /// <summary>
@@ -119,5 +139,12 @@ public class MainCityWnd : WindowRoot
         menuAnim.Play(clip.name);
     }
 
+    /// <summary>
+    /// 注册摇杆事件
+    /// </summary>
+    public void RegisterTouchEvts()
+    {
+
+    }
     #endregion
 }

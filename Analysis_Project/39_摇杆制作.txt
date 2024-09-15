@@ -1,0 +1,32 @@
+
+一、创建摇杆UI
+1、摇杆里的imgTouch，用作摇杆触控区域，在imgTouch区域点击，都会触发摇杆事件；
+区域不需要显示，imgTouch的透明的改为0；
+2、imgDirBg，作为摇杆的轮盘，imgDirPoint作为摇杆的杆轴；
+
+二、添加摇杆控制
+1、在MainCityWnd.cs里定义摇杆物体
+public Image imgTouch;// 摇杆触控区域
+public Image imgDirBg;// 摇杆轮盘
+public Image imgDirPoint;// 摇杆杆轴
+2、在初始化时不显示摇杆杆轴
+在InitWnd()里设置，将杆轴掩藏；
+protected override void InitWnd()
+{
+    base.InitWnd();
+    SetActive(imgDirPoint, false);
+    RefreshUI();
+}
+3、添加专门用来注册摇杆的点击事件的函数RegisterTouchEvts()
+在InitWnd()里执行调用
+
+
+
+
+
+
+
+
+
+
+
