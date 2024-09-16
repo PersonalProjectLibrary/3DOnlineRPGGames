@@ -14,7 +14,15 @@ using UnityEngine;
 
 public class PathDefine 
 {
-    #region Configs
+    #region Configs Path
+    /// <summary>
+    /// 创建角色界面生成随机姓名配置文件
+    /// </summary>
     public const string RdNameCfg = "ResConfigs/rdname";
+    /// <summary>
+    /// 主城地图配置文件
+    /// </summary>
+    public const string McMapCfg = "ResConfigs/mcmap";
+
     #endregion
 }

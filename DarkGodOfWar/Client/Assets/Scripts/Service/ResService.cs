@@ -29,7 +29,8 @@ public class ResService : MonoBehaviour
     {
         Instance = this;
         PECommon.Log("Init ResService...");
-        InitRdNameCfg();
+        InitRdNameCfg(PathDefine.RdNameCfg);
+        InitMcMapCfg(PathDefine.McMapCfg);
     }
 
     #region LoadScene
@@ -97,17 +98,19 @@ public class ResService : MonoBehaviour
 
 
     #region InitConfigs
+
+    #region 创建角色界面里生成随机名字——rdname.xml
     private List<string> surNameList = new List<string>();
     private List<string> manList = new List<string>();
-    private List<string> womanList = new List<string>(); 
+    private List<string> womanList = new List<string>();
 
     /// <summary>
     /// 生成随机姓名的配置文件初始化
     /// </summary>
-    private void InitRdNameCfg()
+    private void InitRdNameCfg(string path)
     {
-        TextAsset nameXml =Resources.Load<TextAsset>(PathDefine.RdNameCfg);
-        if (!nameXml) PECommon.Log("Xml file:" + PathDefine.RdNameCfg + "not exist!",LogType.Error);
+        TextAsset nameXml = Resources.Load<TextAsset>(path);
+        if (!nameXml) PECommon.Log("Xml file:" + path + "not exist!", LogType.Error);
         else
         {
             XmlDocument doc = new XmlDocument();
@@ -144,6 +147,71 @@ public class ResService : MonoBehaviour
         else rdName += manList[PETools.RandomInt(0, manList.Count - 1)];
         return rdName;
     }
+
+    #endregion
+
+
+    #region 主城地图配置——mcmap.xml
+    /// <summary>
+    /// （id号，对应map配置表数据）存储配置表解析后的地图数据
+    /// </summary>
+    private Dictionary<int, McMapCfg> mcMapCfgDataDic = new Dictionary<int, McMapCfg>();
+
+    /// <summary>
+    /// 主城地图配置初始化
+    /// </summary>
+    private void InitMcMapCfg(string path)
+    {
+        TextAsset nameXml = Resources.Load<TextAsset>(path);
+        if (!nameXml) PECommon.Log("Xml file:" + path + "not exist!", LogType.Error);
+        else
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(nameXml.text);
+            XmlNodeList nodeList = doc.SelectSingleNode("root").ChildNodes;
+            for (int i = 0; i < nodeList.Count; i++)
+            {
+                XmlElement element = nodeList[i] as XmlElement;
+                if (element.GetAttributeNode("ID") == null) continue;
+                int id = Convert.ToInt32(element.GetAttributeNode("ID").InnerText);
+                McMapCfg mc = new McMapCfg { ID = id };
+                foreach (XmlElement e in nodeList[i].ChildNodes)
+                {
+                    switch (e.Name)
+                    {
+                        case "mapName":mc.mapName = e.InnerText; break;
+                        case "sceneName": mc.sceneName = e.InnerText; break;
+                        case "mainCamPos":
+                            {
+                                string[] valArr = e.InnerText.Split(',');
+                                mc.mainCamPos = new Vector3(float.Parse(valArr[0]), float.Parse(valArr[1]), float.Parse(valArr[2]));
+                            }
+                            break;
+                        case "mainCamRote":
+                            {
+                                string[] valArr = e.InnerText.Split(',');
+                                mc.mainCamRote = new Vector3(float.Parse(valArr[0]), float.Parse(valArr[1]), float.Parse(valArr[2]));
+                            }
+                            break;
+                        case "playerBornPos":
+                            {
+                                string[] valArr = e.InnerText.Split(',');
+                                mc.playerBornPos = new Vector3(float.Parse(valArr[0]), float.Parse(valArr[1]), float.Parse(valArr[2]));
+                            }
+                            break;
+                        case "playerBornRote":
+                            {
+                                string[] valArr = e.InnerText.Split(',');
+                                mc.playerBornRote = new Vector3(float.Parse(valArr[0]), float.Parse(valArr[1]), float.Parse(valArr[2]));
+                            }
+                            break;
+                    }
+                }
+                mcMapCfgDataDic.Add(id, mc);
+            }
+        }
+    }
+    #endregion
 
     #endregion
 

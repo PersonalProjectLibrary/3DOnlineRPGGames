@@ -1,0 +1,140 @@
+
+前面是新建场景测试角色的移动和动画，这里将角色放入主城中；
+
+主城里东西、设置，比如相机、生成怪物等，都是通过配置实现的，
+这样可以避免反复修改场景资源，避免美术策划反复变动，免得造成一些数据的错误；
+一般而言，这些设置都是通过配置来读取，配置成表格里的数据，在场景加载时初始化这些东西；
+如果需要更改，通过表格进行更改；
+
+这里主场景做个简单的配置：摄像机朝向的配置、主角出生的位置；
+
+一、添加主城配置表
+1、可以参考前面随机姓名配置表的生成设置，创建主城配置表
+2、这里使用提供的已配置好的表格mcmap.xml，放到项目Assets/Resources/ResConfigs文件夹里
+3、在GameResource/ResConfigs/主城相机朝向和角色生成配置 文件夹里也有放置止一份配置文件
+
+二、新建配置数据的基类BaseData<T>
+在Assets/Scripts/Common文件夹里新建春初主城地图配置数据的类BaseData.cs
+
+public class BaseData<T>{ public int ID;// 配置表里的ID }
+
+三、新建存储主城地图配置数据的类
+1、在BaseData.cs文件里，添加主城地图配置表数据类McMapCfg
+2、设置McMapCfg继承BaseData，并添加配置数据的变量
+public class McMapCfg : BaseData<McMapCfg>
+{
+    public string mapName;// 地图名
+    public string sceneName;// 场景名
+    public Vector3 mainCamPos;// （跟随角色的）主相机的位置
+    public Vector3 mainCamRote;// （跟随角色的）主相机的角度
+    public Vector3 playerBornPos;// 玩家角色的出生位置
+    public Vector3 playerBornRote;// 玩家角色的出生角度
+}
+
+四、代码读取解析配置表
+1、优化初始化生成随机姓名的配置文件的函数InitRdNameCfg()
+原内部读取指定配置表，改为读取InitRdNameCfg(string path)传入的path对应的配置表
+原：
+public void InitService()
+{
+    ... ...
+    InitRdNameCfg();
+}
+private void InitRdNameCfg()
+{
+    TextAsset nameXml = Resources.Load<TextAsset>(PathDefine.RdNameCfg);
+    if (!nameXml) PECommon.Log("Xml file:" + PathDefine.RdNameCfg + "not exist!", LogType.Error);
+    ... ...
+}
+改：
+public void InitService()
+{
+    ... ...
+    InitRdNameCfg(PathDefine.RdNameCfg);
+}
+private void InitRdNameCfg(string path)
+{
+    TextAsset nameXml = Resources.Load<TextAsset>(path);
+    if (!nameXml) PECommon.Log("Xml file:" + path + "not exist!", LogType.Error);
+    ... ...
+}
+
+2、在PathDefine.cs里添加主城配置文件路径
+public const string McMapCfg = "ResConfigs/mcmap";
+
+3、在资源服务ResService.cs里定义字典在数据解析后把地图数据存储起来
+private Dictionary<int, McMapCfg> mcMapCfgDataDic = new Dictionary<int, McMapCfg>();
+
+4、在资源服务ResService.cs里定义初始化解析配置表的函数InitMcMapCfg()
+将解析的数据以McMapCfg.cs的格式记录，并保存到字典里；
+private void InitMcMapCfg(string path)
+{
+    TextAsset nameXml = Resources.Load<TextAsset>(path);
+    if (!nameXml) PECommon.Log("Xml file:" + path + "not exist!", LogType.Error);
+    else
+    {
+        XmlDocument doc = new XmlDocument();
+        doc.LoadXml(nameXml.text);
+        XmlNodeList nodeList = doc.SelectSingleNode("root").ChildNodes;
+        for (int i = 0; i < nodeList.Count; i++)
+        {
+            XmlElement element = nodeList[i] as XmlElement;
+            if (element.GetAttributeNode("ID") == null) continue;
+            int id = Convert.ToInt32(element.GetAttributeNode("ID").InnerText);
+            McMapCfg mc = new McMapCfg { ID = id };
+            foreach (XmlElement e in nodeList[i].ChildNodes)
+            {
+                switch (e.Name)
+                {
+                    case "mapName":mc.mapName = e.InnerText; break;
+                    case "sceneName": mc.sceneName = e.InnerText; break;
+                    case "mainCamPos":
+                        {
+                            string[] valArr = e.InnerText.Split(',');
+                            mc.mainCamPos = new Vector3(float.Parse(valArr[0]), float.Parse(valArr[1]), float.Parse(valArr[2]));
+                        }
+                        break;
+                    case "mainCamRote":
+                        {
+                            string[] valArr = e.InnerText.Split(',');
+                            mc.mainCamRote = new Vector3(float.Parse(valArr[0]), float.Parse(valArr[1]), float.Parse(valArr[2]));
+                        }
+                        break;
+                    case "playerBornPos":
+                        {
+                            string[] valArr = e.InnerText.Split(',');
+                            mc.playerBornPos = new Vector3(float.Parse(valArr[0]), float.Parse(valArr[1]), float.Parse(valArr[2]));
+                        }
+                        break;
+                    case "playerBornRote":
+                        {
+                            string[] valArr = e.InnerText.Split(',');
+                            mc.playerBornRote = new Vector3(float.Parse(valArr[0]), float.Parse(valArr[1]), float.Parse(valArr[2]));
+                        }
+                        break;
+                }
+            }
+            mcMapCfgDataDic.Add(id, mc);
+        }
+    }
+}
+
+5、最后在InitService()里调用InitMcMapCfg()，执行初始化；
+public void InitService()
+{
+    ... ...
+    InitRdNameCfg(PathDefine.RdNameCfg);
+    InitMcMapCfg(PathDefine.McMapCfg);
+}
+
+五、切回GameRoot场景，点击运行测试
+无报错，可正常运行，进行断点调试，可查看正常读取配置表数据；
+
+
+
+
+
+
+
+
+
