@@ -268,58 +268,32 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 499576, guid: ba26e03b723d2b54391d01cbbe3dcbc1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 5.144
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 499576, guid: ba26e03b723d2b54391d01cbbe3dcbc1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1116986550, guid: ba26e03b723d2b54391d01cbbe3dcbc1, type: 3}
+      propertyPath: anim
+      value: 
+      objectReference: {fileID: 1116986547}
+    - target: {fileID: 1116986550, guid: ba26e03b723d2b54391d01cbbe3dcbc1, type: 3}
+      propertyPath: ctrl
+      value: 
+      objectReference: {fileID: 1116986546}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ba26e03b723d2b54391d01cbbe3dcbc1, type: 3}
---- !u!1 &1116986546 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 199576, guid: ba26e03b723d2b54391d01cbbe3dcbc1, type: 3}
+--- !u!143 &1116986546 stripped
+CharacterController:
+  m_CorrespondingSourceObject: {fileID: 1116986548, guid: ba26e03b723d2b54391d01cbbe3dcbc1, type: 3}
   m_PrefabInstance: {fileID: 1116986545}
   m_PrefabAsset: {fileID: 0}
---- !u!95 &1116986547
+--- !u!95 &1116986547 stripped
 Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 1116986547, guid: ba26e03b723d2b54391d01cbbe3dcbc1, type: 3}
+  m_PrefabInstance: {fileID: 1116986545}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1116986546}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: a839659a76155df44a5fb0c078d4cce9, type: 3}
-  m_Controller: {fileID: 9100000, guid: 0092fcf991105154aaf1cded504054d7, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 1
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
---- !u!143 &1116986548
-CharacterController:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1116986546}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Height: 1.8
-  m_Radius: 0.4
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0.9, z: 0}
 --- !u!1 &2101669213
 GameObject:
   m_ObjectHideFlags: 0

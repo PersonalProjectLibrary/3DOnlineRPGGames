@@ -1,0 +1,127 @@
+
+一、添加角色初始化设置
+1、角色身上新增PlayerController.cs脚本
+在Assets/Scripts文件夹下新建Test文件夹，将新建的PlayerController.cs放到Test文件夹里；
+
+2、获取角色身上的动画控制器组件Anim、角色控制器ctrl、定义方向朝向dir
+注：这里定义的动画控制器是Animator，不是Animation
+Animation是传统的动画控制器，之前做的简单的UI动画使用的是Animation
+这里需要制作更复杂的状态切换，使用比较新的Animator控制器；
+
+3、定义跟随玩家角色的相机
+这里设置为private，然后直接查找获取，就不设置为Public外部绑定了；
+在Start()里进行初始化绑定：camTrans = Camera.main.transform;
+
+二、添加角色移动设置
+1、添加设置方向SetDir()、产生移动SetMove()、相机跟随SetCamMove()的函数
+控制角色的方向
+2、控制角色
+（1）在Update()，添加对角色的操控、上面几种操作的调用
+角色变化的信息可能是每一帧都有输入变化，所以在Update里对角色进行控制；
+
+（2）在Update里，不需要每帧都调用SetDir()、SetMove()、SetCameMove()
+只有玩家朝向dir不为（0，0）时才执行角色改变：
+这里添加布尔变量isMove，来标记当前是不是移动状态；
+if (isMove)
+{
+    SetDir();
+    SetMove();
+    SetCamMove();
+}
+
+（3）这里直接在Update里添加对角色移动的输入的检测
+这里使用Input里的api，实现模拟，构造移动的二维坐标；后面对接到脚本插件里；
+这里设置角色的移动是固定速度的，不是变速的，所以对二维坐标进行规格化处理；
+float h = Input.GetAxis("Horizontal");
+float v = Input.GetAxis("Vertical");
+Vector2 _dir = new Vector2(h, v).normalized;
+
+（4）将当前获取的方向_dir，赋值给角色
+如果角色是静止的，则没必要一直输入赋值，当_dir不为0时，才去赋值
+if (_dir != Vector2.zero) Dir= _dir;
+else Dir= Vector2.zero;
+
+（5）将dir设置为属性Dir，当玩家输入改变角色方向时，在属性的set里判断是否进行移动
+public Vector2 Dir
+{
+    get { return dir; }
+    set
+    {
+        if (value == Vector2.zero) isMove = false;
+        else isMove = true;
+        dir = value;
+    }
+}
+
+三、完善SetDir()、SetMove()、SetCamMove()，实现角色的移动
+1、设置角色方向SetDir
+（1）三维场景里：
+     1）角色坐标下：（x，y，z）的z	角色沿z轴进行旋转偏移多少度；
+     2）世界坐标下：（x，y，z）的y	Rotation_Y方向值对应角色旋转偏移多少度；
+
+（2）代码控制，设置Trasform.Rotation.y控制角色旋转，旋转取值范围为（-180，180），
+向右转取值，向左转取负值
+
+（3）玩家的朝向，就是计算当前z轴角度与z轴正方向的夹角偏移量
+private void SetDir()
+{
+    //从目标角度dir，到当前（初位置角色z轴正方向/角色正前方）朝向，之间的角度偏移量
+    float angle = Vector2.SignedAngle(Dir, new Vector2(0, 1));//计算画布屏幕内角度偏移量
+    Vector3 eulerAngles = new Vector3(0, angle, 0);//根据角度偏移量，计算场景里旋转角度
+    transform.localEulerAngles = eulerAngles;//设置角色旋转角度
+}
+
+2、Constants.cs里添加移动的速度变量
+public const int PlayerMoveSpeed = 8;//角色移动速度
+public const int MonsterMoveSpeed = 4;//怪物移动速度
+
+3、使角色产生移动SetMove()
+（1）二维屏幕坐标下：（x，y），左右x，前后/上下y，
+当前玩家的输入产生的（h,v）坐标，是相对画布2维屏幕的X，Y轴而言
+
+（2）三维场景里：
+角色和世界坐标下：（x，y，z）的x，z，显示效果：场景/屏幕的左右x，远近z
+
+（3）代码控制，设置Transform.Position.x，Transform.Position.y控制角色移动
+
+（4）使用角色控制器里的Move接口，传入当前要移动的数据
+前面SetDir()设置好了角色的运动方向，这里直接往前移动就好；
+private void SetMove()
+{
+    ctrl.Move(transform.forward * Time.deltaTime * Constants.PlayerMoveSpeed);
+}
+
+4、相机跟随角色移动SetCamMove()
+设置摄像机，在场景启动时设置相机的偏移量，后面一直保持该偏移量即可；
+（1）定义、存储相机的偏移量camOffset
+private Transform camTrans;
+private Vector3 camOffset;
+private void Start()
+{
+    camTrans = Camera.main.transform;
+    camOffset = transform.position - camTrans.position;
+}
+
+（2）保持相机和角色之间的偏移量固定
+先判断相机存不存在，有的怪物就没有相机跟随；
+private void SetCamMove()
+{
+    if (camTrans != null) camTrans.position = transform.position - camOffset;
+}
+
+四、运行测试
+1、先对场景里玩家身上脚本里的相机角色控制器进行绑定
+2、点击运行游戏
+注意参照Scene里角色的移动查看效果；
+Game里相机一直固定跟随角色，看起来像是静止不动的；
+
+
+
+
+
+
+
+
+
+
+

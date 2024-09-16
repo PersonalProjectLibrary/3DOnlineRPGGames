@@ -33,4 +33,8 @@ public class Constants
 
     //摇杆点标准距离
     public const int ScreenOpDis = 90;//摇杆杆轴可偏移距离
+
+    //移动速度
+    public const int PlayerMoveSpeed = 8;//角色移动速度
+    public const int MonsterMoveSpeed = 4;//怪物移动速度
 }
