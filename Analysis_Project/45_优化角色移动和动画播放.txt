@@ -1,0 +1,120 @@
+
+
+一、动画控制：设置Animator里的Blend
+1、添加控制BlendTree参数的函数SetBlend()
+private void SetBlend(float val){ anim.SetFloat("Blend", val); }
+
+2、在角色移动时，将Blend设置为1，角色静止时设为0；
+private void Update()
+{
+    ... ...
+    if (_dir != Vector2.zero)
+    {
+        Dir = _dir;
+        SetBlend(1);
+    }
+    else
+    {
+        Dir = Vector2.zero;
+        SetBlend(0);
+    }
+    ... ...
+}
+
+3、运行测试
+可看到角色运动停止时，动画随之切换
+
+二、优化角色动画播放
+当前角色运动停止时，角色动画变化也很快很突兀
+1、定义Blend值
+private float targetBlend;//目标blend值
+private float currentBlend;//当前blend值
+
+2、优化对Blend值的设置
+（1）在Constant.cs里定义Blend相关常量
+         1）定义Blend动画变化的加速度AccelerateSpeed 
+         2）将idle和walk时Blend的值也定义为常量
+         public const int BlendIdle = 0;//idle动画时Blend值
+         public const int BlendWalk = 1;//walk动画时Blend值
+         public const float AccelerateSpeed = 5;//角色blend动画变化的加速度
+
+（2）原直接设置：
+private void SetBlend(float val){ anim.SetFloat("Blend", val); }
+改：将值val赋值给targetBlend
+private void SetBlend(float val){ targetBlend = val; }
+
+（3）然后在新增设置动画混合的函数UpdateMixBlend()设置blend值
+设置Blend值前，先判断目标值targetBlend和当前值currentBlend之间差异有多大
+         1）如果差值 小于  加速度*Time.dateTime，即差异小于一帧的变化量
+         直接把targetBlend赋值给currentBlend；
+         2）如果currentBlend大于targetBlend，要把currentBlend变小，即从运动状态变为停下来状态
+         将currentBlend每帧以加速度量不断减少
+         3）如果currentBlend大于targetBlend，要把currentBlend变大，即从静止状态变为运动状态
+         将currentBlend每帧以加速度量不断增加
+         4）然后将变化后的currentBlend赋值给Blend
+private void UpdateMixBlend()
+{
+    if (Mathf.Abs(currentBlend - targetBlend) < Constants.AccelerateSpeed * Time.deltaTime)
+        currentBlend = targetBlend;
+    else if (currentBlend > targetBlend) currentBlend -= Constants.AccelerateSpeed * Time.deltaTime;
+    else currentBlend += Constants.AccelerateSpeed * Time.deltaTime;
+    anim.SetFloat("Blend", currentBlend);
+}
+
+3、在Update里调用UpdateMixBlend()，对Blend动画做平滑
+注：只有在currentBlend不等于targetBlend时才执行动画变化
+
+原：
+private void Update()
+{
+    float h = Input.GetAxis("Horizontal");
+    float v = Input.GetAxis("Vertical");
+    Vector2 _dir = new Vector2(h, v).normalized;
+    if (_dir != Vector2.zero)
+    {
+        Dir = _dir;
+        SetBlend(1);
+    }
+    else
+    {
+        Dir = Vector2.zero;
+        SetBlend(0);
+    }
+
+    if (isMove)
+    {
+        SetDir();
+        SetMove();
+        SetCamMove();
+    }
+}
+改：
+private void Update()
+{
+    float h = Input.GetAxis("Horizontal");
+    float v = Input.GetAxis("Vertical");
+    Vector2 _dir = new Vector2(h, v).normalized;
+    if (_dir != Vector2.zero)
+    {
+        Dir = _dir;
+        SetBlend(Constants.BlendWalk);
+    }
+    else
+    {
+        Dir = Vector2.zero;
+        SetBlend(Constants.BlendIdle);
+    }
+    if(currentBlend!=targetBlend) UpdateMixBlend();
+    if (isMove)
+    {
+        SetDir();
+        SetMove();
+        SetCamMove();
+    }
+}
+
+三、运行测试
+
+
+
+

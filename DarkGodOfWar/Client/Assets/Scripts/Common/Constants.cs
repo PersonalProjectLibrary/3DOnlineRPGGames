@@ -37,4 +37,9 @@ public class Constants
     //移动速度
     public const int PlayerMoveSpeed = 8;//角色移动速度
     public const int MonsterMoveSpeed = 4;//怪物移动速度
+
+    //Blend动画混合参数
+    public const int BlendIdle = 0;//idle动画时Blend值
+    public const int BlendWalk = 1;//walk动画时Blend值
+    public const float AccelerateSpeed = 5;//角色blend动画变化的加速度
 }

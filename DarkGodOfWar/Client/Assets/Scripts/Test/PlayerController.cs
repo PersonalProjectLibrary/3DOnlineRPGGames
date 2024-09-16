@@ -26,6 +26,9 @@ public class PlayerController : MonoBehaviour
     /// 角色动画控制器
     /// </summary>
     public Animator anim;
+    private float targetBlend;//目标blend值
+    private float currentBlend;//当前blend值
+
     /// <summary>
     /// 角色控制器
     /// </summary>
@@ -61,8 +64,18 @@ public class PlayerController : MonoBehaviour
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
         Vector2 _dir = new Vector2(h, v).normalized;
-        if (_dir != Vector2.zero) Dir = _dir;
-        else Dir = Vector2.zero;
+        if (_dir != Vector2.zero)
+        {
+            Dir = _dir;
+            SetBlend(Constants.BlendWalk);
+        }
+        else
+        {
+            Dir = Vector2.zero;
+            SetBlend(Constants.BlendIdle);
+        }
+
+        if(currentBlend!=targetBlend) UpdateMixBlend();
 
         if (isMove)
         {
@@ -98,5 +111,31 @@ public class PlayerController : MonoBehaviour
     private void SetCamMove()
     {
         if (camTrans != null) camTrans.position = transform.position - camOffset;
+    }
+
+    /// <summary>
+    /// 修改目标Blend值
+    /// </summary>
+    /// <param name="blend"></param>
+    private void SetBlend(float val)
+    {
+        //anim.SetFloat("Blend", val);
+        targetBlend = val;
+    }
+
+    /// <summary>
+    /// 设置Blend的值
+    /// </summary>
+    private void UpdateMixBlend()
+    {
+        //差值 小于 加速度*Time.dateTime，即差异小于一帧的变化量
+        if (Mathf.Abs(currentBlend - targetBlend) < Constants.AccelerateSpeed * Time.deltaTime)
+            currentBlend = targetBlend;
+        //currentBlend大于targetBlend，即从运动状态变为停下来状态
+        else if (currentBlend > targetBlend) currentBlend -= Constants.AccelerateSpeed * Time.deltaTime;
+        //currentBlend大于targetBlend，即从静止状态变为运动状态
+        else currentBlend += Constants.AccelerateSpeed * Time.deltaTime;
+        //更新动画
+        anim.SetFloat("Blend", currentBlend);
     }
 }
