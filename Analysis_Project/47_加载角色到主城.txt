@@ -1,0 +1,85 @@
+
+一、完善主城配置数据设置
+1、添加根据Id号获取配置数据的接口
+直接根据map字典里有没有这个id的数据来判断，
+有对应id，返回对应数据；没有，返回空；
+public McMapCfg GetMapCfgData(int id)
+{
+    McMapCfg data;
+    if (mcMapCfgDataDic.TryGetValue(id, out data)) return data;
+    return null;
+}
+
+二、优化加载主城场景
+原本根据主城名直接加载场景，改为根据id号获取场景配置后，再去加载场景；
+
+1、Constans.cs里新增主城场景id常量代替主城场景名
+public const int IDMainCityMap = 10000;//主城场景地图配置数据id
+
+2、更新MainCitySystem.cs里加载主城场景方法
+原：
+public void EnterMainCity()
+{
+    resService.AsyncLoadScene(Constants.SceneMainCity, () =>{... ...});
+}
+改：
+public void EnterMainCity()
+{
+    McMapCfg mapData = resService.GetMapCfgData(Constants.IDMainCityMap);//获取主城配置数据
+    resService.AsyncLoadScene(mapData.sceneName, () => {... ...});
+}
+
+三、加载玩家角色到主城里
+1、PathDefine.cs里添加玩家角色加载路径常量
+public const string AssissnCityPrefab = "PrefabPlayer/AssassinCity";
+
+2、ResService.cs里添加加载预制体Prefab的函数LoadPrefab()
+（1）根据预制体路径，获取实例化对象
+先获取对应预制体，如果预制体不存在则从资源文件夹里加载
+新获取到的预制体，如果需要缓存，将其存储到存到prefabCacheDic字典里
+（2）实例化加载预制体
+private Dictionary<string, GameObject> prefabCacheDic = new Dictionary<string, GameObject>();
+public GameObject LoadPrefab(string path,bool cache = false)// 实例化预制体
+{
+    //获取目标预制体
+    GameObject prefab = null;
+    if(!prefabCacheDic.TryGetValue(path,out prefab))//没缓存过，从resource里加载
+    {
+        prefab = Resources.Load<GameObject>(path);
+        if (cache) prefabCacheDic.Add(path, prefab);//需要缓存则存储到字典里
+    }
+    //加载预制体物体
+    GameObject go = null;
+    if (prefab != null) go = Instantiate(prefab);
+    return go;
+}
+
+3、MainCitySystem.cs里新增加载角色的函数LoadPlayer();
+实例化生成角色，并根据主城场景配置数据，初始化玩家角色（角色生成点、相机角度）
+并在EnterMainCity()里调用；
+public void EnterMainCity()
+{
+    McMapCfg mcMapData = resService.GetMapCfgData(Constants.IDMainCityMap);
+    resService.AsyncLoadScene(mcMapData.sceneName, () =>
+    {
+        PECommon.Log("Enter MainCity...");//输出日志
+        LoadPlayer(mcMapData);//加载游戏主角、设置人物展示相机
+        ... ...
+    });
+}
+
+private void LoadPlayer(McMapCfg mcMapData)// 加载角色
+{
+    GameObject player = resService.LoadPrefab(PathDefine.AssissnCityPrefab, true);
+    player.transform.position = mcMapData.playerBornPos;
+    player.transform.localEulerAngles = mcMapData.playerBornRote;
+    player.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
+
+    Camera.main.transform.position = mcMapData.mainCamPos;
+    Camera.main.transform.localEulerAngles = mcMapData.mainCamRote;
+}
+
+
+
+
+

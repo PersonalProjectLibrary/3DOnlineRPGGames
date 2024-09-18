@@ -33,8 +33,8 @@ public class ResService : MonoBehaviour
         InitMcMapCfg(PathDefine.McMapCfg);
     }
 
-    #region LoadScene
-
+    #region Load Resource
+    #region Load Scene
     /// <summary>
     /// 设置场景加载进度，控制进度条实时更新
     /// </summary>
@@ -64,19 +64,21 @@ public class ResService : MonoBehaviour
         };
     }
 
+    /// <summary>
+    /// 展现场景加载进度条
+    /// </summary>
     private void Update()
     {
         if (progressAction != null) progressAction();
     }
+    
     #endregion
 
-
     #region Load Audio
-
     /// <summary>
     /// 存储需要缓存的声音资源
     /// </summary>
-    private Dictionary<string,AudioClip> audioDic = new Dictionary<string,AudioClip>();
+    private Dictionary<string, AudioClip> audioDic = new Dictionary<string, AudioClip>();
 
     /// <summary>
     /// 加载声音资源
@@ -84,18 +86,46 @@ public class ResService : MonoBehaviour
     /// <param name="path">资源的获取路径+资源名</param>
     /// <param name="cache">是否进行缓存，默认false</param>
     /// <returns></returns>
-    public AudioClip LoadAudio(string path,bool cache = false)
+    public AudioClip LoadAudio(string path, bool cache = false)
     {
         AudioClip audioClip = null;
-        if(!audioDic.TryGetValue(path, out audioClip))//没有缓存过
+        if (!audioDic.TryGetValue(path, out audioClip))//没有缓存过
         {
             audioClip = Resources.Load<AudioClip>(path);//获取声音资源
-            if(cache)audioDic.Add(path, audioClip);//对声音进行缓存
+            if (cache) audioDic.Add(path, audioClip);//对声音进行缓存
         }
         return audioClip;
     }
+
     #endregion
 
+    #region Load Prefab
+    /// <summary>
+    /// 缓存的预制体：预制体获取路径，预制体
+    /// </summary>
+    private Dictionary<string, GameObject> prefabCacheDic = new Dictionary<string, GameObject>();
+    /// <summary>
+    /// 根据预制体路径，获取实例化对象
+    /// </summary>
+    /// <param name="path">预制体加载路径</param>
+    /// <param name="cache">是否缓存预制体</param>
+    /// <returns></returns>
+    public GameObject LoadPrefab(string path,bool cache = false)
+    {
+        GameObject prefab = null;
+        if(!prefabCacheDic.TryGetValue(path,out prefab))
+        {
+            prefab = Resources.Load<GameObject>(path);
+            if (cache) prefabCacheDic.Add(path, prefab);
+        }
+        GameObject go = null;
+        if (prefab != null) go = Instantiate(prefab);
+        return go;
+    }
+
+    #endregion
+
+    #endregion
 
     #region InitConfigs
 
@@ -211,6 +241,19 @@ public class ResService : MonoBehaviour
             }
         }
     }
+
+    /// <summary>
+    /// 根据Id号获取配置数据的接口
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public McMapCfg GetMapCfgData(int id)
+    {
+        McMapCfg data;
+        if (mcMapCfgDataDic.TryGetValue(id, out data)) return data;
+        return null;
+    }
+
     #endregion
 
     #endregion

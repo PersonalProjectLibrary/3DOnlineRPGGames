@@ -25,4 +25,12 @@ public class PathDefine
     public const string McMapCfg = "ResConfigs/mcmap";
 
     #endregion
+
+    #region Player Path
+    /// <summary>
+    /// 主城角色预制体路径
+    /// </summary>
+    public const string AssissnCityPrefab = "PrefabPlayer/AssassinCity";
+
+    #endregion
 }

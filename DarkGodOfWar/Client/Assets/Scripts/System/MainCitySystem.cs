@@ -10,6 +10,8 @@
 #endregion
 
 
+using UnityEngine;
+
 public class MainCitySystem : SystemRoot
 {
     public static MainCitySystem Instance = null;
@@ -32,13 +34,29 @@ public class MainCitySystem : SystemRoot
     /// </summary>
     public void EnterMainCity()
     {
-        resService.AsyncLoadScene(Constants.SceneMainCity, () =>
+        McMapCfg mcMapData = resService.GetMapCfgData(Constants.IDMainCityMap);
+        resService.AsyncLoadScene(mcMapData.sceneName, () =>
         {
             PECommon.Log("Enter MainCity...");//输出日志
+            LoadPlayer(mcMapData);//加载游戏主角、设置人物展示相机
             mainCityWnd.SetWndState();//打开主城UI界面
             audioService.PlayBgMusic(Constants.BgmMainCity);//播放主城的背景音乐
-            //TODO:加载游戏主角、设置人物展示相机
 
         });
+    }
+
+    /// <summary>
+    /// 加载角色
+    /// </summary>
+    /// <param name="mcMapData">主城角色相机配置</param>
+    private void LoadPlayer(McMapCfg mcMapData)
+    {
+        GameObject player = resService.LoadPrefab(PathDefine.AssissnCityPrefab, true);
+        player.transform.position = mcMapData.playerBornPos;
+        player.transform.localEulerAngles = mcMapData.playerBornRote;
+        player.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
+
+        Camera.main.transform.position = mcMapData.mainCamPos;
+        Camera.main.transform.localEulerAngles = mcMapData.mainCamRote;
     }
 }

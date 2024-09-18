@@ -16,7 +16,8 @@ public class Constants
 {
     //场景名称
     public const string SceneLogin = "SceneLogin";//登录场景
-    public const string SceneMainCity = "SceneMainCity";//主城场景
+    //public const string SceneMainCity = "SceneMainCity";//主城场景
+    public const int IDMainCityMap = 10000;//主城场景地图配置数据id
 
     //背景音乐
     public const string BgmLogin = "bgLogin";//登录界面的背景音乐
