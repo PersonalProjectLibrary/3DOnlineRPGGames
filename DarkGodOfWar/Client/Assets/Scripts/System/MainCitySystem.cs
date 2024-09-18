@@ -38,10 +38,9 @@ public class MainCitySystem : SystemRoot
         resService.AsyncLoadScene(mcMapData.sceneName, () =>
         {
             PECommon.Log("Enter MainCity...");//输出日志
-            LoadPlayer(mcMapData);//加载游戏主角、设置人物展示相机
             mainCityWnd.SetWndState();//打开主城UI界面
             audioService.PlayBgMusic(Constants.BgmMainCity);//播放主城的背景音乐
-
+            LoadPlayer(mcMapData);//加载游戏主角、设置人物展示相机
         });
     }
 
@@ -49,14 +48,20 @@ public class MainCitySystem : SystemRoot
     /// 加载角色
     /// </summary>
     /// <param name="mcMapData">主城角色相机配置</param>
+    /// 注：存在角色加载比碰撞体加载快，
+    /// 即使添加主城碰撞体和根据配置设置了角色位置，还是出现角色穿透主城的问题；
+    /// 故这里实例化角色后，先掩藏角色，等角色和相机根据配置表设置好后，再把角色显示出来，
+    /// 这样角色就不会穿透主城一直掉落了。
     private void LoadPlayer(McMapCfg mcMapData)
     {
         GameObject player = resService.LoadPrefab(PathDefine.AssissnCityPrefab, true);
+        player.SetActive(false);
         player.transform.position = mcMapData.playerBornPos;
         player.transform.localEulerAngles = mcMapData.playerBornRote;
         player.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
 
         Camera.main.transform.position = mcMapData.mainCamPos;
         Camera.main.transform.localEulerAngles = mcMapData.mainCamRote;
+        player.SetActive(true);
     }
 }
