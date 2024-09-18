@@ -190,8 +190,8 @@ public class MainCityWnd : WindowRoot
                 imgDirPoint.transform.position = startPos + clampDir;
             }
             else imgDirPoint.transform.position = evt.position;
-            //TODO向玩家传递方向信息，设置玩家角色移动
-            Debug.Log(dir.normalized);
+            //向玩家传递方向信息，设置玩家角色移动
+            MainCitySystem.Instance.SetMoveDir(dir.normalized);
         });
 
         //松开摇杆
@@ -200,8 +200,8 @@ public class MainCityWnd : WindowRoot
             imgDirBg.transform.position = defaultPos;
             SetActive(imgDirPoint, false);
             imgDirPoint.transform.localPosition = Vector2.zero;//相对父物体还原使用本地坐标
-            //TODO向玩家传递方向信息，设置玩家角色方向
-            Debug.Log(Vector2.zero);
+            //向玩家传递方向信息，停止玩家角色移动
+            MainCitySystem.Instance.SetMoveDir(Vector2.zero);
         });
     }
     #endregion

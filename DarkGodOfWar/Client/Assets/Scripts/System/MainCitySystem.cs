@@ -19,6 +19,11 @@ public class MainCitySystem : SystemRoot
     public MainCityWnd mainCityWnd;
 
     /// <summary>
+    /// 玩家角色控制器
+    /// </summary>
+    private PlayerController playerCtrl;
+
+    /// <summary>
     /// 初始化主城系统
     /// </summary>
     public override void InitSystem()
@@ -62,6 +67,23 @@ public class MainCitySystem : SystemRoot
 
         Camera.main.transform.position = mcMapData.mainCamPos;
         Camera.main.transform.localEulerAngles = mcMapData.mainCamRote;
+
+        playerCtrl = player.GetComponent<PlayerController>();
+        playerCtrl.Init();
         player.SetActive(true);
+    }
+
+    /// <summary>
+    /// 向玩家传递方向信息，设置玩家角色移动和停止
+    /// </summary>
+    /// <param name="dir">摇杆区域点击触发的坐标</param>
+    public void SetMoveDir(Vector2 dir)
+    {
+        //设置角色动画：如果传入的是0，则停止移动，否则角色进行移动
+        if (dir == Vector2.zero) playerCtrl.SetBlend(Constants.BlendIdle);
+        else playerCtrl.SetBlend(Constants.BlendWalk);
+
+        //设置角色方向，控制移动
+        playerCtrl.Dir = dir;
     }
 }

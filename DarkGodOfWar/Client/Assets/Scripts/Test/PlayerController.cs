@@ -53,7 +53,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void Start()
+    /// <summary>
+    /// 角色初始化
+    /// </summary>
+    public void Init()
     {
         camTrans = Camera.main.transform;
         camOffset = transform.position - camTrans.position;
@@ -61,6 +64,9 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+
+        #region Input
+        /*
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
         Vector2 _dir = new Vector2(h, v).normalized;
@@ -74,8 +80,10 @@ public class PlayerController : MonoBehaviour
             Dir = Vector2.zero;
             SetBlend(Constants.BlendIdle);
         }
+        //*/
+        #endregion
 
-        if(currentBlend!=targetBlend) UpdateMixBlend();
+        if (currentBlend!=targetBlend) UpdateMixBlend();
 
         if (isMove)
         {
@@ -91,7 +99,8 @@ public class PlayerController : MonoBehaviour
     private void SetDir()
     {
         //从目标角度dir，到当前（初位置角色z轴正方向/角色正前方）朝向，之间的角度偏移量
-        float angle = Vector2.SignedAngle(Dir, new Vector2(0, 1));//计算画布屏幕内角度偏移量
+        //计算画布屏幕内角度偏移量+由于主城配置给相机添加的角度偏移量
+        float angle = Vector2.SignedAngle(Dir, new Vector2(0, 1)) + camTrans.eulerAngles.y;
         Vector3 eulerAngles = new Vector3(0, angle, 0);//根据角度偏移量，计算场景里旋转角度
         transform.localEulerAngles = eulerAngles;//设置角色旋转角度
     }
@@ -117,7 +126,7 @@ public class PlayerController : MonoBehaviour
     /// 修改目标Blend值
     /// </summary>
     /// <param name="blend"></param>
-    private void SetBlend(float val)
+    public void SetBlend(float val)
     {
         //anim.SetFloat("Blend", val);
         targetBlend = val;

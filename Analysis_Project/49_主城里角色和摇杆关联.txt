@@ -1,0 +1,118 @@
+
+一、获取主角控制器
+1、将PlayerController.cs里Start()改为Init()
+测试场景里，直接在Start()里对角色进行初始化操作；
+这里接到主城场景里，通过外部调用Init()方法来对角色进行初始化操作；
+原：void Start()
+改：public void Init()
+
+2、在MainCitySystem.cs里添加对角色控制器PlayerController的定义
+在LoadPlayer()进行设置进行初始化
+private PlayerController playerCtrl;
+private void LoadPlayer(McMapCfg mcMapData)
+{
+    GameObject player = resService.LoadPrefab(PathDefine.AssissnCityPrefab, true);
+    player.SetActive(false);
+    player.transform.position = mcMapData.playerBornPos;
+    player.transform.localEulerAngles = mcMapData.playerBornRote;
+    player.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
+
+    Camera.main.transform.position = mcMapData.mainCamPos;
+    Camera.main.transform.localEulerAngles = mcMapData.mainCamRote;
+
+    playerCtrl = player.GetComponent<PlayerController>();
+    playerCtrl.Init();
+    player.SetActive(true);
+}
+
+二、移除前面测试时写的对角色的移动控制
+之前测试角色的移动，是通过简单的检测键盘上下左右的输入，来控制角色的移动；
+这里改为摇杆，就将PlayerController.cs里Update()里移动输入检测设置语句注释掉；
+原：
+private void Update()
+{
+    #region Input
+    float h = Input.GetAxis("Horizontal");
+    float v = Input.GetAxis("Vertical");
+    Vector2 _dir = new Vector2(h, v).normalized;
+    if (_dir != Vector2.zero)
+    {
+        Dir = _dir;
+        SetBlend(Constants.BlendWalk);
+    }
+    else
+    {
+        Dir = Vector2.zero;
+        SetBlend(Constants.BlendIdle);
+    }
+    #endregion
+    ... ...
+}
+改
+private void Update()
+{
+
+    #region Input
+    /*
+    ... ...
+    //*/
+    #endregion
+
+    ... ...
+}
+
+三、将角色移动对接到MainCityWnd.cs里
+1、在MainCitySystem.cs里添加对角色控制的中转SetMoveDir()
+在MainCitySystem.cs里添加SetMoveDir()函数，传入摇杆区域点击触发的坐标，
+在MainCityWnd.cs的RegisterTouchEvts()的OnDrag()和OnClickUp()事件里调用
+
+2、完善SetMoveDir()
+注：这里将PlayerController.cs里原本private修饰的SetBlend()改为public修饰
+（1）设置角色动画
+如果传入的是0坐标，则停止移动，传入的不是0，则进行移动
+if (dir == Vector2.zero) playerCtrl.SetBlend(Constants.BlendIdle);
+else playerCtrl.SetBlend(Constants.BlendWalk);
+（2）设置角色方向
+playerCtrl.Dir = dir;
+
+四、优化角色移动
+根据主城配置设置相机，对摄像机做了偏移处理，
+导致相机跟随角色移动，但角色移动方向和镜头方向不匹配；
+
+解决方法：
+在把玩家方向传入，设置玩家方向角度时，处理相机相对人物的偏移
+在PlayerController.cs的SetDir里，计算角度时，添加相机的偏移量
+原：
+private void SetDir()
+{
+
+    //从目标角度dir，到当前（初位置角色z轴正方向/角色正前方）朝向，之间的角度偏移量
+    float angle = Vector2.SignedAngle(Dir, new Vector2(0, 1));
+    ... ...
+}
+改：
+private void SetDir()
+{
+    //计算画布屏幕内角度偏移量+由于主城配置给相机添加的角度偏移量
+    float angle = Vector2.SignedAngle(Dir, new Vector2(0, 1)) + camTrans.eulerAngles.y;
+    ... ...
+}
+
+这样人物的移动和UI里的操控就完全一致了
+
+五、优化玩家角色姓名显示
+角色始终显示在UI里界面的固定位置出（相机和角色保持固定的偏移量），
+对应角色名字在UI里的位置也是固定的；
+这里调整MainCityWnd界面里CenterPin里的txtName的坐标
+原：(0，85，0)
+改：(20，115，0)
+这样角色移动时，玩家名字就更好的在角色旁边显示
+
+六、运行测试
+
+
+
+
+
+
+
