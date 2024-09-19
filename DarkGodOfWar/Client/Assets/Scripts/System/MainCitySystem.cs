@@ -20,10 +20,15 @@ public class MainCitySystem : SystemRoot
     /// 主城界面
     /// </summary>
     public MainCityWnd mainCityWnd;
+
     /// <summary>
     /// 角色信息界面
     /// </summary>
     public InfoWnd infoWnd;
+    /// <summary>
+    /// 角色相机
+    /// </summary>
+    private Transform charaterCam;
 
     /// <summary>
     /// 玩家角色控制器
@@ -52,7 +57,10 @@ public class MainCitySystem : SystemRoot
             PECommon.Log("Enter MainCity...");//输出日志
             mainCityWnd.SetWndState();//打开主城UI界面
             audioService.PlayBgMusic(Constants.BgmMainCity);//播放主城的背景音乐
-            LoadPlayer(mcMapData);//加载游戏主角、设置人物展示相机
+            LoadPlayer(mcMapData);//加载游戏主角、设置主相机跟随角色
+            //设置用于角色信息界面显示角色的相机
+            if (charaterCam != null) charaterCam.gameObject.SetActive(false);
+
         });
     }
 
@@ -99,6 +107,13 @@ public class MainCitySystem : SystemRoot
     /// </summary>
     public void OpenInfoWnd()
     {
+        if (charaterCam == null) 
+            charaterCam = GameObject.FindGameObjectWithTag("CharacterCam").transform;
+        //设置角色的相对位置(反复手动测试测出来的合适位置)
+        charaterCam.localPosition = playerCtrl.transform.position + playerCtrl.transform.forward * 3.8f + new Vector3(0, 1.2f, 0);
+        charaterCam.localEulerAngles = new Vector3(0, 180 + playerCtrl.transform.localEulerAngles.y, 0);
+        charaterCam.localScale = Vector3.one;
+        charaterCam.gameObject.SetActive(true);
         infoWnd.SetWndState();
     }
 }

@@ -2622,7 +2622,7 @@ GameObject:
   - component: {fileID: 908367288}
   - component: {fileID: 908367287}
   m_Layer: 0
-  m_Name: charbg
+  m_Name: characterbg
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -1,0 +1,56 @@
+
+一、场景里增加摄像机
+用于拍摄场景里的角色，默认是拍摄角色正面画面；
+1、打开主城场景，新建相机，重命名CharacterCam
+2、拖角色预制体放到场景里做参考
+3、添加角色的Layer渲染层级：Player
+4、设置相机参数
+如：CullingMask先改为Nothing，再选择Player，这样就很快设置为只渲染Layer为Player的对象，即相机画面只显示玩家角色；
+5、方便代码查找角色相机，添加Tag，将CharacterCam的Tag设置为：CharacterCam；
+6、设置CharacterCam身上的TargetTexture为characterShow的RenderTexture
+这样characterCam画面映射的RenderTexture里，
+而RenderTexture添加到InfoWnd的characterShow的RawImage里；
+这样就实现了InfoWnd里显示玩家角色；
+
+7、设置好相机，将相机位置置为0位置，然后移除场景里的玩家角色；
+
+二、代码里获取设置角色相机
+1、MainCitySystem.cs里定义角色相机
+privateTransform charaterCam;
+
+2、设置角色相机
+（1）EnterMainCity()里判断角色相机存不存在
+在初次进入主城场景，可能没有赋值。
+如果存在，则设置为关闭状态
+刚进入主城里，角色相机应该关闭，在打开角色信息面板时才激活；
+public void EnterMainCity()
+{
+    ... ...
+    resService.AsyncLoadScene(mcMapData.sceneName, () =>
+    {
+        ... ...
+        //设置用于角色信息界面显示角色的相机
+        if (charaterCam != null) charaterCam.gameObject.SetActive(false);
+    });
+}
+（2）OpenInfoWnd里激活相机，并设置相机位置
+如果没有则在场景里根据Tag查找角色相机。
+并设置相机的相对位置，这里相机位置设置是反复手动测试测出来的合适位置
+public void OpenInfoWnd()
+{
+    if (charaterCam == null) 
+        charaterCam = GameObject.FindGameObjectWithTag("CharacterCam").transform;
+    //设置角色的相对位置(反复手动测试测出来的合适位置)
+    charaterCam.localPosition = playerCtrl.transform.position + playerCtrl.transform.forward * 3.8f + new Vector3(0, 1.2f, 0);
+    charaterCam.localEulerAngles = new Vector3(0, 180 + playerCtrl.transform.localEulerAngles.y, 0);
+    charaterCam.localScale = Vector3.one;
+    charaterCam.gameObject.SetActive(true);
+
+    infoWnd.SetWndState();
+}
+
+三、运行测试
+
+
+
+
