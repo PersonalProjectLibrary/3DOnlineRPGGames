@@ -17,9 +17,29 @@ using UnityEngine.UI;
 
 public class WindowRoot : MonoBehaviour
 {
+    /// <summary>
+    /// 资源加载服务
+    /// </summary>
     protected ResService resService = null;
+    /// <summary>
+    /// 声音播放服务
+    /// </summary>
     protected AudioService audioService = null;
+    /// <summary>
+    /// 网络服务
+    /// </summary>
     protected NetService netService = null;
+
+    #region 设置界面
+    /// <summary>
+    /// 初始化界面
+    /// </summary>
+    protected virtual void InitWnd()
+    {
+        resService = ResService.Instance;
+        audioService = AudioService.Instance;
+        netService = NetService.Instance;
+    }
 
     /// <summary>
     /// 设置UI界面显示状态
@@ -33,16 +53,6 @@ public class WindowRoot : MonoBehaviour
     }
 
     /// <summary>
-    /// 初始化界面
-    /// </summary>
-    protected virtual void InitWnd()
-    {
-        resService = ResService.Instance;
-        audioService = AudioService.Instance;
-        netService = NetService.Instance;
-    }
-
-    /// <summary>
     /// 清理界面
     /// </summary>
     protected void ClearWnd()
@@ -51,11 +61,12 @@ public class WindowRoot : MonoBehaviour
         audioService = null;
         netService = null;
     }
+    
+    #endregion
 
-    #region Tools Functions：显示掩藏对象、设置文本内容
-
+    #region Tools Functions：设置物体的显掩、设置文本内容、获取组件
     /// <summary>
-    /// 对物体的激活
+    /// 设置物体的显掩
     /// </summary>
     /// <param name="go"></param>
     /// <param name="isActive"></param>
@@ -81,7 +92,7 @@ public class WindowRoot : MonoBehaviour
     }
 
     /// <summary>
-    /// 设置Text内容
+    /// 设置文本内容
     /// </summary>
     /// <param name="txt"></param>
     /// <param name="content"></param>
@@ -110,20 +121,21 @@ public class WindowRoot : MonoBehaviour
         SetText(trans.GetComponent<Text>(), num);
     }
 
-    #endregion
-    
     /// <summary>
-    /// 判断物体身上有没有某个组件,有则获取，没有则添加
+    /// 获取组件
     /// </summary>
     /// <typeparam name="T">所需组件</typeparam>
     /// <param name="go">获取组件的物体</param>
     /// <returns>所需的组件</returns>
+    /// 判断物体身上有没有某个组件,有则获取，没有则添加
     protected T GetOrAddComponent<T>(GameObject go) where T : Component
     {
         T t = go.GetComponent<T>();
         if (t == null) t = go.AddComponent<T>();
         return t;
     }
+
+    #endregion
 
     #region Click Evts
     /// <summary>

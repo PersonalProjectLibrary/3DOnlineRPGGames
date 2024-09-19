@@ -16,7 +16,14 @@ public class MainCitySystem : SystemRoot
 {
     public static MainCitySystem Instance = null;
 
+    /// <summary>
+    /// 主城界面
+    /// </summary>
     public MainCityWnd mainCityWnd;
+    /// <summary>
+    /// 角色信息界面
+    /// </summary>
+    public InfoWnd infoWnd;
 
     /// <summary>
     /// 玩家角色控制器
@@ -85,5 +92,13 @@ public class MainCitySystem : SystemRoot
 
         //设置角色方向，控制移动
         playerCtrl.Dir = dir;
+    }
+
+    /// <summary>
+    /// 打开角色信息面板
+    /// </summary>
+    public void OpenInfoWnd()
+    {
+        infoWnd.SetWndState();
     }
 }

@@ -15,6 +15,9 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+/// <summary>
+/// 主城界面
+/// </summary>
 public class MainCityWnd : WindowRoot
 {
     #region UIDefine
@@ -141,23 +144,6 @@ public class MainCityWnd : WindowRoot
         }
     }
 
-    #endregion
-
-    #region ClickEvents
-    /// <summary>
-    /// 点击主菜单按钮
-    /// </summary>
-    public void ClickMenuBtn()
-    {
-        AnimationClip clip = null;//动画播放的文件
-        audioService.PlayUIAudio(Constants.UiExtenBtn);//更新音乐
-        menuState = !menuState;//每次点击都修改主菜单UI的状态
-        //根据当前状态来选择设置主菜单的显示掩藏
-        if (menuState) clip = menuAnim.GetClip("MCMenuOpenAnim");
-        else clip = menuAnim.GetClip("MCMenuCloseAnim");
-        menuAnim.Play(clip.name);
-    }
-
     /// <summary>
     /// 注册摇杆事件
     /// </summary>
@@ -204,5 +190,32 @@ public class MainCityWnd : WindowRoot
             MainCitySystem.Instance.SetMoveDir(Vector2.zero);
         });
     }
+
+    #endregion
+
+    #region ClickEvents
+    /// <summary>
+    /// 点击主菜单按钮
+    /// </summary>
+    public void ClickMenuBtn()
+    {
+        AnimationClip clip = null;//动画播放的文件
+        audioService.PlayUIAudio(Constants.UiExtenBtn);//更新音乐
+        menuState = !menuState;//每次点击都修改主菜单UI的状态
+        //根据当前状态来选择设置主菜单的显示掩藏
+        if (menuState) clip = menuAnim.GetClip("MCMenuOpenAnim");
+        else clip = menuAnim.GetClip("MCMenuCloseAnim");
+        menuAnim.Play(clip.name);
+    }
+
+    /// <summary>
+    /// 点击打开角色信息面板
+    /// </summary>
+    public void ClickHeadBtn()
+    {
+        audioService.PlayUIAudio(Constants.UiOpenPage);
+        MainCitySystem.Instance.OpenInfoWnd();
+    }
+
     #endregion
 }

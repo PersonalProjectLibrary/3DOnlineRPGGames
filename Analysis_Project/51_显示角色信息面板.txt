@@ -1,0 +1,57 @@
+
+1、新增InfoWnd的控制脚本
+新建InfoWnd.cs脚本，挂到场景里的InfoWnd身上；
+脚本放到Assets/Scripts/UIWindow文件夹下；
+
+2、初始化InfoWnd.cs
+InfoWnd.cs继承WindowRoot，
+并重写添加InitWnd()初始化方法；
+
+3、添加刷新整个UI界面的函数RefreshUI()
+并在InitWnd()里调用；可参考MainCityWnd.cs里对界面刷新的设置；
+（1）定义界面UI对象，并在Unity场景里进行赋值绑定
+
+（2）获取玩家的数据，设置UI对象的初始设置
+
+这里将InfoWnd对象里的子物体进行了重命名：
+如：txtExpprg重命名为txtExpPrg，txthp重命名为txtHp，
+txthurt重命名为txtHurt，chardes重命名为characterJob，
+charShow重命名为characterShow等
+这里也将名为charShow的RendererTexture重命名为characterShow；
+
+4、添加关闭角色信息面板的函数ClickCloseBtn()
+并在InfoWnd界面的子物体btnClose身上的按钮里添加绑定ClickCloseBtn()事件
+
+5、添加打开InfoWnd界面的函数
+（1）MainCitySystem.cs里定义获取InfoWnd.cs的引用
+（2）MainCitySystem.cs里添加函数打开InfoWnd界面
+public InfoWnd infoWnd;
+public void OpenInfoWnd(){ infoWnd.SetWndState(); }
+
+6、MainCityWnd.cs里进行调用执行打开InfoWnd
+（1）Constant.cs里添加打开页面的音效常量
+public const string UiOpenPage = "uiOpenBtn";
+（2）MainCityWnd.cs添加关联 打开角色信息面板的函数 ClickHeadBtn()
+
+7、场景里对象绑定
+（1）GameRoot身上的MainCitySystem组件上绑定InfoWnd
+（2）MainCityWnd的子物体btnHead角色头像身上的按钮绑定MainCityWnd.cs里的ClickHeadBtn()事件
+
+8、运行测试
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
