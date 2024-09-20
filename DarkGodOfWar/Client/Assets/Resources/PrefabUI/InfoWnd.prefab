@@ -168,7 +168,7 @@ GameObject:
   - component: {fileID: 70951510}
   - component: {fileID: 70951509}
   m_Layer: 0
-  m_Name: val
+  m_Name: apDefVal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -463,7 +463,7 @@ GameObject:
   - component: {fileID: 141264309}
   - component: {fileID: 141264308}
   m_Layer: 0
-  m_Name: val
+  m_Name: adVal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1762,7 +1762,7 @@ GameObject:
   - component: {fileID: 606989576}
   - component: {fileID: 606989575}
   m_Layer: 0
-  m_Name: val
+  m_Name: hpVal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1985,7 +1985,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u6CD5\u672F\u5F3A\u5EA6"
+  m_Text: "\u751F\u547D\u503C"
 --- !u!1 &660037493
 GameObject:
   m_ObjectHideFlags: 0
@@ -2155,7 +2155,7 @@ GameObject:
   - component: {fileID: 726066097}
   - component: {fileID: 726066096}
   m_Layer: 0
-  m_Name: val
+  m_Name: dodgeVal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3103,7 +3103,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1033738349}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 5736438681728023680}
+        m_TargetAssemblyTypeName: InfoWnd, Assembly-CSharp
+        m_MethodName: ClickOpenDetailBtn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1076182736
 GameObject:
   m_ObjectHideFlags: 0
@@ -3384,7 +3396,7 @@ GameObject:
   - component: {fileID: 1237918529}
   - component: {fileID: 1237918528}
   m_Layer: 0
-  m_Name: val
+  m_Name: apVal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3573,7 +3585,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1256918581}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 5736438681728023680}
+        m_TargetAssemblyTypeName: InfoWnd, Assembly-CSharp
+        m_MethodName: ClickCloseDetailBtn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1289196098
 GameObject:
   m_ObjectHideFlags: 0
@@ -4049,7 +4073,7 @@ GameObject:
   - component: {fileID: 1621189930}
   - component: {fileID: 1621189929}
   m_Layer: 0
-  m_Name: val
+  m_Name: pierceVal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4282,7 +4306,7 @@ GameObject:
   - component: {fileID: 1691344127}
   - component: {fileID: 1691344126}
   m_Layer: 0
-  m_Name: val
+  m_Name: adDefVal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4776,7 +4800,7 @@ GameObject:
   - component: {fileID: 1909969168}
   - component: {fileID: 1909969167}
   m_Layer: 0
-  m_Name: val
+  m_Name: criticalVal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5698,3 +5722,14 @@ MonoBehaviour:
   txtDef: {fileID: 279007855}
   btnClose: {fileID: 998689809}
   imgChar: {fileID: 1222156632}
+  detailTrans: {fileID: 280367772}
+  btnDetailOpen: {fileID: 1033738348}
+  btnDetailClose: {fileID: 1256918580}
+  txtDetailHp: {fileID: 606989575}
+  txtDetailAD: {fileID: 141264308}
+  txtDetailAP: {fileID: 1237918528}
+  txtDetailADDef: {fileID: 1691344126}
+  txtDetailAPDef: {fileID: 70951509}
+  txtDetailDodge: {fileID: 726066096}
+  txtDetailPierce: {fileID: 1621189929}
+  txtDetailCritical: {fileID: 1909969167}

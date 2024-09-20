@@ -20,6 +20,7 @@ using UnityEngine.UI;
 public class InfoWnd : WindowRoot
 {
     #region UIDefine
+    #region 角色属性面板
     /// <summary>
     /// 角色信息
     /// </summary>
@@ -64,6 +65,7 @@ public class InfoWnd : WindowRoot
     /// 关闭信息面板按钮
     /// </summary>
     public Button btnClose;
+
     #endregion
 
     #region 角色旋转展示
@@ -79,6 +81,55 @@ public class InfoWnd : WindowRoot
 
     #endregion
 
+    #region 详细属性面板
+    /// <summary>
+    /// 详细属性面板
+    /// </summary>
+    public Transform detailTrans;
+    /// <summary>
+    /// 打开详细属性面板按钮
+    /// </summary>
+    public Button btnDetailOpen;
+    /// <summary>
+    /// 关闭详细属性面板按钮
+    /// </summary>
+    public Button btnDetailClose;
+    /// <summary>
+    /// 详细属性_生命值
+    /// </summary>
+    public Text txtDetailHp;
+    /// <summary>
+    /// 详细属性_物理攻击
+    /// </summary>
+    public Text txtDetailAD;
+    /// <summary>
+    /// 详细属性_法术强度
+    /// </summary>
+    public Text txtDetailAP;
+    /// <summary>
+    /// 详细属性_物理护甲
+    /// </summary>
+    public Text txtDetailADDef;
+    /// <summary>
+    /// 详细属性_魔法抗性
+    /// </summary>
+    public Text txtDetailAPDef;
+    /// <summary>
+    /// 详细属性_闪避概率
+    /// </summary>
+    public Text txtDetailDodge;
+    /// <summary>
+    /// 详细属性_穿甲比率
+    /// </summary>
+    public Text txtDetailPierce;
+    /// <summary>
+    /// 详细属性_暴击概率
+    /// </summary>
+    public Text txtDetailCritical;
+    #endregion
+
+    #endregion
+
     /// <summary>
     /// 初始化角色信息界面
     /// </summary>
@@ -86,6 +137,7 @@ public class InfoWnd : WindowRoot
     {
         base.InitWnd();
         RefreshUI();
+        SetActive(detailTrans, false);
         RegTouchEvts();
     }
 
@@ -95,6 +147,7 @@ public class InfoWnd : WindowRoot
     private void RefreshUI()
     {
         PlayerData pData = GameRoot.Instance.PlayerData;
+        //角色展示面板设置
         SetText(txtInfo, pData.name + " LV." + pData.lv);
         SetText(txtExp, pData.exp + "/" + PECommon.GetExpUpValByLv(pData.lv));
         imgExpPrg.fillAmount = pData.exp * 1.0f / PECommon.GetExpUpValByLv(pData.lv);
@@ -104,12 +157,22 @@ public class InfoWnd : WindowRoot
         SetText(txtJob, " 职业   " + "暗夜刺客");
         SetText(txtFight, " 战力   " + PECommon.GetFightByProps(pData));
         SetText(txtHp, " 血量   " + pData.hp);
-        SetText(txtHurt, " 伤害   " + (pData.ad+pData.ap));
+        SetText(txtHurt, " 伤害   " + (pData.ad + pData.ap));
         SetText(txtDef, " 防御   " + (pData.addef + pData.apdef));
+
+        //详细属性
+        SetText(txtDetailHp, pData.hp);
+        SetText(txtDetailAD, pData.ad);
+        SetText(txtDetailAP, pData.ap);
+        SetText(txtDetailADDef, pData.addef);
+        SetText(txtDetailAPDef, pData.apdef);
+        SetText(txtDetailDodge, pData.dodge + "%");
+        SetText(txtDetailPierce, pData.pierce + "%");
+        SetText(txtDetailCritical, pData.critical + "%");
     }
 
     /// <summary>
-    /// 触摸监听事件注册
+    /// 角色旋转展示触摸监听事件注册
     /// </summary>
     private void RegTouchEvts()
     {
@@ -133,5 +196,23 @@ public class InfoWnd : WindowRoot
     {
         audioService.PlayUIAudio(Constants.UiClickBtn);
         MainCitySystem.Instance.CloseInfoWnd();
+    }
+
+    /// <summary>
+    /// 打开详细属性面板
+    /// </summary>
+    public void ClickOpenDetailBtn()
+    {
+        audioService.PlayUIAudio(Constants.UiClickBtn);
+        SetActive(detailTrans);
+    }
+
+    /// <summary>
+    /// 关闭详细属性面板
+    /// </summary>
+    public void ClickCloseDetailBtn()
+    {
+        audioService.PlayUIAudio(Constants.UiClickBtn);
+        SetActive(detailTrans, false);
     }
 }

@@ -1,0 +1,15 @@
+
+1、前面制作InfoWnd角色信息展示面板时，顺便把详细属性面板制作了；
+详细属性面板，即InfoWnd里的子物体：transDetail。默认掩藏关闭状态；
+
+2、在InfoWnd里添加对详细属性面板的定义
+（1）在InitWnd()初始化时关闭详细属性面板
+（2）在InfoWnd的RefreshUI()里添加对详细属性的设置
+
+3、InfoWnd里添加设置详细属性面板的函数
+（1）打开详细属性面板：ClickOpenDetailBtn()
+（2）关闭详细属性面板：ClickCloseDetailBtn()
+
+4、场景里对详细属性面板相关对象进行绑定赋值
+
+5、测试
