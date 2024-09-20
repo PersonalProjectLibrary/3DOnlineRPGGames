@@ -1,0 +1,78 @@
+
+一、遗留bug
+之前角色信息界面展示角色，激活角色相机后，一直没关闭；
+这里做处理，随角色信息界面关闭关闭；
+
+1、在MainCitySys.cs里新增关闭信息窗口的函数CloseInfoWnd()
+然后更新InfoWnd.cs的ClickCloseBtn()
+原：
+public void ClickCloseBtn()
+{
+    audioService.PlayUIAudio(Constants.UiClickBtn);
+    SetWndState(false);
+}
+改：
+public void ClickCloseBtn()
+{
+    audioService.PlayUIAudio(Constants.UiClickBtn);
+    MainCitySystem.Instance.CloseInfoWnd();
+}
+
+二、实现展示角色信息里的角色旋转
+当按下鼠标或触摸时，进行滑动，获取到滑动的距离，
+然后把滑动距离映射到角色的旋转属性，实现角色的左右旋转
+
+三、监听触摸事件
+1、定义要监听的物体
+public RawImage imgChar;
+2、定义二维向量，记录手指按下去的位置
+public Vector2 startPos;
+
+3、操作主城系统MainCitySystem里人物的旋转
+（1）记录初始角色的旋转角度
+private float startRotate = 0;
+public void SetStartRotate()
+{ startRotate = playerCtrl.transform.localEulerAngles.y; }
+（2）根据InfoWnd.cs里计算的旋转角度，设置角色的旋转角度
+并在InfoWnd.cs的RegTouchEvts()里调用
+public void SetPlayerRotate(float rotate)
+{
+    playerCtrl.transform.localEulerAngles = new Vector3(0, startRotate + rotate, 0);
+}
+
+4、InfoWnd.cs里添加触摸监听注册事件RegTouchEvts()
+可参考MainCityWnd.cs里的摇杆触摸监听事件注册
+在InitWnd()里进行注册使用
+（1）记录手指按下去的位置
+（2）记录拖拽时手指当前距离
+（3）计算距离
+private void RegTouchEvts()
+{
+    OnClickDown(imgChar.gameObject, (PointerEventData evt) =>
+    {
+        startPos = evt.position;
+        MainCitySystem.Instance.SetStartRotate();
+    });
+    OnDrag(imgChar.gameObject, (PointerEventData evt) =>
+    {
+        float rotate = -(evt.position.x - startPos.x) * 0.4f;
+        MainCitySystem.Instance.SetPlayerRotate(rotate);
+    });
+}
+
+四、测试
+注意移除SceneMainCity场景里CharacterCam身上的AudioListener组件
+在GameRoot场景里的GameRoot身上挂了整个游戏的全局AudioListener组件
+
+
+
+
+
+
+
+
+
+
+
+
+

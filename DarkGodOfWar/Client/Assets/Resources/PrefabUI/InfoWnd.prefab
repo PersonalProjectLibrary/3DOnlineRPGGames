@@ -2622,7 +2622,7 @@ GameObject:
   - component: {fileID: 908367288}
   - component: {fileID: 908367287}
   m_Layer: 0
-  m_Name: characterbg
+  m_Name: charbg
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3311,7 +3311,7 @@ GameObject:
   - component: {fileID: 1222156633}
   - component: {fileID: 1222156632}
   m_Layer: 0
-  m_Name: characterShow
+  m_Name: charShow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3586,7 +3586,7 @@ GameObject:
   - component: {fileID: 1289196101}
   - component: {fileID: 1289196100}
   m_Layer: 0
-  m_Name: characterJob
+  m_Name: charJob
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5697,3 +5697,4 @@ MonoBehaviour:
   txtHurt: {fileID: 948101161}
   txtDef: {fileID: 279007855}
   btnClose: {fileID: 998689809}
+  imgChar: {fileID: 1222156632}

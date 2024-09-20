@@ -10,6 +10,8 @@
 #endregion
 
 using PEProtocol;
+using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 /// <summary>
@@ -64,6 +66,19 @@ public class InfoWnd : WindowRoot
     public Button btnClose;
     #endregion
 
+    #region 角色旋转展示
+    /// <summary>
+    /// 角色展示图片
+    /// </summary>
+    /// 监控触摸情况，实现对展现的角色旋转查看
+    public RawImage imgChar;
+    /// <summary>
+    /// 鼠标手指点击位置
+    /// </summary>
+    private Vector2 startPos;
+
+    #endregion
+
     /// <summary>
     /// 初始化角色信息界面
     /// </summary>
@@ -71,6 +86,7 @@ public class InfoWnd : WindowRoot
     {
         base.InitWnd();
         RefreshUI();
+        RegTouchEvts();
     }
 
     /// <summary>
@@ -93,11 +109,29 @@ public class InfoWnd : WindowRoot
     }
 
     /// <summary>
+    /// 触摸监听事件注册
+    /// </summary>
+    private void RegTouchEvts()
+    {
+        //开始点击触屏
+        OnClickDown(imgChar.gameObject, (PointerEventData evt) =>
+        {
+            startPos = evt.position;
+            MainCitySystem.Instance.SetStartRotate();
+        });
+        OnDrag(imgChar.gameObject, (PointerEventData evt) =>
+        {
+            float rotate = -(evt.position.x - startPos.x) * 0.4f;
+            MainCitySystem.Instance.SetPlayerRotate(rotate);
+        });
+    }
+
+    /// <summary>
     /// 关闭角色信息面板
     /// </summary>
     public void ClickCloseBtn()
     {
         audioService.PlayUIAudio(Constants.UiClickBtn);
-        SetWndState(false);
+        MainCitySystem.Instance.CloseInfoWnd();
     }
 }

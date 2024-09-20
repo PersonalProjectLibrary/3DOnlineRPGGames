@@ -22,20 +22,6 @@ public class MainCitySystem : SystemRoot
     public MainCityWnd mainCityWnd;
 
     /// <summary>
-    /// 角色信息界面
-    /// </summary>
-    public InfoWnd infoWnd;
-    /// <summary>
-    /// 角色相机
-    /// </summary>
-    private Transform charaterCam;
-
-    /// <summary>
-    /// 玩家角色控制器
-    /// </summary>
-    private PlayerController playerCtrl;
-
-    /// <summary>
     /// 初始化主城系统
     /// </summary>
     public override void InitSystem()
@@ -59,10 +45,22 @@ public class MainCitySystem : SystemRoot
             audioService.PlayBgMusic(Constants.BgmMainCity);//播放主城的背景音乐
             LoadPlayer(mcMapData);//加载游戏主角、设置主相机跟随角色
             //设置用于角色信息界面显示角色的相机
-            if (charaterCam != null) charaterCam.gameObject.SetActive(false);
-
+            if (charaterCam == null) 
+                charaterCam = GameObject.FindGameObjectWithTag("CharacterCam").transform;
+            charaterCam.gameObject.SetActive(false);
         });
     }
+
+    #region 主城的角色设置
+    /// <summary>
+    /// 角色相机
+    /// </summary>
+    private Transform charaterCam;
+
+    /// <summary>
+    /// 玩家角色控制器
+    /// </summary>
+    private PlayerController playerCtrl;
 
     /// <summary>
     /// 加载角色
@@ -102,13 +100,27 @@ public class MainCitySystem : SystemRoot
         playerCtrl.Dir = dir;
     }
 
+    #endregion
+
+    #region InfoWnd
+    /// <summary>
+    /// 角色信息界面
+    /// </summary>
+    public InfoWnd infoWnd;
+
+    /// <summary>
+    /// 角色初始角度
+    /// </summary>
+    private float startRotate = 0;
+
     /// <summary>
     /// 打开角色信息面板
     /// </summary>
     public void OpenInfoWnd()
     {
-        if (charaterCam == null) 
+        if (charaterCam == null)
             charaterCam = GameObject.FindGameObjectWithTag("CharacterCam").transform;
+
         //设置角色的相对位置(反复手动测试测出来的合适位置)
         charaterCam.localPosition = playerCtrl.transform.position + playerCtrl.transform.forward * 3.8f + new Vector3(0, 1.2f, 0);
         charaterCam.localEulerAngles = new Vector3(0, 180 + playerCtrl.transform.localEulerAngles.y, 0);
@@ -116,4 +128,33 @@ public class MainCitySystem : SystemRoot
         charaterCam.gameObject.SetActive(true);
         infoWnd.SetWndState();
     }
+
+    /// <summary>
+    /// 关闭角色信息面板
+    /// </summary>
+    public void CloseInfoWnd()
+    {
+        if (charaterCam != null) charaterCam.gameObject.SetActive(false);
+        infoWnd.SetWndState(false);
+    }
+
+    /// <summary>
+    /// 记录角色初始角度
+    /// </summary>
+    public void SetStartRotate()
+    {
+        startRotate = playerCtrl.transform.localEulerAngles.y;
+    }
+
+    /// <summary>
+    /// 设置角色信息界面里角色的旋转
+    /// </summary>
+    /// <param name="rotate"></param>
+    public void SetPlayerRotate(float rotate)
+    {
+        playerCtrl.transform.localEulerAngles = new Vector3(0, startRotate + rotate, 0);
+    }
+
+    #endregion
+
 }
