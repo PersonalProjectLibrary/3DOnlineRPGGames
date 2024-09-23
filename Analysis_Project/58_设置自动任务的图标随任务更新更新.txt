@@ -1,0 +1,70 @@
+
+Unity客户端利用任务引导配置文件里的任务id号
+数据库和服务器中，命名为guideid，对应配置表里 itemID，新账号默认1001
+
+一、设置主城UI界面 自动任务的图标 随任务更新而更新
+角色进入主城界面后，UI界面里-自动任务 按钮，显示任务的图标
+对应Resources/ResImages里的general、trader、wiseman、Artisan这几个已经做好的图标
+在代码里，对这个做处理，把这几个任务图标赋值对一个到 自动任务 按钮上
+
+1、PathDefine.cs里新增 自动任务 的头像资源的路径常量
+2、Constants.cs里新增 自动任务 的npc角色的id常量
+
+3、ResService.cs里新增 缓存加载的sprite的字典和加载sprite的函数
+private Dictionary<string, Sprite> spDic = new Dictionary<string, Sprite>();
+public Sprite LoadSprite(string path,bool cache = false)// 加载Sprite
+{
+    Sprite sp = null;
+    if(!spDic.TryGetValue(path,out sp))
+    {
+        sp = Resources.Load<Sprite>(path);
+        if (cache) spDic.Add(path, sp);
+    }
+    return sp;
+}
+
+4、WindowRoot.cs里新增 修改图片 的常用公共函数SetSprite()
+protected void SetSprite(Image img,string path)
+{
+    Sprite sp = resService.LoadSprite(path, true);//加载图片
+    img.sprite = sp;//替换图片
+}
+
+5、MainCityWnd.cs里
+（1）定义当前任务引导的相关成员对象
+private AutoGuideCfg curTaskData;
+public Button btnGuide;
+
+（2）新增设置UI图标的函数SetGuideBtnIcon()
+根据不同npcID，使用不同图标；
+private void SetGuideBtnIcon(int npcId)
+{
+    //获取目标图片加载路径
+    string spPath = "";
+    Image img = btnGuide.GetComponent<Image>();
+    switch (npcId)
+    {
+        case Constants.NpcWiseMan: spPath = PathDefine.WisekHead;break;
+        case Constants.NpcGeneral: spPath = PathDefine.GeneralHead; break;
+        case Constants.NpcArtisan: spPath = PathDefine.ArtisanHead; break;
+        case Constants.NpcTrader: spPath = PathDefine.TraderHead; break;
+        default: spPath = PathDefine.TaskHead; break;
+    }
+    //加载图片
+    SetSprite(img, spPath);
+}
+
+（3）RefreshUI()
+在初始化刷新UI的显示时，设置自动任务的任务图标
+先从资源服务里获取角色的任务id数据，然后判断任务id数据是否为空
+因为目前只有6个任务，做完所有任务后，任务id数据为空，自动任务按钮使用默认图标
+
+6、绑定场景里MainCityWnd的自动任务按钮组件
+
+二、运行测试
+
+
+
+
+
+

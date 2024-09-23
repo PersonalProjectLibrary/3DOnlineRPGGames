@@ -10,7 +10,6 @@
 #endregion
 
 using System;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -30,7 +29,7 @@ public class WindowRoot : MonoBehaviour
     /// </summary>
     protected NetService netService = null;
 
-    #region 设置界面
+    #region Set Wnd：设置界面
     /// <summary>
     /// 初始化界面
     /// </summary>
@@ -61,10 +60,35 @@ public class WindowRoot : MonoBehaviour
         audioService = null;
         netService = null;
     }
-    
+
     #endregion
 
-    #region Tools Functions：设置物体的显掩、设置文本内容、获取组件
+    #region Tools Functions：设置物体的显掩、设置文本内容、获取组件、设置图片
+    /// <summary>
+    /// 设置图片
+    /// </summary>
+    /// <param name="img"></param>
+    /// <param name="path"></param>
+    protected void SetSprite(Image img,string path)
+    {
+        Sprite sp = resService.LoadSprite(path, true);//加载图片
+        img.sprite = sp;//替换图片
+    }
+
+    /// <summary>
+    /// 获取组件
+    /// </summary>
+    /// <typeparam name="T">所需组件</typeparam>
+    /// <param name="go">获取组件的物体</param>
+    /// <returns>所需的组件</returns>
+    /// 判断物体身上有没有某个组件,有则获取，没有则添加
+    protected T GetOrAddComponent<T>(GameObject go) where T : Component
+    {
+        T t = go.GetComponent<T>();
+        if (t == null) t = go.AddComponent<T>();
+        return t;
+    }
+
     /// <summary>
     /// 设置物体的显掩
     /// </summary>
@@ -121,23 +145,9 @@ public class WindowRoot : MonoBehaviour
         SetText(trans.GetComponent<Text>(), num);
     }
 
-    /// <summary>
-    /// 获取组件
-    /// </summary>
-    /// <typeparam name="T">所需组件</typeparam>
-    /// <param name="go">获取组件的物体</param>
-    /// <returns>所需的组件</returns>
-    /// 判断物体身上有没有某个组件,有则获取，没有则添加
-    protected T GetOrAddComponent<T>(GameObject go) where T : Component
-    {
-        T t = go.GetComponent<T>();
-        if (t == null) t = go.AddComponent<T>();
-        return t;
-    }
-
     #endregion
 
-    #region Click Evts
+    #region Click Evts：点击、触屏事件
     /// <summary>
     /// UI触控按下
     /// </summary>
@@ -148,6 +158,7 @@ public class WindowRoot : MonoBehaviour
         PEListener listener = GetOrAddComponent<PEListener>(go);
         listener.onClickDown = callback;
     }
+    
     /// <summary>
     ///  UI触控拖拽
     /// </summary>
@@ -158,6 +169,7 @@ public class WindowRoot : MonoBehaviour
         PEListener listener = GetOrAddComponent<PEListener>(go);
         listener.onDrag = callback;
     }
+    
     /// <summary>
     ///  UI触控松开
     /// </summary>
@@ -168,6 +180,7 @@ public class WindowRoot : MonoBehaviour
         PEListener listener = GetOrAddComponent<PEListener>(go);
         listener.onClickUp = callback;
     }
+    
     #endregion
 
 }

@@ -91,7 +91,16 @@ public class MainCityWnd : WindowRoot
     private float pointDis;
     #endregion
 
-    #region MainFunctions
+    /// <summary>
+    /// 当前任务引导配置数据
+    /// </summary>
+    private AutoGuideCfg curTaskData;
+    /// <summary>
+    /// 自动任务的按钮
+    /// </summary>
+    public Button btnGuide;
+
+    #region Main Functions
     /// <summary>
     /// 主城UI初始化
     /// </summary>
@@ -120,19 +129,20 @@ public class MainCityWnd : WindowRoot
         SetText(txtPower, "体力:" + pData.power + "/" + PECommon.GetPowerLimit(pData.lv));
         imgPowerPrg.fillAmount = pData.power * 1.0f / PECommon.GetPowerLimit(pData.lv);
 
+        #region Set expPrg
         //经验进度条UI自适应
         GridLayoutGroup grid = expPrgTrans.GetComponent<GridLayoutGroup>();
-        
+
         //当前项目的UI自适应是基于高度做标准的，这里用高度计算缩放比；
         float globalRate = 1.0f * Constants.ScreenStandardHeight / Screen.height;
         float screenWidth = Screen.width * globalRate;//UI在自适应后，实际展现给玩家的缩放宽度
         float width = (screenWidth - 180) / 10;//每小段经验条的长度
         grid.cellSize = new Vector2(width, 7);
-        
+
         //经验进度条数值显示
         int expPrgVal = (int)(pData.exp * 1.0f / PECommon.GetExpUpValByLv(pData.lv) * 100);
         SetText(txtExpPrg, expPrgVal + "%");
-        
+
         //设置分段进度条哪些显示或掩藏，展示玩家经验状态
         int index = expPrgVal / 10;
         for (int i = 0; i < expPrgTrans.childCount; i++)
@@ -142,8 +152,46 @@ public class MainCityWnd : WindowRoot
             else if (i == index) img.fillAmount = expPrgVal % 10 * 1.0f / 10;
             else img.fillAmount = 0;
         }
+
+        #endregion
+
+        #region Set guideBtn Icon
+        curTaskData = resService.GetAutoGuideData(pData.guideid);
+        if (curTaskData == null) SetGuideBtnIcon(-1);
+        else SetGuideBtnIcon(curTaskData.npcID);
+
+        #endregion
     }
 
+    #endregion
+
+    #region ClickEvents
+    /// <summary>
+    /// 点击主菜单按钮
+    /// </summary>
+    public void ClickMenuBtn()
+    {
+        AnimationClip clip = null;//动画播放的文件
+        audioService.PlayUIAudio(Constants.UiExtenBtn);//更新音乐
+        menuState = !menuState;//每次点击都修改主菜单UI的状态
+        //根据当前状态来选择设置主菜单的显示掩藏
+        if (menuState) clip = menuAnim.GetClip("MCMenuOpenAnim");
+        else clip = menuAnim.GetClip("MCMenuCloseAnim");
+        menuAnim.Play(clip.name);
+    }
+
+    /// <summary>
+    /// 点击打开角色信息面板
+    /// </summary>
+    public void ClickHeadBtn()
+    {
+        audioService.PlayUIAudio(Constants.UiOpenPage);
+        MainCitySystem.Instance.OpenInfoWnd();
+    }
+
+    #endregion
+
+    #region Tools Functions
     /// <summary>
     /// 注册摇杆事件
     /// </summary>
@@ -191,31 +239,25 @@ public class MainCityWnd : WindowRoot
         });
     }
 
-    #endregion
-
-    #region ClickEvents
     /// <summary>
-    /// 点击主菜单按钮
+    /// 设置 自动任务UI 的图标
     /// </summary>
-    public void ClickMenuBtn()
+    /// <param name="npcId">-1为没有任务，设置默认Icon</param>
+    private void SetGuideBtnIcon(int npcId)
     {
-        AnimationClip clip = null;//动画播放的文件
-        audioService.PlayUIAudio(Constants.UiExtenBtn);//更新音乐
-        menuState = !menuState;//每次点击都修改主菜单UI的状态
-        //根据当前状态来选择设置主菜单的显示掩藏
-        if (menuState) clip = menuAnim.GetClip("MCMenuOpenAnim");
-        else clip = menuAnim.GetClip("MCMenuCloseAnim");
-        menuAnim.Play(clip.name);
+        //获取目标图片加载路径
+        string spPath = "";
+        Image img = btnGuide.GetComponent<Image>();
+        switch (npcId)
+        {
+            case Constants.NpcWiseMan: spPath = PathDefine.WisekHead;break;
+            case Constants.NpcGeneral: spPath = PathDefine.GeneralHead; break;
+            case Constants.NpcArtisan: spPath = PathDefine.ArtisanHead; break;
+            case Constants.NpcTrader: spPath = PathDefine.TraderHead; break;
+            default: spPath = PathDefine.TaskHead; break;
+        }
+        SetSprite(img, spPath);//加载图片
     }
-
-    /// <summary>
-    /// 点击打开角色信息面板
-    /// </summary>
-    public void ClickHeadBtn()
-    {
-        audioService.PlayUIAudio(Constants.UiOpenPage);
-        MainCitySystem.Instance.OpenInfoWnd();
-    }
-
+    
     #endregion
 }

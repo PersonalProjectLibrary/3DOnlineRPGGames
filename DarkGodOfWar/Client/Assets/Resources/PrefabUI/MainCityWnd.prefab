@@ -4478,6 +4478,7 @@ MonoBehaviour:
   imgTouch: {fileID: 1709294111}
   imgDirBg: {fileID: 1459282338}
   imgDirPoint: {fileID: 995558093}
+  btnGuide: {fileID: 81486381}
 --- !u!1 &9088962462061153138
 GameObject:
   m_ObjectHideFlags: 0

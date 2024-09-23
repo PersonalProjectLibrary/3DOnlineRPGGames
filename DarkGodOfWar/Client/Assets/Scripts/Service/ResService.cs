@@ -126,6 +126,30 @@ public class ResService : MonoBehaviour
 
     #endregion
 
+    #region Load Sprite
+    /// <summary>
+    /// 缓存的Sprite：sprite获取路径，Sprite
+    /// </summary>
+    private Dictionary<string, Sprite> spDic = new Dictionary<string, Sprite>();
+    /// <summary>
+    /// 加载Sprite
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="cache"></param>
+    /// <returns></returns>
+    public Sprite LoadSprite(string path,bool cache = false)
+    {
+        Sprite sp = null;
+        if(!spDic.TryGetValue(path,out sp))
+        {
+            sp = Resources.Load<Sprite>(path);
+            if (cache) spDic.Add(path, sp);
+        }
+        return sp;
+    }
+
+    #endregion
+
     #endregion
 
     #region Init Configs 解析xml配置表
@@ -301,7 +325,7 @@ public class ResService : MonoBehaviour
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    private AutoGuideCfg GetAutoGuideData(int id)
+    public AutoGuideCfg GetAutoGuideData(int id)
     {
         AutoGuideCfg agc = null;
         taskGuideDic.TryGetValue(id, out agc);

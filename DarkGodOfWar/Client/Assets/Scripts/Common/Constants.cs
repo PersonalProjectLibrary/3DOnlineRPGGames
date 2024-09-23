@@ -16,8 +16,8 @@ public class Constants
 {
     //场景名称
     public const string SceneLogin = "SceneLogin";//登录场景
-    //public const string SceneMainCity = "SceneMainCity";//主城场景
     public const int IDMainCityMap = 10000;//主城场景地图配置数据id
+    //public const string SceneMainCity = "SceneMainCity";//主城场景
 
     //背景音乐
     public const string BgmLogin = "bgLogin";//登录界面的背景音乐
@@ -44,4 +44,10 @@ public class Constants
     public const int BlendIdle = 0;//idle动画时Blend值
     public const int BlendWalk = 1;//walk动画时Blend值
     public const float AccelerateSpeed = 5;//角色blend动画变化的加速度
+
+    //AutoGuide NPC
+    public const int NpcWiseMan = 0;//智者npc
+    public const int NpcGeneral = 1;//将军npc
+    public const int NpcArtisan = 2;//工匠npc
+    public const int NpcTrader = 3;//货商npc
 }
