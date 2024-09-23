@@ -167,6 +167,26 @@ public class MainCityWnd : WindowRoot
 
     #region ClickEvents
     /// <summary>
+    /// 点击自动任务按钮
+    /// </summary>
+    public void ClickGuideBtn()
+    {
+        audioService.PlayUIAudio(Constants.UiClickBtn);
+        if (curTaskData == null) GameRoot.AddTips("更多引导任务，正在开发中...");
+        else MainCitySystem.Instance.RunGuideTask(curTaskData);
+    }
+
+    /// <summary>
+    /// 点击角色头像按钮
+    /// </summary>
+    /// 打开角色信息面板
+    public void ClickHeadBtn()
+    {
+        audioService.PlayUIAudio(Constants.UiOpenPage);
+        MainCitySystem.Instance.OpenInfoWnd();
+    }
+
+    /// <summary>
     /// 点击主菜单按钮
     /// </summary>
     public void ClickMenuBtn()
@@ -178,15 +198,6 @@ public class MainCityWnd : WindowRoot
         if (menuState) clip = menuAnim.GetClip("MCMenuOpenAnim");
         else clip = menuAnim.GetClip("MCMenuCloseAnim");
         menuAnim.Play(clip.name);
-    }
-
-    /// <summary>
-    /// 点击打开角色信息面板
-    /// </summary>
-    public void ClickHeadBtn()
-    {
-        audioService.PlayUIAudio(Constants.UiOpenPage);
-        MainCitySystem.Instance.OpenInfoWnd();
     }
 
     #endregion

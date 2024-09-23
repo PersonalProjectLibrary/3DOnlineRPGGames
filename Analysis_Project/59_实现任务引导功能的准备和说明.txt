@@ -1,0 +1,59 @@
+
+点击 自动任务 按钮，执行对应的任务函数
+
+一、MainCityWnd.cs
+MainCityWnd.cs里新增点击自动任务按钮函数ClickGuideBtn()
+并对场景的btnGuide添加ClickGuideBtn()点击事件
+1、播放按钮点击音效
+2、判断任务的数据是否已经存在
+（1）任务数据不存在、已经执行完任务，显示提示tips
+（2）任务数据存在，执行任务
+由于引导任务涉及多个模块，如：打开充值界面、打开购买界面、打开强化界面等等；
+会和其他系统有很频繁的交互；
+故把执行任务的代码放到MainCitySystem.cs主城系统里实现
+System脚本会更方便的调用其他模块
+public void ClickGuideBtn()
+{
+    audioService.PlayUIAudio(Constants.UiClickBtn);
+    if (curTaskData == null) GameRoot.AddTips("更多引导任务，正在开发中...");
+    else MainCitySystem.Instance.RunGuideTask(curTaskData);
+}
+
+二、MainCitySystem.cs
+1、新增存储引导任务配置数据的变量
+private AutoGuideCfg curTaskData;
+
+2、新增打开引导的对话界面函数OpenGuideWnd()
+在RunGuideTask()里调用；
+后面补充实现函数功能
+
+3、新增执行任务的函数RunGuideTask()
+（1）在MainCityWnd.cs的ClickGuideBtn()里调用执行
+（2）解析任务数据，执行相关操作
+判断是否需要寻路找目标npc
+这里根据guide.xml里的npcID来判断是否寻路找npc；
+npcID为-1时，认为不需要找npc，而是打开引导任务的对话界面
+npcID为1，2，3数值时，找对应npc；
+
+三、关于执行任务的NPC寻路功能介绍（后续实现）
+1、NPC寻路：调用主角在主城的系统去寻路
+
+2、在寻路过程中，隔段时间就会进行检测计算主角和目标npc之间的距离
+当距离大于某限定值，就一直寻路下去
+当距离小于某限定值，判断找到目标npc，打开对话界面
+
+3、实现：
+（1）寻路使用Unity提供的Nevigation导航系统，实现寻路系统；
+（2）把场景里的npc的transform信息传递到mainCitySystem里，
+计算角色和npc之间的距离，判定是否找到npc；
+
+
+
+
+
+
+
+
+
+
+

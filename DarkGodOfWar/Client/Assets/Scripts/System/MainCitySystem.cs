@@ -51,58 +51,46 @@ public class MainCitySystem : SystemRoot
         });
     }
 
-    #region 主城的角色设置
+    #region 引导任务设置
     /// <summary>
-    /// 角色相机
+    /// 当前引导任务数据
     /// </summary>
-    private Transform charaterCam;
+    private AutoGuideCfg curTaskData;
 
     /// <summary>
-    /// 玩家角色控制器
+    /// 执行引导任务
     /// </summary>
-    private PlayerController playerCtrl;
-
-    /// <summary>
-    /// 加载角色
-    /// </summary>
-    /// <param name="mcMapData">主城角色相机配置</param>
-    /// 注：存在角色加载比碰撞体加载快，
-    /// 即使添加主城碰撞体和根据配置设置了角色位置，还是出现角色穿透主城的问题；
-    /// 故这里实例化角色后，先掩藏角色，等角色和相机根据配置表设置好后，再把角色显示出来，
-    /// 这样角色就不会穿透主城一直掉落了。
-    private void LoadPlayer(McMapCfg mcMapData)
+    /// <param name="agc">任务引导数据</param>
+    public void RunGuideTask(AutoGuideCfg agc)
     {
-        GameObject player = resService.LoadPrefab(PathDefine.AssissnCityPrefab, true);
-        player.SetActive(false);
-        player.transform.position = mcMapData.playerBornPos;
-        player.transform.localEulerAngles = mcMapData.playerBornRote;
-        player.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
+        if (agc != null) curTaskData = agc;
+        if (curTaskData.npcID == -1) OpenGuideWnd();//id为-1，不需要找npc，直接打开任务对话窗口
+        else//解析任务数据，执行相关操作
+        {
+            //NPC寻路：调用主角在主城的系统去寻路
+            
+            //在寻路过程中，隔段时间就会进行检测计算主角和目标npc之间的距离
+            //当距离大于某限定值，就一直寻路下去：如何实现寻路系统
+            //当距离小于某限定值，判断找到目标npc，打开对话界面：怎么判定找到npc
+            
+            //使用Unity提供的Nevigation导航系统，实现寻路
+            //把场景里的npc的exam transform信息传递到mainCitySystem里
 
-        Camera.main.transform.position = mcMapData.mainCamPos;
-        Camera.main.transform.localEulerAngles = mcMapData.mainCamRote;
-
-        playerCtrl = player.GetComponent<PlayerController>();
-        playerCtrl.Init();
-        player.SetActive(true);
+        }
     }
 
     /// <summary>
-    /// 向玩家传递方向信息，设置玩家角色移动和停止
+    /// 打开引导任务的对话界面
     /// </summary>
-    /// <param name="dir">摇杆区域点击触发的坐标</param>
-    public void SetMoveDir(Vector2 dir)
+    private void OpenGuideWnd()
     {
-        //设置角色动画：如果传入的是0，则停止移动，否则角色进行移动
-        if (dir == Vector2.zero) playerCtrl.SetBlend(Constants.BlendIdle);
-        else playerCtrl.SetBlend(Constants.BlendWalk);
-
-        //设置角色方向，控制移动
-        playerCtrl.Dir = dir;
+        //TODO
     }
 
     #endregion
 
-    #region InfoWnd
+
+    #region 角色信息界面设置
     /// <summary>
     /// 角色信息界面
     /// </summary>
@@ -153,6 +141,57 @@ public class MainCitySystem : SystemRoot
     public void SetPlayerRotate(float rotate)
     {
         playerCtrl.transform.localEulerAngles = new Vector3(0, startRotate + rotate, 0);
+    }
+
+    #endregion
+
+    #region 主城的角色设置
+    /// <summary>
+    /// 角色相机
+    /// </summary>
+    private Transform charaterCam;
+
+    /// <summary>
+    /// 玩家角色控制器
+    /// </summary>
+    private PlayerController playerCtrl;
+
+    /// <summary>
+    /// 加载角色
+    /// </summary>
+    /// <param name="mcMapData">主城角色相机配置</param>
+    /// 注：存在角色加载比碰撞体加载快，
+    /// 即使添加主城碰撞体和根据配置设置了角色位置，还是出现角色穿透主城的问题；
+    /// 故这里实例化角色后，先掩藏角色，等角色和相机根据配置表设置好后，再把角色显示出来，
+    /// 这样角色就不会穿透主城一直掉落了。
+    private void LoadPlayer(McMapCfg mcMapData)
+    {
+        GameObject player = resService.LoadPrefab(PathDefine.AssissnCityPrefab, true);
+        player.SetActive(false);
+        player.transform.position = mcMapData.playerBornPos;
+        player.transform.localEulerAngles = mcMapData.playerBornRote;
+        player.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
+
+        Camera.main.transform.position = mcMapData.mainCamPos;
+        Camera.main.transform.localEulerAngles = mcMapData.mainCamRote;
+
+        playerCtrl = player.GetComponent<PlayerController>();
+        playerCtrl.Init();
+        player.SetActive(true);
+    }
+
+    /// <summary>
+    /// 向玩家传递方向信息，设置玩家角色移动和停止
+    /// </summary>
+    /// <param name="dir">摇杆区域点击触发的坐标</param>
+    public void SetMoveDir(Vector2 dir)
+    {
+        //设置角色动画：如果传入的是0，则停止移动，否则角色进行移动
+        if (dir == Vector2.zero) playerCtrl.SetBlend(Constants.BlendIdle);
+        else playerCtrl.SetBlend(Constants.BlendWalk);
+
+        //设置角色方向，控制移动
+        playerCtrl.Dir = dir;
     }
 
     #endregion
