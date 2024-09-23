@@ -1,0 +1,117 @@
+
+前面已经实现对 任务引导系统的配置文件的解析；这里使用配置文件进行设置
+
+一、介绍说明
+1、在进入主城后，在自动引导图标里显示第一个任务，要引导到哪个目标角色那里；
+显示npc头像，点击npc头像，角色自动去找目标npc；
+
+2、所以，每个角色进入到场景里，应该有个人的任务数据；
+这个任务数据，应该是和当前角色完成的任务进度相关的；
+这个任务进度，应该记录在服务器上
+
+3、在服务器和数据库上添加新增玩家任务数据的相关配置
+
+二、数据库添加任务引导的id属性
+打开数据，选中account表，右键--设计表--新增guideid属性；
+类型int，勾选 不是null 
+用于记录引导任务进度的id
+
+三、服务器添加任务引导相关的属性
+1、GameMsg.cs里
+（1）PlayerData类新增任务引导进度id的定义
+public class PlayerData
+{
+    ... ...
+    public int guideid;// 任务引导进度id
+}
+
+2、DBManager.cs里
+（1）QueryPlayerData()里
+1）查询玩家账号时，就要获取任务引导进度id
+2）新增玩家账号时，设置任务引导进度id为默认第一个任务1001
+public PlayerData QueryPlayerData(string acct,string pass)
+{
+    ... ...
+    try
+    {
+        ... ...
+        if (reader.Read())//处理数据
+        {
+            ... ...
+            if (_pass.Equals(pass))
+            {
+                playerData = new PlayerData//密码正确，返回玩家数据
+                {
+                    ... ...,
+                    critical = reader.GetInt32("critical"),
+                    guideid = reader.GetInt32("guideid")
+                };
+            }
+        }
+    }
+    ... ...
+    finally
+    {
+        ... ...
+        if (isNew)
+        {
+            playerData = new PlayerData
+            {
+                ... ...
+                critical = 2,
+                guideid =1001
+            };
+            ... ...
+        }
+    }
+    return playerData;
+}
+
+（2）InsertNewAcctData()里
+1）数据库的连接语句里，新增任务引导id
+2）插入数据操作里，新增对任务引导id的数据插入
+改：
+private int InsertNewAcctData(string acct, string pass, PlayerData pData)
+{
+    ... ...
+    try
+    {
+        MySqlCommand cmd = new MySqlCommand("insert into account set acct=@acct,pass=@pass,name=@name,"
+            +"level=@level,exp=@exp,power=@power,coin=@coin,diamond=@diamond,"
+            +"hp=@hp,ad=@ad,ap=@ap,addef=@addef,apdef=@apdef,dodge=@dodge,"
+            +"pierce=@pierce,critical=@critical,guideid=@guideid", SqlConnection);
+        ... ...
+        cmd.Parameters.AddWithValue("critical", pData.critical);
+        cmd.Parameters.AddWithValue("guideid", pData.guideid);
+        ... ...
+    }
+    ... ...
+}
+
+（3）UpdatePlayerData里
+同InsertNewAcctData()里数据库的连接语句和插入数据操作里，新增对任务引导id的数据插入
+public bool UpdatePlayerData(int id,PlayerData playerData)
+{
+    try
+    {
+        MySqlCommand cmd = new MySqlCommand( "update account set name=@name,"
+            +"level=@level,exp=@exp,power=@power,coin=@coin,diamond=@diamond,"
+            +"hp=@hp,ad=@ad,ap=@ap,addef=@addef,apdef=@apdef,dodge=@dodge,pierce=@pierce,"
+            +"critical=@critical,guideid=@guideid where id =@id", SqlConnection);
+        ... ...
+        cmd.Parameters.AddWithValue("guideid", playerData.guideid);
+        cmd.ExecuteNonQuery();
+    }
+    catch (Exception e)
+    {
+        PECommon.Log("Update PlayerData Error：" + e, LogType.Error);
+        return false;
+    }
+    return true;
+}
+
+3、重新生成PEProtocol
+
+四、运行数据库、服务器，运行游戏，重新创建账号，查看游戏、数据生成数据是否正常；
+
+

@@ -182,5 +182,10 @@ namespace PEProtocol
         /// 暴击概率
         /// </summary>
         public int critical;
+
+        /// <summary>
+        /// 任务引导进度id
+        /// </summary>
+        public int guideid;
     }
 }

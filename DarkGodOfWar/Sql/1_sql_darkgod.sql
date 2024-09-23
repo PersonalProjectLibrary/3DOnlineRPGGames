@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50617
 File Encoding         : 65001
 
-Date: 2024-09-23 16:15:10
+Date: 2024-09-17 01:34:33
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -37,14 +37,12 @@ CREATE TABLE `account` (
   `dodge` int(11) NOT NULL,
   `pierce` int(11) NOT NULL,
   `critical` int(11) NOT NULL,
-  `guideid` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of account
 -- ----------------------------
-INSERT INTO `account` VALUES ('1', '789', '789', '夏虹', '5', '650', '150', '5000', '500', '2000', '275', '265', '67', '43', '7', '5', '2', '1001');
-INSERT INTO `account` VALUES ('2', '123', '123', '秦唯', '1', '70', '50', '5000', '500', '2000', '275', '265', '67', '43', '7', '5', '2', '1001');
-INSERT INTO `account` VALUES ('3', '126', '126', '魏然', '2', '80', '10', '5000', '500', '2000', '275', '265', '67', '43', '7', '5', '2', '1001');
-INSERT INTO `account` VALUES ('4', '333', '222', '安伊', '1', '0', '150', '5000', '500', '2000', '275', '265', '67', '43', '7', '5', '2', '1001');
+INSERT INTO `account` VALUES ('1', '789', '789', '夏虹', '5', '650', '150', '5000', '500', '2000', '275', '265', '67', '43', '7', '5', '2');
+INSERT INTO `account` VALUES ('2', '123', '123', '秦唯', '1', '70', '50', '5000', '500', '2000', '275', '265', '67', '43', '7', '5', '2');
+INSERT INTO `account` VALUES ('3', '126', '126', '魏然', '2', '80', '10', '5000', '500', '2000', '275', '265', '67', '43', '7', '5', '2');
