@@ -16,13 +16,19 @@ public class PathDefine
 {
     #region Configs Path
     /// <summary>
-    /// 创建角色界面生成随机姓名配置文件
+    /// 创建角色界面_随机姓名配置文件
     /// </summary>
     public const string RdNameCfg = "ResConfigs/rdname";
+    
     /// <summary>
-    /// 主城地图配置文件
+    /// 主城_地图配置文件
     /// </summary>
     public const string McMapCfg = "ResConfigs/mcmap";
+
+    /// <summary>
+    /// 主城_任务引导配置文件
+    /// </summary>
+    public const string TaskGuideCfg = "ResConfigs/taskguide";
 
     #endregion
 

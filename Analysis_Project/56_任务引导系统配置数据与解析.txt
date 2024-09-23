@@ -1,0 +1,34 @@
+
+1、在BaseData.cs文件里，定义配置文件格式的类AutoGuideCfg
+
+2、在PathDefine.cs文件里。新增任务引导配置文件的路径变量
+public const string TaskGuideCfg = "ResConfigs/taskguide";
+
+这里将原本的guide.xml重命名为taskguide.xml
+
+3、在ResService.cs资源服务里，新增 引导任务的字典：
+任务ID，任务配置文件
+private Dictionary<int, AutoGuideCfg> taskGuideDic = new Dictionary<int, AutoGuideCfg>();
+
+4、在ResService.cs资源服务里，对配置文件进行解析
+（1）新增解析函数InitGuideCfg()，并在InitSvc()里进行调用
+对配置文件的解析，可参考InitMcMapCfg()
+
+（2）新增获取配置的函数GetAutoGuideData()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

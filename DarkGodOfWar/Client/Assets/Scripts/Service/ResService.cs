@@ -31,6 +31,7 @@ public class ResService : MonoBehaviour
         PECommon.Log("Init ResService...");
         InitRdNameCfg(PathDefine.RdNameCfg);
         InitMcMapCfg(PathDefine.McMapCfg);
+        InitGuideCfg(PathDefine.TaskGuideCfg);
     }
 
     #region Load Resource
@@ -127,9 +128,9 @@ public class ResService : MonoBehaviour
 
     #endregion
 
-    #region InitConfigs
+    #region Init Configs 解析xml配置表
 
-    #region 创建角色界面里生成随机名字——rdname.xml
+    #region 创建角色界面_随机姓名配置解析——rdname.xml
     private List<string> surNameList = new List<string>();
     private List<string> manList = new List<string>();
     private List<string> womanList = new List<string>();
@@ -180,8 +181,7 @@ public class ResService : MonoBehaviour
 
     #endregion
 
-
-    #region 主城地图配置——mcmap.xml
+    #region 主城_地图配置解析——mcmap.xml
     /// <summary>
     /// （id号，对应map配置表数据）存储配置表解析后的地图数据
     /// </summary>
@@ -252,6 +252,60 @@ public class ResService : MonoBehaviour
         McMapCfg data;
         if (mcMapCfgDataDic.TryGetValue(id, out data)) return data;
         return null;
+    }
+
+    #endregion
+
+    #region 主城_任务引导配置解析--taskguide.xml
+    /// <summary>
+    /// 引导任务的字典(任务ID，任务配置文件)
+    /// </summary>
+    private Dictionary<int, AutoGuideCfg> taskGuideDic = new Dictionary<int, AutoGuideCfg>();
+
+    /// <summary>
+    /// 任务引导配置文件初始化
+    /// </summary>
+    private void InitGuideCfg(string path)
+    {
+        TextAsset nameXml = Resources.Load<TextAsset>(path);
+        if (!nameXml) PECommon.Log("Xml file:" + path + "not exist!", LogType.Error);
+        else
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(nameXml.text);
+            XmlNodeList nodeList = doc.SelectSingleNode("root").ChildNodes;
+            for (int i = 0; i < nodeList.Count; i++)
+            {
+                XmlElement element = nodeList[i] as XmlElement;
+                if (element.GetAttributeNode("ID") == null) continue;
+                int id = Convert.ToInt32(element.GetAttributeNode("ID").InnerText);
+                AutoGuideCfg ag = new AutoGuideCfg { ID = id };
+                foreach (XmlElement e in nodeList[i].ChildNodes)
+                {
+                    switch (e.Name)
+                    {
+                        case "npcID": ag.npcID = int.Parse(e.InnerText); break;
+                        case "dialogArr": ag.dialogArr = e.InnerText; break;//具体对话窗口再处理对话
+                        case "actID": ag.actID = int.Parse(e.InnerText); break;
+                        case "coin": ag.coin = int.Parse(e.InnerText); break;
+                        case "exp": ag.exp = int.Parse(e.InnerText); break;
+                    }
+                }
+                taskGuideDic.Add(id, ag);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 获取任务引导的配置文件
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    private AutoGuideCfg GetAutoGuideData(int id)
+    {
+        AutoGuideCfg agc = null;
+        taskGuideDic.TryGetValue(id, out agc);
+        return agc;
     }
 
     #endregion
