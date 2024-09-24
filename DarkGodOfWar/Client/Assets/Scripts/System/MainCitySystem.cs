@@ -22,6 +22,11 @@ public class MainCitySystem : SystemRoot
     public MainCityWnd mainCityWnd;
 
     /// <summary>
+    /// npc位置信息数组
+    /// </summary>
+    private Transform[] npcPosTrans;
+
+    /// <summary>
     /// 初始化主城系统
     /// </summary>
     public override void InitSystem()
@@ -43,6 +48,11 @@ public class MainCitySystem : SystemRoot
             PECommon.Log("Enter MainCity...");//输出日志
             mainCityWnd.SetWndState();//打开主城UI界面
             audioService.PlayBgMusic(Constants.BgmMainCity);//播放主城的背景音乐
+            //获取主城的npc位置信息
+            GameObject mapObj = GameObject.FindGameObjectWithTag("MapRoot");
+            MainCityMap mainCityMap = mapObj.GetComponent<MainCityMap>();
+            npcPosTrans = mainCityMap.npcPosTrans;
+
             LoadPlayer(mcMapData);//加载游戏主角、设置主相机跟随角色
             //设置用于角色信息界面显示角色的相机
             if (charaterCam == null) 

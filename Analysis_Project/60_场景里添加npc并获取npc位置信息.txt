@@ -1,0 +1,51 @@
+
+一、设置SceneMainCity场景
+1、SceneMainCity场景里添加NPC
+（1）依次将Assets/Resources/PrefabUI文件夹里的npc预制体拖进场景，并设置其位置
+
+（2）由于npc的动画资源存在一些问题，这里优先保证播放时角色正常显示。
+所以若场景里个别npc角色放置并不是正常站立状态，为了适配动画正常播放，进行调整修正；
+
+（3）为了方便管理，场景里建立空对象NPC，将其他npc都放到NPC下面
+
+2、设置玩家找对应npc进行寻路时的目标位置PosNPC
+（1）这里在场景里建立空物体PosNPC_0/1/2/3，并记录存储对应npc的位置信息；
+
+（2）调整位置，距目标NPC旁边一点位置；作为玩家角色需要寻路的目标位置；
+这里为了方便调整和查看位置，在每个PosNPC下面放有对应解除和预制体关联的npc物体；
+调整好位置后，将PosNPC下面的子物体npc给掩藏起来，不删除，方便后续需要调整时使用；
+
+（3）调整好PosNPC位置后，将PosNPC统一放到空物体PosNPC下面
+
+3、新建脚本，关联PosNPC，记录位置信息；后续通过引用获取脚本，进而获得npc位置信息
+代码里获取PosNPC的位置，方便后续调用寻路系统去找npc
+（1）场景新建空物体，重命名为MapRoot，设置Tag为MapRoot；
+注原本测试时，将场景里的MainCity_Static预制体的Tag设置为MapRoot，这里修改为Untagged
+
+（2）新建脚本，命名为MainCityMap.cs，并挂到MapRoot身上
+定义数组，存储NPC位置、角色寻路的目标位置信息
+
+（3）将场景里的PosNPC绑定到MapRoot身上的MainCityMap.cs里
+
+注：这里将Scripts文件夹里的Test文件夹重命名为Other
+MainCityMap.cs和原本Test文件夹里的PlayerController.cs都放到Other文件夹里
+
+二、代码获取npc位置信息
+在进入主城，进行初始化时，获取npc位置信息
+1、在MainCitySystem.cs里定义npc数组
+private Transform[] npcPosTrans;
+在EnterMainCity()里进行获取赋值；
+private Transform[] npcPosTrans;
+public void EnterMainCity()
+{
+    ...
+   GameObject mapObj = GameObject.FindGameObjectWithTag("MapRoot");
+   MainCityMap mainCityMap = mapObj.GetComponent<MainCityMap>();
+   npcPosTrans = mainCityMap.npcPosTrans;
+   ... ...
+}
+
+
+
+
+

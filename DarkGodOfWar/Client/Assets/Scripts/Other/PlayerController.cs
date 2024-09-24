@@ -1,7 +1,7 @@
 
 #region 脚本功能、创建时间和文件作者
 /**************************************
-    文件：Test_PlayerController.cs
+    文件：Other_PlayerController.cs
     作者：LoriaRujoy
     邮箱：2659635618@qq.com
     时间：2024/9/15 22:26
