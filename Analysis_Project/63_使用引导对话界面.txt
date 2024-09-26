@@ -1,0 +1,33 @@
+
+一、引导对话界面制作
+在前面制作 角色信息界面 时，就已经把引导对话界面制作过了，这里直接略过；
+可在GameRoot场景里Canvas下GuideWnd就是引导对话界面，也是和NPC对话的界面
+
+二、代码添加引导对话界面使用
+1、创建GuideWnd.cs
+在UIWindow文件夹下创建GuideWnd.cs脚本，并挂载场景里GuideWnd身上；
+
+2、初始化GuideWnd.cs
+继承WindowRoot，重写添加初始化函数InitWnd()
+
+3、在主城系统MainCitySystem里添加对GuideWnd.cs的引用
+public GuideWnd guideWnd;
+并在场景里，在GameRoot身上的MainCitySystem脚本组件上绑定GuideWnd；
+
+4、使用GuideWnd.cs
+MainCitySystem.cs里的OpenGuideWnd()里执行打开GuideWnd 界面
+private void OpenGuideWnd(){ guideWnd.SetWndState(); }
+
+三、运行测试
+玩家执行自动任务，到达目标位置，正常打开引导对话界面；
+
+
+
+
+
+
+
+
+
+
+

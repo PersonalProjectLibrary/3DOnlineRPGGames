@@ -9,8 +9,6 @@
 ***************************************/
 #endregion
 
-
-using System;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -22,15 +20,6 @@ public class MainCitySystem : SystemRoot
     /// 主城界面
     /// </summary>
     public MainCityWnd mainCityWnd;
-
-    /// <summary>
-    /// npc位置信息数组
-    /// </summary>
-    private Transform[] npcPosTrans;
-    /// <summary>
-    /// 角色自动导航组件
-    /// </summary>
-    private NavMeshAgent navAgent;
 
     /// <summary>
     /// 初始化主城系统
@@ -67,11 +56,30 @@ public class MainCitySystem : SystemRoot
         });
     }
 
-    #region 引导任务设置
+    #region Guide Wnd：引导对话界面
+    /// <summary>
+    /// 引导对话界面
+    /// </summary>
+    public GuideWnd guideWnd;
+
+    #endregion
+
+    #region Guide Wnd：引导任务设置
     /// <summary>
     /// 当前引导任务数据
     /// </summary>
     private AutoGuideCfg curTaskData;
+    
+    /// <summary>
+    /// npc位置信息数组
+    /// </summary>
+    private Transform[] npcPosTrans;
+    
+    /// <summary>
+    /// 角色自动导航组件
+    /// </summary>
+    private NavMeshAgent navAgent;
+
     /// <summary>
     /// 是否在自动寻路中
     /// </summary>
@@ -110,35 +118,12 @@ public class MainCitySystem : SystemRoot
         }
     }
 
-    /// <summary>
-    /// 打开引导任务的对话界面
-    /// </summary>
-    private void OpenGuideWnd()
-    {
-        //TODO
-        Debug.Log("OpenGuideWnd");
-    }
-
     private void Update()
     {
         if (isNavGuide)
         {
             IsArriveNavPos();//寻路中实时检测是否到目标位置，到位置结束寻路
             playerCtrl.SetCamMove();// 自动任务时相机跟随
-        }
-    }
-
-    /// <summary>
-    /// 停止自动任务
-    /// </summary>
-    private void StopNavTask()
-    {
-        if (isNavGuide)
-        {
-            isNavGuide = false;
-            navAgent.isStopped = true;
-            navAgent.enabled = false;
-            playerCtrl.SetBlend(Constants.BlendIdle);
         }
     }
 
@@ -157,10 +142,32 @@ public class MainCitySystem : SystemRoot
             OpenGuideWnd();
         }
     }
+
+    /// <summary>
+    /// 停止自动任务
+    /// </summary>
+    private void StopNavTask()
+    {
+        if (isNavGuide)
+        {
+            isNavGuide = false;
+            navAgent.isStopped = true;
+            navAgent.enabled = false;
+            playerCtrl.SetBlend(Constants.BlendIdle);
+        }
+    }
+
+    /// <summary>
+    /// 打开引导任务的对话界面
+    /// </summary>
+    private void OpenGuideWnd()
+    {
+        guideWnd.SetWndState();
+    }
+    
     #endregion
 
-
-    #region 角色信息界面设置
+    #region Info Wnd：角色信息界面设置
     /// <summary>
     /// 角色信息界面
     /// </summary>
@@ -216,7 +223,7 @@ public class MainCitySystem : SystemRoot
 
     #endregion
 
-    #region 主城的角色设置
+    #region Character：主城的角色设置
     /// <summary>
     /// 角色相机
     /// </summary>
