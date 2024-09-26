@@ -117,7 +117,7 @@ public class PlayerController : MonoBehaviour
     /// <summary>
     /// 设置相机的跟随移动
     /// </summary>
-    private void SetCamMove()
+    public void SetCamMove()
     {
         if (camTrans != null) camTrans.position = transform.position - camOffset;
     }

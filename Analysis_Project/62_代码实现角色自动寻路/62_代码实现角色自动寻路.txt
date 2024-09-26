@@ -1,0 +1,205 @@
+
+一、获取导航组件
+1、获取角色身上的导航组件，MainCitySystem.cs里定义角色导航组件
+private NavMeshAgent navAgent;
+
+2、在进入主城加载角色后，获取角色组件，
+在LoadPlayer()里对navAgent获取赋值
+private void LoadPlayer(McMapCfg mcMapData)
+{
+    ... ...
+    player.SetActive(true);
+    navAgent = player.GetComponent<NavMeshAgent>();
+}
+
+二、利用导航组件执行导航
+1、计算任务npc对应的玩家目标位置与玩家角色之间位置距离
+guide.xml表里npcID和npcPosTrans数组索引一一对应，指向相同的npc；
+float dis = Vector3.Distance(playerCtrl.transform.position, npcPosTrans[agc.npcID].position);
+
+2、角色和npc之间的距离大于0.5f，进行寻路
+public void RunGuideTask(AutoGuideCfg agc)
+{
+    if (agc != null) curTaskData = agc;
+    if (curTaskData.npcID == -1) OpenGuideWnd();//id为-1，不需要找npc，直接打开任务对话窗口
+    else
+    {
+        float dis = Vector3.Distance(playerCtrl.transform.position, npcPosTrans[agc.npcID].position);
+        if (dis < 0.5f){...}
+        else 	//当距离大于0.5f,进行寻路
+        {
+            navAgent.speed = Constants.PlayerMoveSpeed;
+            navAgent.SetDestination(npcPosTrans[agc.npcID].position);
+            navAgent.enabled = true;
+        }
+    }
+}
+
+注：新版Navigation里，挂有NavMeshAgent的角色，设置SetDestination后，
+人物只是转向，没有进行自动移动到目标位置；
+解决方法：
+参考：Unity小问题小记之寻路导航Navigation的SetDestination的人物无法移动
+https://blog.csdn.net/g958529809/article/details/135333991和
+https://blog.csdn.net/g958529809/article/details/135389911
+解决操作：
+Unity菜单栏--Edit--ProjectSettings--Physics里把AutoSyncTransform这个选项进行勾选打开；
+就可正常操作了
+
+三、处理目前存在的问题
+没有角色移动和停止的动画切换；相机没有跟随角色移动
+
+1、设置角色的动画切换播放
+在设置角色进行自动寻路时，也设置播放角色走路动画：playerCtrl.SetBlend(Constants.BlendWalk);
+这样就实现了角色寻路时，玩家动画切换
+public void RunGuideTask(AutoGuideCfg agc)
+{
+    if (agc != null) curTaskData = agc;
+    if (curTaskData.npcID == -1) OpenGuideWnd();//id为-1，不需要找npc，直接打开任务对话窗口
+    else
+    {
+        ... ...
+        if (dis < 0.5f){... ...}
+        else
+        {
+            ... ...
+            playerCtrl.SetBlend(Constants.BlendWalk);
+        }
+    }
+}
+
+2、设置相机跟随角色移动
+相机的更新是每一帧都更新，这里使用Update，使角色自动寻路时，相机实时更新；
+但角色也不是一直都进行自动寻路导航，有时候是玩家摇杆控制移动；
+添加标志变量，只有在进入自动寻路时，才使用Update更新相机；
+（1）定义标志变量isNavGuide 
+区分自动导航还是摇杆控制移动
+private bool isNavGuide = false;
+
+（2）开始导航时，isNavGuide 置为true；停止导航时，isNavGuide 设置为false
+public void RunGuideTask(AutoGuideCfg agc)
+{
+        ... ...
+        if (dis < 0.5f)
+        {
+            isNavGuide = false;
+            ... ...
+        }
+        else
+        {
+            isNavGuide = true;
+            ... ...
+        }
+        ... ...
+}
+（3）使用Update()方法设置相机的跟随
+这里将PlayerController.cs里的SetCamMove()从private改为public
+方便设置相机在玩家寻路时跟随玩家；
+private void Update()
+{
+    if (isNavGuide) playerCtrl.SetCamMove();//自动导航时相机跟随
+}
+
+四、设置自动导航结束
+当距离小于0.5，判断找到目标npc，结束自动导航，并打开对话界面
+public void RunGuideTask(AutoGuideCfg agc)
+{
+    if (agc != null) curTaskData = agc;
+    if (curTaskData.npcID == -1) OpenGuideWnd();//id为-1，不需要找npc，直接打开任务对话窗口
+    else
+    {
+        float dis = Vector3.Distance(playerCtrl.transform.position, npcPosTrans[agc.npcID].position);
+        if (dis < 0.5f)
+        {
+            isNavGuide = false;
+            navAgent.isStopped = true;
+            playerCtrl.SetBlend(Constants.BlendIdle);
+            navAgent.enabled = false;
+            OpenGuideWnd();
+        }
+        else {... ...}
+    }
+}
+
+五、测试
+方便查看角色停止寻路打开对话窗口，设置OpenGuideWnd()里输出日志
+private void OpenGuideWnd(){ Debug.Log("OpenGuideWnd"); }
+
+六、存在问题
+1、在寻路过程中，使用摇杆，但无法中断角色的寻路
+因为点击自动任务，会进行检测距离判断是否寻路，
+进入寻路分支后，执行寻路操作，不执行停止寻路分支；
+后面寻路过程中不会再执行 自动任务，也不会进入停止寻路分支；
+所以会一直寻路，只有再次点击  自动人物，检测和目标角色距离小于0.5f，才执行自动寻路结束；
+
+2、在角色到达目标位置，也没有执行打开对话窗口的函数：输出日志
+同上面问题一样的原因：角色到达目标点后，没有停止导航，也不会打开对话窗口；
+
+3、存在隐患
+当第一次点击自动寻路，而角色距离目标npc很近，就会执行停止寻路操作；
+但此时寻路组件还是关闭没激活状态，这会导致报错；
+
+七、解决问题
+1、第一次点击自动寻路，而角色距离目标npc很近，执行停止寻路操作，但寻路组件还是没激活状态
+在点击 自动寻路时，就设置打开激活寻路组件；
+后面根据距离判断，执行激活或关闭激活寻路操作；
+public void RunGuideTask(AutoGuideCfg agc)
+{
+    if (agc != null) curTaskData = agc;
+    navAgent.enabled = true;
+    ... ...
+}
+
+2、自动寻路无法中断
+（1）添加中断的函数，中断的前提是正在自动导航中
+private void StopNavTask()
+{
+    if (isNavGuide)
+    {
+        isNavGuide = false;
+        navAgent.isStopped = true;
+        navAgent.enabled = false;
+        playerCtrl.SetBlend(Constants.BlendIdle);
+    }
+}
+
+（2）在设置摇杆控制角色方向时，进行调用结束自动任务
+public void SetMoveDir(Vector2 dir)
+{
+    StopNavTask(); //取消自动寻路
+    ... ...
+}
+
+（3）在打开信息面板时，也进行中断自动导航
+public void OpenInfoWnd()
+{
+    StopNavTask();//结束自动寻路
+    ... ...
+}
+
+3、在角色到达目标位置，没有执行打开对话窗口的函数：输出日志
+点击自动任务，在进入自动导航后，
+找到目标点后，也运行不到停止导航打开对话窗口等其他分支；
+这里在整个导航的过程当中，持续检测判断当前位置有没有和目标位置小于0.5f；
+（1）新增函数做寻路距离判断
+private void IsArriveNavPos()
+{
+    float dis = Vector3.Distance(playerCtrl.transform.position, npcPosTrans[curTaskData.npcID].position);
+    if (dis < 0.5f)
+    {
+        isNavGuide = false;
+        navAgent.isStopped = true;
+        playerCtrl.SetBlend(Constants.BlendIdle);
+        navAgent.enabled = false;
+        OpenGuideWnd();
+    }
+}
+（2）Update里如果是寻路中，调用IsArriveNavPos()检测执行是否到目标位置结束寻路
+
+八、运行测试
+正常寻路导航，正常中断，正常执行打开对话窗口的函数输出日志；
+
+
+
+
+
+

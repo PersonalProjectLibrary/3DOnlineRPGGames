@@ -10,7 +10,9 @@
 #endregion
 
 
+using System;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class MainCitySystem : SystemRoot
 {
@@ -25,6 +27,10 @@ public class MainCitySystem : SystemRoot
     /// npc位置信息数组
     /// </summary>
     private Transform[] npcPosTrans;
+    /// <summary>
+    /// 角色自动导航组件
+    /// </summary>
+    private NavMeshAgent navAgent;
 
     /// <summary>
     /// 初始化主城系统
@@ -66,6 +72,10 @@ public class MainCitySystem : SystemRoot
     /// 当前引导任务数据
     /// </summary>
     private AutoGuideCfg curTaskData;
+    /// <summary>
+    /// 是否在自动寻路中
+    /// </summary>
+    private bool isNavGuide = false;
 
     /// <summary>
     /// 执行引导任务
@@ -74,18 +84,29 @@ public class MainCitySystem : SystemRoot
     public void RunGuideTask(AutoGuideCfg agc)
     {
         if (agc != null) curTaskData = agc;
+        navAgent.enabled = true;
         if (curTaskData.npcID == -1) OpenGuideWnd();//id为-1，不需要找npc，直接打开任务对话窗口
         else//解析任务数据，执行相关操作
         {
-            //NPC寻路：调用主角在主城的系统去寻路
-            
-            //在寻路过程中，隔段时间就会进行检测计算主角和目标npc之间的距离
-            //当距离大于某限定值，就一直寻路下去：如何实现寻路系统
-            //当距离小于某限定值，判断找到目标npc，打开对话界面：怎么判定找到npc
-            
-            //使用Unity提供的Nevigation导航系统，实现寻路
-            //把场景里的npc的exam transform信息传递到mainCitySystem里
-
+            //guide.xml表里npcID和npcPosTrans数组索引一一对应，指向相同的npc；
+            //计算目标位置与玩家角色之间位置距离
+            float dis = Vector3.Distance(playerCtrl.transform.position, npcPosTrans[agc.npcID].position);
+            if (dis < 0.5f)
+            {
+                isNavGuide = false;
+                navAgent.isStopped = true;
+                playerCtrl.SetBlend(Constants.BlendIdle);
+                navAgent.enabled = false;
+                OpenGuideWnd();
+            }
+            else
+            {
+                isNavGuide = true;
+                navAgent.enabled = true;
+                navAgent.speed = Constants.PlayerMoveSpeed;
+                navAgent.SetDestination(npcPosTrans[agc.npcID].position);
+                playerCtrl.SetBlend(Constants.BlendWalk);
+            }
         }
     }
 
@@ -95,8 +116,47 @@ public class MainCitySystem : SystemRoot
     private void OpenGuideWnd()
     {
         //TODO
+        Debug.Log("OpenGuideWnd");
     }
 
+    private void Update()
+    {
+        if (isNavGuide)
+        {
+            IsArriveNavPos();//寻路中实时检测是否到目标位置，到位置结束寻路
+            playerCtrl.SetCamMove();// 自动任务时相机跟随
+        }
+    }
+
+    /// <summary>
+    /// 停止自动任务
+    /// </summary>
+    private void StopNavTask()
+    {
+        if (isNavGuide)
+        {
+            isNavGuide = false;
+            navAgent.isStopped = true;
+            navAgent.enabled = false;
+            playerCtrl.SetBlend(Constants.BlendIdle);
+        }
+    }
+
+    /// <summary>
+    /// 判断是否自动导航到目标位置
+    /// </summary>
+    private void IsArriveNavPos()
+    {
+        float dis = Vector3.Distance(playerCtrl.transform.position, npcPosTrans[curTaskData.npcID].position);
+        if (dis < 0.5f)
+        {
+            isNavGuide = false;
+            navAgent.isStopped = true;
+            playerCtrl.SetBlend(Constants.BlendIdle);
+            navAgent.enabled = false;
+            OpenGuideWnd();
+        }
+    }
     #endregion
 
 
@@ -116,6 +176,7 @@ public class MainCitySystem : SystemRoot
     /// </summary>
     public void OpenInfoWnd()
     {
+        StopNavTask();//结束自动寻路
         if (charaterCam == null)
             charaterCam = GameObject.FindGameObjectWithTag("CharacterCam").transform;
 
@@ -188,6 +249,7 @@ public class MainCitySystem : SystemRoot
         playerCtrl = player.GetComponent<PlayerController>();
         playerCtrl.Init();
         player.SetActive(true);
+        navAgent = player.GetComponent<NavMeshAgent>();
     }
 
     /// <summary>
@@ -196,6 +258,7 @@ public class MainCitySystem : SystemRoot
     /// <param name="dir">摇杆区域点击触发的坐标</param>
     public void SetMoveDir(Vector2 dir)
     {
+        StopNavTask(); //取消自动寻路
         //设置角色动画：如果传入的是0，则停止移动，否则角色进行移动
         if (dir == Vector2.zero) playerCtrl.SetBlend(Constants.BlendIdle);
         else playerCtrl.SetBlend(Constants.BlendWalk);
