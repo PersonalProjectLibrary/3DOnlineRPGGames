@@ -12,6 +12,9 @@
 using PEProtocol;
 using System.Collections.Generic;
 
+/// <summary>
+/// 服务器缓存层
+/// </summary>
 public class CacheSvc
 {
     private static CacheSvc instance = null;

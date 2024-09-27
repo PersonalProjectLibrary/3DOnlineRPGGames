@@ -9,9 +9,11 @@
 ***************************************/
 #endregion
 
-
 using PEProtocol;
 
+/// <summary>
+/// 登录业务系统
+/// </summary>
 public class LoginSys
 {
     private static LoginSys instance = null;

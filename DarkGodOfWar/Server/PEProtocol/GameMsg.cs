@@ -53,6 +53,12 @@ namespace PEProtocol
         /// </summary>
         None = 0,
         /// <summary>
+        /// 服务器数据异常
+        /// </summary>
+        /// 一般是客户端开挂了
+        /// 解决方法：强制把客户端踢下线
+        ServerDataError,
+        /// <summary>
         /// 账号已经上线(重复登录)
         /// </summary>
         AcctIsOnline,

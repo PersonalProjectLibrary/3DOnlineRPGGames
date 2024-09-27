@@ -9,6 +9,9 @@
 ***************************************/
 #endregion
 
+/// <summary>
+/// 服务器入口
+/// </summary>
 public class ServerClient
 {
     static void Main(string[] args)

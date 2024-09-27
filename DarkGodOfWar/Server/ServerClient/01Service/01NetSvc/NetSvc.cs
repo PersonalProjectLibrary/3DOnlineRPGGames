@@ -13,6 +13,9 @@ using PENet;
 using PEProtocol;
 using System.Collections.Generic;
 
+/// <summary>
+/// 网络服务
+/// </summary>
 public class NetSvc
 {
     private static NetSvc instance = null;
@@ -79,6 +82,7 @@ public class NetSvc
             case CMD.None: break;
             case CMD.ReqLogin: LoginSys.Instance.ReqLogin(msgPack); break;
             case CMD.ReqReName: LoginSys.Instance.ReqReName(msgPack); break;
+            case CMD.ReqGuide:GuideSys.Instance.ReqGuide(msgPack);break;
             default: break;
         }
     }

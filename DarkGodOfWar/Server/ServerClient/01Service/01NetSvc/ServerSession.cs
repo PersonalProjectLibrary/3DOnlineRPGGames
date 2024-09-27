@@ -13,8 +13,9 @@ using PENet;
 using PEProtocol;
 
 /// <summary>
-/// 用于服务器和客户端建立联系，一个客户端对应一个Session
+/// 网络会话连接
 /// </summary>
+/// 用于服务器和客户端建立联系，一个客户端对应一个Session
 public class ServerSession : PESession<GameMsg>
 {
     public int sessionID = 0;

@@ -5,7 +5,7 @@
     作者：LoriaRujoy
     邮箱：2659635618@qq.com
     时间：2024/9/10 22:50:32
-    功能：数据库管理类
+    功能：数据库管理层
 ***************************************/
 #endregion
 
@@ -13,6 +13,9 @@ using MySql.Data.MySqlClient;
 using PEProtocol;
 using System;
 
+/// <summary>
+/// 数据库管理层
+/// </summary>
 public class DBManager
 {
     private static DBManager instance = null;

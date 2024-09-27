@@ -9,6 +9,9 @@
 ***************************************/
 #endregion
 
+/// <summary>
+/// 服务器根节点
+/// </summary>
 public class ServerRoot
 {
     private static ServerRoot instance = null;
@@ -33,6 +36,7 @@ public class ServerRoot
         CacheSvc.Instance.Init();
         //业务系统层
         LoginSys.Instance.Init();
+        GuideSys.Instance.Init();
     }
 
     /// <summary>
