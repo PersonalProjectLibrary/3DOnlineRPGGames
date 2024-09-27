@@ -1,0 +1,122 @@
+
+引导对话完成后，向服务器发送任务对话完成的数据；
+服务器发送相关奖励给玩家
+
+一、GameMsg.cs脚本里定义引导数据网络协议
+1、客户端发送引导任务完成的请求ReqGuide
+请求引导的id对话，只需发送当前已经完成的引导任务的id
+[Serializable]
+public class ReqGuide{ public int guideid;// 引导任务id }
+
+2、服务器回应引导任务完成的请求RspGuide
+（1）需要定义的数据： 
+更新的任务和引导的id；任务奖励：金币，经验值数据；经验值可能会导致等级变化，还有等级数据
+[Serializable]
+public class RspGuide
+{
+    public int guideid;//下个任务id
+    public int coin;//获得的金币奖励
+    public int exp;//获得的经验值奖励
+    public int lv;//获得奖励后当前等级
+}
+（2）使用服务器统一数据，而不是直接使用配置客户端的数据
+因为直接使用客户端的数据不安全，本地的数据全部都要使用服务器获取；
+尤其是关键性的数据：金币、经验值、等级等不能让客户端随意的更改；
+如果直接使用客户端更改，后续还可能有其他麻烦的异常逻辑
+就像客户端的
+ResService.cs的InitGuideCfg里解析设置金币和经验值，
+BaseData.cs的AutoGuideCfg里定义金币和经验值，
+都是没必要可以删除的语句；
+原：
+public class AutoGuideCfg : BaseData<AutoGuideCfg>
+{
+    public int npcID;// 触发任务目标NPC索引号
+    public string dialogArr;// 对话数据
+    public int actID;// 目标任务ID
+    public int coin;// 金币
+    public int exp;// 经验值
+}
+private void InitGuideCfg(string path)
+{
+    ... ...
+    foreach (XmlElement e in nodeList[i].ChildNodes)
+    {
+            switch (e.Name)
+            {
+                case "npcID": ag.npcID = int.Parse(e.InnerText); break;
+                case "dialogArr": ag.dialogArr = e.InnerText; break;//具体对话窗口再处理对话
+                case "actID": ag.actID = int.Parse(e.InnerText); break;
+                case "coin": ag.coin = int.Parse(e.InnerText); break;
+                case "exp": ag.exp = int.Parse(e.InnerText); break;
+            }
+    }
+     ... ...
+}
+改：
+public class AutoGuideCfg : BaseData<AutoGuideCfg>
+{
+    public int npcID;// 触发任务目标NPC索引号
+    public string dialogArr;// 对话数据
+    public int actID;// 目标任务ID
+}
+private void InitGuideCfg(string path)
+{
+    ... ...
+    foreach (XmlElement e in nodeList[i].ChildNodes)
+    {
+            switch (e.Name)
+            {
+                case "npcID": ag.npcID = int.Parse(e.InnerText); break;
+                case "dialogArr": ag.dialogArr = e.InnerText; break;//具体对话窗口再处理对话
+                case "actID": ag.actID = int.Parse(e.InnerText); break;
+            }
+    }
+     ... ...
+}
+
+3、添加相应的网络通信命令号和消息定义
+public enum CMD
+{
+    ... ...
+    //主城相关 200开始
+    ReqGuide = 200,//任务引导请求
+    RspGuide = 201,//任务引导回复
+}
+[Serializable]
+public class GameMsg : PEMsg
+{
+    public ReqGuide reqGuide;// 客户端发送引导完成请求
+    public RspGuide rspGuide;// 服务器回应引导完全请求
+    ... ...
+}
+
+4、重新生成编译PEProtocol.dll
+
+二、Unity客户端使用发送引导任务请求
+GuideWnd.cs的ClickNextBtn()里实现向服务器发送任务完成的请求
+public void ClickNextBtn()
+{
+    audioService.PlayUIAudio(Constants.UiClickBtn);
+    dialogIndex += 1;
+    if (dialogIndex == dialogArr.Length)
+    {
+        GameMsg msg = new GameMsg//设置引导请求消息
+        {
+            cmd = (int)CMD.ReqGuide,
+            reqGuide = new ReqGuide { guideid = curTaskData.ID }
+        };
+        netService.SendMsg(msg);//向服务器发送引导请求信息
+        SetWndState(false);
+    }
+    else SetTalk();
+}
+
+
+
+
+
+
+
+
+
+

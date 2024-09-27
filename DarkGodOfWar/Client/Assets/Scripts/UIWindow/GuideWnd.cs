@@ -72,7 +72,12 @@ public class GuideWnd : WindowRoot
         dialogIndex += 1;
         if (dialogIndex == dialogArr.Length)
         {
-            //TODO：向服务器发送任务完成信息
+            GameMsg msg = new GameMsg//设置引导请求消息
+            {
+                cmd = (int)CMD.ReqGuide,
+                reqGuide = new ReqGuide { guideid = curTaskData.ID }
+            };
+            netService.SendMsg(msg);//向服务器发送引导请求信息
             SetWndState(false);
         }
         else SetTalk();

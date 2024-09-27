@@ -311,8 +311,6 @@ public class ResService : MonoBehaviour
                         case "npcID": ag.npcID = int.Parse(e.InnerText); break;
                         case "dialogArr": ag.dialogArr = e.InnerText; break;//具体对话窗口再处理对话
                         case "actID": ag.actID = int.Parse(e.InnerText); break;
-                        case "coin": ag.coin = int.Parse(e.InnerText); break;
-                        case "exp": ag.exp = int.Parse(e.InnerText); break;
                     }
                 }
                 taskGuideDic.Add(id, ag);

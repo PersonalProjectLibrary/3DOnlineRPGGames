@@ -81,16 +81,4 @@ public class AutoGuideCfg : BaseData<AutoGuideCfg>
     /// </summary>
     /// 完成引导后做什么
     public int actID;
-
-    /// <summary>
-    /// 金币
-    /// </summary>
-    /// 引导完成后的奖励
-    public int coin;
-
-    /// <summary>
-    /// 经验值
-    /// </summary>
-    /// 引导完成后的奖励
-    public int exp;
 }

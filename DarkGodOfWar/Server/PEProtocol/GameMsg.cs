@@ -30,11 +30,16 @@ namespace PEProtocol
     public enum CMD
     {
         None = 0,
-        //登录相关 100
+        //登录相关 100开始
         ReqLogin = 101,//登录请求
         RspLogin = 102,//登录回应
         ReqReName = 103,//重命名请求
         RspReName = 104,//重命名回应
+
+        //主城相关 200开始
+        ReqGuide = 200,//任务引导请求
+        RspGuide = 201,//任务引导回复
+
     }
 
     /// <summary>
@@ -68,53 +73,103 @@ namespace PEProtocol
     [Serializable]
     public class GameMsg : PEMsg
     {
-        public ReqLogin reqLogin;
-        public RspLogin rspLogin;
+        /// <summary>
+        /// 客户端发送引导完成请求
+        /// </summary>
+        public ReqGuide reqGuide;
+        /// <summary>
+        /// 服务器回应引导完全请求
+        /// </summary>
+        public RspGuide rspGuide;
+
+        #region Login And ReName
+        /// <summary>
+        /// 客户端发送重命名请求
+        /// </summary>
         public ReqReName reqReName;
+        /// <summary>
+        /// 服务器回应重命名请求
+        /// </summary>
         public RspReName rspReName;
+        /// <summary>
+        /// 客户端发送登录请求
+        /// </summary>
+        public ReqLogin reqLogin;
+        /// <summary>
+        /// 服务端回应登录请求
+        /// </summary>
+        public RspLogin rspLogin;
+
+        #endregion
     }
+
+    #region 任务引导相关
+    /// <summary>
+    /// 客户端发送引导任务完成的请求的消息
+    /// </summary>
+    /// 请求引导的id对话，只需发送当前已经完成的引导任务的id
+    [Serializable]
+    public class ReqGuide
+    {
+        public int guideid;// 引导任务id
+    }
+
+    /// <summary>
+    /// 服务器回应引导任务完成的请求
+    /// </summary>
+    /// 1、更新任务和引导的id；2、发放奖励：金币，经验值数据；
+    /// 3、经验值可能会导致等级变化，还有等级数据
+    [Serializable]
+    public class RspGuide
+    {
+        public int guideid;//下个任务id
+        public int coin;//获得的金币奖励
+        public int exp;//获得的经验值奖励
+        public int lv;//获得奖励后当前等级
+    }
+
+    #endregion
 
     #region 登录相关
     /// <summary>
-    /// 发送请求登录的消息
+    /// 客户端发送请求登录的消息
     /// </summary>
     [Serializable]
     public class ReqLogin
     {
-        public string acct;
-        public string pass;
+        public string acct;//账号
+        public string pass;//密码
     }
 
     /// <summary>
-    /// 发送回应客户端登录的消息
+    /// 服务器回应登录请求的消息
     /// </summary>
     [Serializable]
     public class RspLogin
     {
-        public PlayerData playerData;
+        public PlayerData playerData;//玩家数据
     }
 
     /// <summary>
-    /// 发送请求进行重命名
+    /// 客户端发送重命名请求的消息
     /// </summary>
     /// 新玩家登录注册新账号起名时向服务器发送请求
     [Serializable]
     public class ReqReName
     {
-        public string name;
+        public string name;//重命名的名字
     }
 
     /// <summary>
-    /// 服务器回应重命名请求
+    /// 服务器回应重命名请求的消息
     /// </summary>
     /// 判断服务器上其他人有没有使用过该名字
     [Serializable]
     public class RspReName
     {
-        public string name;
+        public string name;//更新后的名字
     }
     #endregion
-
 
     /// <summary>
     /// 玩家信息
