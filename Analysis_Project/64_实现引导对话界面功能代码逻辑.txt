@@ -1,0 +1,122 @@
+
+一、引导对话界面功能
+1、人物形象的显示
+2、对话内容和人物名字
+3、点击按钮切换对话，对话完执行目标操作
+目标操作，如打开强化界面、打开其他操作等
+
+二、代码实现
+1、GuideWnd.cs里获取UI组件，并在场景里进行绑定
+public Text txtName;// 角色名字
+public Text txtTalk;// 对话内容
+public Image imgIcon;// 人物图标
+
+2、初始化时，拿到玩家和任务的数据
+（1）在GuideWnd.cs里定义玩家数据、获取任务数据
+后面根据玩家数据，设置玩家姓名显示；
+根据任务数据，设置任务对话内容，显示任务npc图标
+private PlayerData pData;
+private AutoGuideCfg curTaskData;
+
+（2）获取任务数据
+在MainCitySystem.cs里新增获取任务数据的函数
+public AutoGuideCfg GetCurTaskData(){ return curTaskData; }
+
+（3）初始化时获取玩家和任务数据
+protected override void InitWnd()
+{
+    base.InitWnd();
+    pData = GameRoot.Instance.PlayerData;
+    curTaskData = MainCitySystem.Instance.GetCurTaskData();
+}
+
+3、在PathDefine里定义npc图标获取路径
+public const string SelfIcon = "ResImages/assassin";// 刺客角色图标
+public const string GuideIcon = "ResImages/npcguide";// 默认引导npc图标
+public const string WiseIcon = "ResImages/npc0";// npc智者图标
+public const string GeneralIcon = "ResImages/npc1";// npc将军图标
+public const string ArtisanIcon = "ResImages/npc2";// npc工匠图标
+public const string TraderIcon = "ResImages/npc3";// npc商贩图标
+
+4、解析任务数据的对话数据
+将对话数据，解析到数组中，并记录当前对话到哪条对话
+（1）定义对话数组、当前对话索引号
+private string[] dialogArr;
+private int dialogIndex;
+protected override void InitWnd()
+{
+    ... ...
+    dialogArr = curTaskData.dialogArr.Split('#');//分隔对话数据
+    dialogIndex = 1;
+}
+
+（2）解析设置引导对话显示
+1）设置包括：对话内容，对话的Icon显示，还有对话者姓名显示
+2）由于玩家，npc的对话图标尺寸不一致，为了避免拉伸图片变形；
+还要设置图标尺寸
+3）注意对话中存在替换词，如将玩家姓名替换到对话里的$name处
+4）新增SetTalk()，并在InitWnd()里调用
+protected override void InitWnd()
+{
+    ... ...
+    SetTalk();
+}
+private void SetTalk()
+{
+    string[] talkArr = dialogArr[dialogIndex].Split('|');//分割对话编号和对话内容
+    if (talkArr[0] == "0")//角色的对话
+    {
+        SetSprite(imgIcon, PathDefine.SelfIcon);
+        SetText(txtName, pData.name);
+    }
+    else//npc的对话
+    {
+        switch (curTaskData.npcID)
+        {
+            case 0:
+                SetSprite(imgIcon, PathDefine.WiseIcon);
+                SetText(txtName, "智者");
+                break;
+            ... ...
+            default:
+                SetSprite(imgIcon, PathDefine.GuideIcon);
+                SetText(txtName, "小仙女");
+                break;
+        }
+    }
+    imgIcon.SetNativeSize();//图标icon自适应，不随尺寸进行拉伸变形
+    SetText(txtTalk, talkArr[1].Replace("$name", pData.name));//文本中的$name，替换为玩家名字
+}
+
+（3）这里将配置表里的dilogArr标签属性，更新修改为dialogArr；
+ResService.cs里对taskguide.xml数据解析，使用的也是dialogArr；
+GameResources/ResConfigs/任务引导系统配置文件 
+里的备份配置文件也进行修改，将dilogArr改为dialogArr
+
+三、运行测试
+任务引导后，正常显示对话界面，对话数据也正常解析显示
+
+四、完善添加对话界面按钮功能
+1、GuideWnd.cs里新增点击函数
+public void ClickNextBtn()// 点击切换下一条对话
+{
+    audioService.PlayUIAudio(Constants.UiClickBtn);
+    dialogIndex += 1;
+    if (dialogIndex == dialogArr.Length)
+    {
+        //TODO：向服务器发送任务完成信息
+        SetWndState(false);
+    }
+    else SetTalk();
+}
+
+2、场景里绑定按钮事件
+
+五、测试
+可正常切换对话，关闭对话窗口
+
+
+
+
+
+

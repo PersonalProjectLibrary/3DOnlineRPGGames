@@ -643,8 +643,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainCityWnd: {fileID: 319396833}
-  guideWnd: {fileID: 928142506387084858}
   infoWnd: {fileID: 5736438681728023680}
+  guideWnd: {fileID: 928142506387084858}
 --- !u!81 &1031753739
 AudioListener:
   m_ObjectHideFlags: 0
@@ -850,10 +850,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: GuideWnd
       objectReference: {fileID: 0}
-    - target: {fileID: 928142507077573556, guid: 3446c2976c7c10e4f9397e4e49ab46c3, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 928142507077573557, guid: 3446c2976c7c10e4f9397e4e49ab46c3, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -940,18 +936,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3446c2976c7c10e4f9397e4e49ab46c3, type: 3}
---- !u!1 &928142506387084857 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 928142507077573556, guid: 3446c2976c7c10e4f9397e4e49ab46c3, type: 3}
+--- !u!114 &928142506387084858 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 928142506387084858, guid: 3446c2976c7c10e4f9397e4e49ab46c3, type: 3}
   m_PrefabInstance: {fileID: 928142506387084856}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &928142506387084858
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 928142506387084857}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d2d80ed33d9b47544a30a33e499c0554, type: 3}

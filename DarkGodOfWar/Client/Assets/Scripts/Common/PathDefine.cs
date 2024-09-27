@@ -11,7 +11,7 @@
 
 public class PathDefine 
 {
-    #region Configs Path
+    #region ConfigsFile Path
     /// <summary>
     /// 创建角色界面_随机姓名配置文件
     /// </summary>
@@ -27,7 +27,7 @@ public class PathDefine
 
     #endregion
 
-    #region Player Path
+    #region PlayerPrefab Path
     /// <summary>
     /// 主城角色预制体路径
     /// </summary>
@@ -35,7 +35,35 @@ public class PathDefine
 
     #endregion
 
-    #region AutoGuide Path
+    #region Dialog CharacterIcon Path
+    /// <summary>
+    /// 刺客角色图标
+    /// </summary>
+    public const string SelfIcon = "ResImages/assassin";
+    /// <summary>
+    /// 默认引导npc图标
+    /// </summary>
+    public const string GuideIcon = "ResImages/npcguide";
+    /// <summary>
+    /// npc智者图标
+    /// </summary>
+    public const string WiseIcon = "ResImages/npc0";
+    /// <summary>
+    /// npc将军图标
+    /// </summary>
+    public const string GeneralIcon = "ResImages/npc1";
+    /// <summary>
+    /// npc工匠图标
+    /// </summary>
+    public const string ArtisanIcon = "ResImages/npc2";
+    /// <summary>
+    /// npc商贩图标
+    /// </summary>
+    public const string TraderIcon = "ResImages/npc3";
+
+    #endregion
+
+    #region AutoGuide HeadImage Path
     /// <summary>
     /// 自动引导_默认头像
     /// </summary>

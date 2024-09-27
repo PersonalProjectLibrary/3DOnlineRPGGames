@@ -20,6 +20,14 @@ public class MainCitySystem : SystemRoot
     /// 主城界面
     /// </summary>
     public MainCityWnd mainCityWnd;
+    /// <summary>
+    /// 角色信息界面
+    /// </summary>
+    public InfoWnd infoWnd;
+    /// <summary>
+    /// 引导对话界面
+    /// </summary>
+    public GuideWnd guideWnd;
 
     /// <summary>
     /// 初始化主城系统
@@ -55,14 +63,6 @@ public class MainCitySystem : SystemRoot
             charaterCam.gameObject.SetActive(false);
         });
     }
-
-    #region Guide Wnd：引导对话界面
-    /// <summary>
-    /// 引导对话界面
-    /// </summary>
-    public GuideWnd guideWnd;
-
-    #endregion
 
     #region Guide Wnd：引导任务设置
     /// <summary>
@@ -128,6 +128,15 @@ public class MainCitySystem : SystemRoot
     }
 
     /// <summary>
+    /// 获取当前任务数据
+    /// </summary>
+    /// <returns></returns>
+    public AutoGuideCfg GetCurTaskData()
+    {
+        return curTaskData;
+    }
+
+    /// <summary>
     /// 判断是否自动导航到目标位置
     /// </summary>
     private void IsArriveNavPos()
@@ -168,11 +177,6 @@ public class MainCitySystem : SystemRoot
     #endregion
 
     #region Info Wnd：角色信息界面设置
-    /// <summary>
-    /// 角色信息界面
-    /// </summary>
-    public InfoWnd infoWnd;
-
     /// <summary>
     /// 角色初始角度
     /// </summary>
