@@ -1,0 +1,99 @@
+
+服务器数据文件的读取
+
+一、C#读取xml文件，
+1、Unity里使用可以使用Unity资源系统加载文件
+TextAsset xml = Resource.Load<TextAsset>(filePath);
+XmlDocuent doc = new XmlDocument();
+doc.LoadXml(xml.text);
+
+2、服务器里只能C#的IO接口加载文件
+XmlDocument doc = new XmlDocument();
+doc.Load(filePath);
+
+3、解析xml文件
+XmlNodeList nodeList = doc.SelectSingleNode("root").ChildNodes;
+XmlElement ele = nodleList[i] as XmlElement;
+string value = ele.GetAttributeNode("ID").InnerText;
+
+二、添加初始化配置数据服务
+服务器不需要加载prefab、加载其他什么资源，这里把配置文件的加载设置为一个单独的服务
+1、新建配置数据服务CfgSvs.cs
+01Service文件夹下新建02CfgSvs文件夹，02CfgSvs文件夹里新建CfgSvs.cs
+
+2、参照NetSvc.cs，对CfgSvs.cs进行初始化
+将CfgSvs.cs设置为单例，
+添加初始化函数，添加缓存层的引用，初始化时会进行数据更新，要用到缓存层
+
+3、ServerRoot.cs里添加对CfgSvs.cs的引用和初始化
+
+三、读取数据配置
+1、添加读取任务引导的配置数据的函数InitGuideCfg()，
+（1）在初始化里调用
+public void Init()
+{
+    InitGuideCfg();
+    PECommon.Log("CfgSvs Init Done.");
+}
+
+（2）注
+1）这里使用xml，需要引用System.xml，ServerClient里自动引用或自己手动添加该引用库；
+2）另外在客户的里是有一份配置文件，在后面游戏开发过程中，配置文件也是要反复修改的；
+所以这里不把配置文件复制到服务器项目里，而是直接使用Unity项目里的配置文件；
+后面发布时，再把统一的配置文件复制到服务器目录文件下进行读取；
+3）这里方便开发，直接打开Unity配置文件夹，复制配置文件路径，
+作为服务器上加载xml配置文件的路径
+如：
+XmlDocument doc = new XmlDocument();
+doc.LoadXml(@"E:\DarkGodOfWar\Client\Assets\Resources\ResConfigs\taskguide.xml");
+
+（3）和客户端读取解析任务引导的xml配置文件差不多，可参照着写
+这里直接将Unity客户端里的taskGuideDic字典和InitGuideCfg()、
+GetAutoGuideData()，以及引导任务的配置文件数据类AutoGuideCfg和BaseData都复制过来改
+
+1）这里将方法和类名改短一点
+AutoGuideCfg重命名为GuideCfg，taskGuideDic重命名为guideDic
+
+2）服务端这边读取引导文件配置，只需要金币和经验值这两个数据，
+对应修改AutoGuideCfg配置数据类及解析函数InitGuideCfg()
+
+public class BaseData<T>{ public int ID;// 配置表里的ID }	// 配置表数据的基类
+public class GuideCfg : BaseData<GuideCfg>	// 任务引导配置表
+{
+    public int coin;// 任务奖励_金币
+    public string exp;// 任务奖励_经验值
+}
+
+public class CfgSvs
+{
+    ... ...
+    private Dictionary<int, GuideCfg> guideDic = new Dictionary<int, GuideCfg>();
+    private void InitGuideCfg()
+    {
+        XmlDocument doc = new XmlDocument();
+        doc.LoadXml(@"E:\DarkGodOfWar\Client\Assets\Resources\ResConfigs\taskguide.xml");
+        XmlNodeList nodeList = doc.SelectSingleNode("root").ChildNodes;
+        for (int i = 0; i < nodeList.Count; i++)
+        {
+            XmlElement element = nodeList[i] as XmlElement;
+            if (element.GetAttributeNode("ID") == null) continue;
+            int id = Convert.ToInt32(element.GetAttributeNode("ID").InnerText);
+            GuideCfg ag = new GuideCfg { ID = id };
+            foreach (XmlElement e in nodeList[i].ChildNodes)
+            {
+                switch (e.Name)
+                {
+                    case "coin": ag.coin = int.Parse(e.InnerText); break;
+                    case "exp": ag.coin = int.Parse(e.InnerText); break;
+                }
+            }
+            guideDic.Add(id, ag);
+        }
+    }
+    public GuideCfg GetAutoGuideData(int id)
+    {
+        GuideCfg agc = null;
+        guideDic.TryGetValue(id, out agc);
+        return agc;
+    }
+}

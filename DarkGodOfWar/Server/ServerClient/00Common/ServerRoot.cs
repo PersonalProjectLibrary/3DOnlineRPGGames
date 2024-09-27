@@ -32,6 +32,7 @@ public class ServerRoot
         //数据层
         DBManager.Instance.Init();
         //服务层
+        CfgSvs.Instance.Init();
         NetSvc.Instance.Init();
         CacheSvc.Instance.Init();
         //业务系统层
