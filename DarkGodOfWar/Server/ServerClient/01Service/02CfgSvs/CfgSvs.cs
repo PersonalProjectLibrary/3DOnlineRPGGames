@@ -73,7 +73,7 @@ public class CfgSvs
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public GuideCfg GetAutoGuideData(int id)
+    public GuideCfg GetGuideData(int id)
     {
         GuideCfg agc = null;
         guideDic.TryGetValue(id, out agc);
@@ -105,5 +105,5 @@ public class GuideCfg : BaseData<GuideCfg>
     /// <summary>
     /// 任务奖励_经验值
     /// </summary>
-    public string exp;
+    public int exp;
 }
