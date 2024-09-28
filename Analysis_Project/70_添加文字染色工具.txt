@@ -1,0 +1,75 @@
+
+原本公共文本弹窗工具DynamicWnd的txtTips的文字只有一种颜色
+这里优化设置为可自定义输入设置文本颜色
+
+1、在Constants.cs里定义几种颜色设置
+这里的颜色变量用颜色码标志<color=#FF0000FF>Tips文字</color>，
+在显示tips时将颜色码加到tips的文字前面，就可以修改文字颜色
+public class Constants
+{
+    ... ...
+    //动态弹窗文字颜色：<color=#FF0000FF>Tips文字</>
+    private const string ColorDefault = "<color=#FFAF36>";//最初默认橙色
+    private const string ColorRed = "<color=#FF0000FF>";//红色
+    private const string ColorGreen = "<color=#00FF00FF>";//绿色
+    private const string ColorBlue = "<color=#00B4FFFF>";//蓝色
+    private const string ColorYellow = "<color=#FFFF00FF>";//黄色
+    private const string ColorEnd = "</color>";//颜色结束标签
+}
+
+2、对设置tips文字颜色功能，在Constants.cs里封装成一个方法工具
+后面其他文本设置颜色也可以使用该工具
+（1）Constants.cs里添加颜色枚举类
+public enum TxtColor
+{
+    Red,
+    Green,
+    Blue,
+    Yellow
+}
+（2）Constants.cs里添加设置文字颜色的静态方法
+public class Constants
+{
+    ... ...
+    private const string ColorEnd = "</>";//颜色结束标签
+    public static string SetTxtColor(string str, TxtColor txtColor)// 设置文本颜色
+    {
+        string result = "";
+        switch (txtColor)
+        {
+            case TxtColor.Red: result = ColorRed + str + ColorEnd; break;
+            case TxtColor.Green: result = ColorGreen + str + ColorEnd; break;
+            case TxtColor.Blue: result = ColorBlue + str + ColorEnd; break;
+            case TxtColor.Yellow: result = ColorYellow + str + ColorEnd; break;
+            default: result = ColorDefault + str + ColorEnd; break;
+        }
+        return result;
+    }
+}
+
+3、设置动态弹窗Tips的文字颜色
+在MainCitySystem.cs的RspGuide()里设置提示任务奖励的弹窗的文字颜色
+原：
+public void RspGuide(GameMsg msg)
+{
+    RspGuide data = msg.rspGuide;//获取服务器数据
+    //Tips弹出提示获取的奖励
+    GameRoot.AddTips("任务奖励 金币+" + curTaskData.coin + " 经验+" + curTaskData.exp);
+    ... ...
+}
+改：
+public void RspGuide(GameMsg msg)
+{
+    RspGuide data = msg.rspGuide;//获取服务器数据
+    //Tips弹出提示获取的奖励
+    GameRoot.AddTips(Constants.SetTxtColor("任务奖励 金币+" + curTaskData.coin + " 经验+" + curTaskData.exp, TxtColor.Blue));
+    ... ...
+}
+
+4、测试
+运行游戏，做引导任务，动态弹窗显示奖励提示就正常显示指定的颜色了
+
+
+
+
+

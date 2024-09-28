@@ -9,9 +9,6 @@
 ***************************************/
 #endregion
 
-using System;
-using UnityEngine;
-
 public class Constants
 {
     //场景名称
@@ -50,4 +47,42 @@ public class Constants
     public const int NpcGeneral = 1;//将军npc
     public const int NpcArtisan = 2;//工匠npc
     public const int NpcTrader = 3;//货商npc
+
+    //动态弹窗文字颜色：<color=#FF0000FF>Tips文字</color>
+    private const string ColorDefault = "<color=#FFAF36>";//最初默认橙色
+    private const string ColorRed = "<color=#FF0000FF>";//红色
+    private const string ColorGreen = "<color=#00FF00FF>";//绿色
+    private const string ColorBlue = "<color=#00B4FFFF>";//蓝色
+    private const string ColorYellow = "<color=#FFFF00FF>";//黄色
+    private const string ColorEnd = "</color>";//颜色结束标签
+    /// <summary>
+    /// 设置文本颜色
+    /// </summary>
+    /// <param name="str"></param>
+    /// <param name="txtColor"></param>
+    /// <returns></returns>
+    public static string SetTxtColor(string str, TxtColor txtColor)
+    {
+        string result = "";
+        switch (txtColor)
+        {
+            case TxtColor.Red: result = ColorRed + str + ColorEnd; break;
+            case TxtColor.Green: result = ColorGreen + str + ColorEnd; break;
+            case TxtColor.Blue: result = ColorBlue + str + ColorEnd; break;
+            case TxtColor.Yellow: result = ColorYellow + str + ColorEnd; break;
+            default: result = ColorDefault + str + ColorEnd; break;
+        }
+        return result;
+    }
+}
+
+/// <summary>
+/// 文本颜色枚举类
+/// </summary>
+public enum TxtColor
+{
+    Red,
+    Green,
+    Blue,
+    Yellow
 }

@@ -177,7 +177,8 @@ public class MainCitySystem : SystemRoot
     {
         RspGuide data = msg.rspGuide;//获取服务器数据
         //Tips弹出提示获取的奖励
-        GameRoot.AddTips("任务奖励 金币+" + curTaskData.coin + " 经验+" + curTaskData.exp);
+        //GameRoot.AddTips("任务奖励 金币+" + curTaskData.coin + " 经验+" + curTaskData.exp);
+        GameRoot.AddTips(Constants.SetTxtColor("任务奖励 金币+" + curTaskData.coin + " 经验+" + curTaskData.exp, TxtColor.Blue));
         //读取任务的actID，执行相应的操作
         switch (curTaskData.actID)
         {
