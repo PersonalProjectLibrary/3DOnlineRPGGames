@@ -9,6 +9,7 @@
 ***************************************/
 #endregion
 
+using PEProtocol;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -131,10 +132,7 @@ public class MainCitySystem : SystemRoot
     /// 获取当前任务数据
     /// </summary>
     /// <returns></returns>
-    public AutoGuideCfg GetCurTaskData()
-    {
-        return curTaskData;
-    }
+    public AutoGuideCfg GetCurTaskData() { return curTaskData; }
 
     /// <summary>
     /// 判断是否自动导航到目标位置
@@ -169,11 +167,31 @@ public class MainCitySystem : SystemRoot
     /// <summary>
     /// 打开引导任务的对话界面
     /// </summary>
-    private void OpenGuideWnd()
+    private void OpenGuideWnd() { guideWnd.SetWndState(); }
+
+    /// <summary>
+    /// 处理服务器回应引导任务请求的消息
+    /// </summary>
+    /// <param name="msg"></param>
+    public void RspGuide(GameMsg msg)
     {
-        guideWnd.SetWndState();
+        RspGuide data = msg.rspGuide;//获取服务器数据
+        //Tips弹出提示获取的奖励
+        GameRoot.AddTips("任务奖励 金币+" + curTaskData.coin + " 经验+" + curTaskData.exp);
+        //读取任务的actID，执行相应的操作
+        switch (curTaskData.actID)
+        {
+            case 0: break;//与智者对话
+            case 1: break;//TODO 进入副本
+            case 2: break;//TODO 进行装备强化
+            case 3: break;//TODO 进行体力购买
+            case 4: break;//TODO 进行金币购买
+            case 5: break;//TODO 进行世界聊天
+        }
+        GameRoot.Instance.SetPlayerDataByGuide(data);//把更新的玩家数据，更新到GameRoot里
+        mainCityWnd.RefreshUI();//刷新主城UI显示
+        infoWnd.RefreshUI();//刷新角色UI显示
     }
-    
     #endregion
 
     #region Info Wnd：角色信息界面设置
@@ -211,10 +229,7 @@ public class MainCitySystem : SystemRoot
     /// <summary>
     /// 记录角色初始角度
     /// </summary>
-    public void SetStartRotate()
-    {
-        startRotate = playerCtrl.transform.localEulerAngles.y;
-    }
+    public void SetStartRotate() { startRotate = playerCtrl.transform.localEulerAngles.y; }
 
     /// <summary>
     /// 设置角色信息界面里角色的旋转

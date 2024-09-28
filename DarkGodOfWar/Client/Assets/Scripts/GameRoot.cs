@@ -70,36 +70,38 @@ public class GameRoot : MonoBehaviour
     /// 显示弹窗提示
     /// </summary>
     /// <param name="tips"></param>
-    public static void AddTips(string tips)
-    {
-        Instance.dynamicWnd.AddTips(tips);
-    }
+    public static void AddTips(string tips) { Instance.dynamicWnd.AddTips(tips); }
 
     #region PlayerData
     private PlayerData playerData = null;
+    
     /// <summary>
     /// 获取玩家数据
     /// </summary>
-    public PlayerData PlayerData
-    {
-        get { return playerData; }
-    }
+    public PlayerData PlayerData { get { return playerData; } }
+    
     /// <summary>
-    /// 更新修改玩家数据
+    /// 根据登录信息设置玩家数据
     /// </summary>
     /// <param name="data"></param>
-    public void SetPlayerData(RspLogin data)
-    {
-        playerData = data.playerData;
-    }
+    public void SetPlayerDataByLogin(RspLogin data) { playerData = data.playerData; }
 
     /// <summary>
     /// 更新玩家名字
     /// </summary>
     /// <param name="name"></param>
-    public void SetPlayerName(string name)
+    public void SetPlayerName(string name) { PlayerData.name = name; }
+
+    /// <summary>
+    /// 根据任务引导信息设置玩家的数据
+    /// </summary>
+    /// <param name="data"></param>
+    public void SetPlayerDataByGuide(RspGuide data)
     {
-        PlayerData.name = name;
+        PlayerData.guideid = data.guideid;
+        playerData.lv = data.lv;
+        playerData.exp = data.exp;
+        playerData.coin = data.coin;
     }
     #endregion
 

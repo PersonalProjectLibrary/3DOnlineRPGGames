@@ -49,7 +49,7 @@ public class LoginSystem : SystemRoot
     public void RespondLogin(GameMsg msg)
     {
         GameRoot.AddTips("登录成功");
-        GameRoot.Instance.SetPlayerData(msg.rspLogin);//保存返回的玩家信息
+        GameRoot.Instance.SetPlayerDataByLogin(msg.rspLogin);//保存返回的玩家信息
         if (msg.rspLogin.playerData.name == "") createWnd.SetWndState();//进入角色创建界面
         else MainCitySystem.Instance.EnterMainCity();//进入主城
         loginWnd.SetWndState(false);//关闭登录界面

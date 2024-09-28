@@ -144,7 +144,7 @@ public class InfoWnd : WindowRoot
     /// <summary>
     /// 刷新UI界面
     /// </summary>
-    private void RefreshUI()
+    public void RefreshUI()
     {
         PlayerData pData = GameRoot.Instance.PlayerData;
         //角色展示面板设置

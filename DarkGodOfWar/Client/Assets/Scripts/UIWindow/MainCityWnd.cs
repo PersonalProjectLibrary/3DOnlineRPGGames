@@ -119,7 +119,7 @@ public class MainCityWnd : WindowRoot
     /// <summary>
     /// 刷新主城UI界面
     /// </summary>
-    private void RefreshUI()
+    public void RefreshUI()
     {
         PlayerData pData = GameRoot.Instance.PlayerData;//获取玩家数据
 

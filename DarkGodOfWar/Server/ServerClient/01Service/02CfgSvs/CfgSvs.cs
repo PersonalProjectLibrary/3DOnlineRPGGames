@@ -48,7 +48,7 @@ public class CfgSvs
     private void InitGuideCfg()
     {
         XmlDocument doc = new XmlDocument();
-        doc.LoadXml(@"E:\GitLibrary\PersonalProjectLibrary\3DOnlineRPGGames\DarkGodOfWar\Client\Assets\Resources\ResConfigs\taskguide.xml");
+        doc.Load(@"E:\GitLibrary\PersonalProjectLibrary\3DOnlineRPGGames\DarkGodOfWar\Client\Assets\Resources\ResConfigs\taskguide.xml");
         XmlNodeList nodeList = doc.SelectSingleNode("root").ChildNodes;
         for (int i = 0; i < nodeList.Count; i++)
         {
@@ -61,7 +61,7 @@ public class CfgSvs
                 switch (e.Name)
                 {
                     case "coin": ag.coin = int.Parse(e.InnerText); break;
-                    case "exp": ag.coin = int.Parse(e.InnerText); break;
+                    case "exp": ag.exp = int.Parse(e.InnerText); break;
                 }
             }
             guideDic.Add(id, ag);
@@ -76,8 +76,8 @@ public class CfgSvs
     public GuideCfg GetGuideData(int id)
     {
         GuideCfg agc = null;
-        guideDic.TryGetValue(id, out agc);
-        return agc;
+        if(guideDic.TryGetValue(id, out agc)) return agc;
+        return null;
     }
 }
 

@@ -115,6 +115,10 @@ public class NetService : MonoBehaviour
                     PECommon.Log("数据库更新异常", LogType.Error);
                     GameRoot.AddTips("网络不稳定");
                     break;
+                case ErrorCode.ServerDataError:
+                    PECommon.Log("服务器数据异常", LogType.Error);
+                    GameRoot.AddTips("客户端数据异常");
+                    break;
             }
             return;
         }
@@ -122,6 +126,7 @@ public class NetService : MonoBehaviour
         {
             case CMD.RspLogin: LoginSystem.Instance.RespondLogin(msg); break;
             case CMD.RspReName:LoginSystem.Instance.RspRename(msg);break;
+            case CMD.RspGuide:MainCitySystem.Instance.RspGuide(msg);break;
         }
     }
 }
