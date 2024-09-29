@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50617
 File Encoding         : 65001
 
-Date: 2024-09-28 23:10:45
+Date: 2024-09-30 00:53:49
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -39,7 +39,7 @@ CREATE TABLE `account` (
   `critical` int(11) NOT NULL,
   `guideid` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of account
@@ -48,3 +48,4 @@ INSERT INTO `account` VALUES ('1', '789', '789', '夏虹', '5', '650', '150', '3
 INSERT INTO `account` VALUES ('2', '123', '123', '秦唯', '3', '70', '50', '500', '20', '800', '75', '265', '67', '43', '7', '5', '2', '1003');
 INSERT INTO `account` VALUES ('3', '126', '126', '魏然', '2', '80', '10', '1000', '80', '1500', '105', '265', '67', '43', '7', '5', '2', '1002');
 INSERT INTO `account` VALUES ('4', '333', '222', '安伊', '1', '80', '30', '0', '160', '1000', '45', '265', '67', '43', '7', '5', '2', '1001');
+INSERT INTO `account` VALUES ('5', '629', '789', '东方昭', '1', '0', '100', '0', '500', '2000', '275', '265', '67', '43', '7', '5', '2', '1001');

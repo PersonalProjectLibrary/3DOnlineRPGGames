@@ -167,6 +167,15 @@ public class MainCityWnd : WindowRoot
 
     #region ClickEvents
     /// <summary>
+    /// 点击打开强化升级界面
+    /// </summary>
+    public void ClickStrongBtn()
+    {
+        audioService.PlayUIAudio(Constants.UiOpenPage);
+        MainCitySystem.Instance.OpenStrongWnd();
+    }
+
+    /// <summary>
     /// 点击自动任务按钮
     /// </summary>
     public void ClickGuideBtn()

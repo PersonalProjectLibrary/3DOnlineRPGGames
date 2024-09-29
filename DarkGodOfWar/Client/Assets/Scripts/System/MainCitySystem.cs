@@ -29,6 +29,10 @@ public class MainCitySystem : SystemRoot
     /// 引导对话界面
     /// </summary>
     public GuideWnd guideWnd;
+    /// <summary>
+    /// 强化升级界面
+    /// </summary>
+    public StrongWnd strongWnd;
 
     /// <summary>
     /// 初始化主城系统
@@ -65,7 +69,18 @@ public class MainCitySystem : SystemRoot
         });
     }
 
-    #region Guide Wnd：引导任务设置
+    #region Strong Wnd：强化升级界面设置
+    /// <summary>
+    /// 打开强化升级界面
+    /// </summary>
+    public void OpenStrongWnd()
+    {
+        strongWnd.SetWndState();
+    }
+
+    #endregion
+
+    #region Guide Wnd：引导任务界面设置
     /// <summary>
     /// 当前引导任务数据
     /// </summary>

@@ -1,0 +1,12 @@
+
+1、在Scripts/UIWindow文件夹里新建StrongWnd.cs脚本，并挂到场景的StrongWnd物体身上
+
+2、初始化设置StrongWnd.cs脚本
+（1）继承WindowRoot，添加InitWnd()方法，
+（2）在MainCitySystem.cs主城系统里添加引用，以及打开强化窗口的函数OpenStrongWnd()
+（3）在MainCityWnd.cs里添加打开强化升级界面的点击事件函数ClickStrongBtn()
+并对场景MainCityWnd里的btnStrong按钮添加点击事件绑定
+（4）StrongWnd.cs添加ClickCloseBtn()关闭窗口函数，然后对强化界面里的btnClose按钮进行事件绑定
+
+3、运行测试
+点击主城界面的强化图标，打开强化界面
