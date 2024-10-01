@@ -9,9 +9,12 @@
 ***************************************/
 #endregion
 
+/// <summary>
+/// 路径常量定义
+/// </summary>
 public class PathDefine 
 {
-    #region ConfigsFile Path
+    #region ConfigsFile Path：配置文件的路径
     /// <summary>
     /// 创建角色界面_随机姓名配置文件
     /// </summary>
@@ -27,7 +30,7 @@ public class PathDefine
 
     #endregion
 
-    #region PlayerPrefab Path
+    #region PlayerPrefab Path：角色预制体的路径
     /// <summary>
     /// 主城角色预制体路径
     /// </summary>
@@ -35,7 +38,7 @@ public class PathDefine
 
     #endregion
 
-    #region Dialog CharacterIcon Path
+    #region Dialog CharacterIcon Path：与npc对话显示的对话的角色图片的路径
     /// <summary>
     /// 刺客角色图标
     /// </summary>
@@ -63,7 +66,7 @@ public class PathDefine
 
     #endregion
 
-    #region AutoGuide HeadImage Path
+    #region AutoGuide HeadImage Path：任务引导的图标的路径
     /// <summary>
     /// 自动引导_默认头像
     /// </summary>
@@ -85,5 +88,17 @@ public class PathDefine
     /// </summary>
     public const string TraderHead = "ResImages/trader";
 
+    #endregion
+
+    #region Strong Left BgImg：强化界面左侧背景图片的路径
+    /// <summary>
+    /// 默认背景版
+    /// </summary>
+    public const string ItemPlateBg = "ResImages/charbg3";
+    /// <summary>
+    /// 选中后箭头背景版
+    /// </summary>
+    public const string ItemArrowBg = "ResImages/btnstrong";
+    
     #endregion
 }

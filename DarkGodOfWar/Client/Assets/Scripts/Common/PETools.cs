@@ -9,6 +9,9 @@
 ***************************************/
 #endregion
 
+/// <summary>
+/// 工具类
+/// </summary>
 public class PETools
 {
     /// <summary>

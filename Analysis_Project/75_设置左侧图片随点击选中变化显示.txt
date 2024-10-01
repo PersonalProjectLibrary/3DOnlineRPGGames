@@ -1,0 +1,57 @@
+
+设置左侧图片随点击选中变化显示
+左侧图片按钮，被点击的按钮变成带箭头图片，其他图片变成默认背景板
+
+1、PathDefine.cs里定义背景板和箭头图片的路径
+public const string ItemPlateBg = "ResImages/charbg3";
+public const string ItemArrowBg = "ResImages/btnstrong";
+
+2、将所有显示图片存到数组里
+在注册图片的点击事件时就对图片数组进行赋值；
+public Transform leftImgPos;
+private Image[] leftImgs = new Image[6];
+private void RegClickEvts()
+{
+    for (int i = 0; i < leftImgPos.childCount; i++)
+    {
+        Image img = leftImgPos.GetChild(i).GetComponent<Image>();
+        ... ...
+        leftImgs[i] = img;
+    }
+}
+
+3、在点击左侧按钮图片后，记录当前选中的图片的索引值，设置左侧图片的显示
+由于默认背景板和选中后的箭头背景图片，大小尺寸不同，
+在图片切换后要对图片的位置大小进行设置，使图片正常显示
+private int curIndex;
+private void ClickPosItem(int index)
+{
+    PECommon.Log("ClickItem：" + index);
+    curIndex = index;
+    for (int i = 0; i < leftImgs.Length; i++)
+    {
+        Transform trans = leftImgs[i].transform;
+        if (i == curIndex)//设置选中的图片
+        {
+            SetSprite(leftImgs[i], PathDefine.ItemArrowBg);
+            trans.localPosition = new Vector3(10, trans.localPosition.y, 0);
+            trans.GetComponent<RectTransform>().sizeDelta = new Vector2(250, 95);
+        }
+        else//设置为默认背景版
+        {
+            SetSprite(leftImgs[i], PathDefine.ItemPlateBg);
+            trans.localPosition = new Vector3(0, trans.localPosition.y, 0);
+            trans.GetComponent<RectTransform>().sizeDelta = new Vector2(220, 85);
+        }
+    }
+}
+
+4、设置打开界面时，默认是选中第一个图片状态
+protected override void InitWnd()
+{
+    ... ...
+    ClickPosItem(0);
+}
+
+5、运行测试
+
