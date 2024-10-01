@@ -1,0 +1,64 @@
+
+强化界面左侧按钮添加点击事件监听
+
+1、界面打开后，显示装备信息，显示选中某一个装备和装备信息，
+（1）默认选中显示第一个：头部 的装备信息
+（2）选中图片背景版切换为选中状态，并且左侧按钮还可以操控
+这里不能使用按钮btn，按钮在点击过程中还有其他效果
+这里使用图片，添加点击事件进行监控操作
+（3）考虑多个图片，不对图片的组件获取设置，直接对其父物体进行设置
+
+2、PEListener.cs里添加OnClick事件
+public class PEListener : MonoBehaviour,IPointerClickHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler
+{
+    public Action<PointerEventData> onClick;
+    ... ...
+    public void OnPointerClick(PointerEventData eventData) { if (onClick != null) onClick(eventData); }
+    ... ...
+}
+
+3、在WindowRoot.cs里添加图片的点击事件
+protected void OnClick(GameObject go, Action<PointerEventData> callback)
+{
+    PEListener listener = GetOrAddComponent<PEListener>(go);
+    listener.onClick = callback;
+}
+
+4、在StrongWnd.cs里对图片进行事件绑定注册
+（1）定义左侧图片父物体组件，并在场景里进行绑定
+public Transform leftImgPos;
+
+（2）新增点击图片刷新右侧装备信息的函数ClickPosItem()
+private void ClickPosItem() { PECommon.Log("ClickItem"); }
+
+（3）对左侧按钮图片进行点击事件检测注册
+protected override void InitWnd()
+{
+    base.InitWnd();
+    RegClickEvts();
+}
+private void RegClickEvts()
+{
+    for (int i = 0; i < leftImgPos.childCount; i++)
+    {
+        Image img = leftImgPos.GetChild(i).GetComponent<Image>();
+
+        OnClick(img.gameObject, (PointerEventData evt) =>
+        {
+            ClickPosItem();
+            audioService.PlayUIAudio(Constants.UiClickBtn);
+        });
+    }
+}
+（4）为了避免左侧背景版图片上面的图片文字挡住背景板，影响背景版点击效果
+这里把背景版上面的图片文字身上Image和Text组件的RaycastTarget选项取消勾选
+
+（5）运行测试
+
+5、后续优化点击事件
+在点击图片时，把图片位置参数传递进去，确认是哪个图片点击，读取数据库里对应的信息数据
+
+
+
+
+

@@ -9,12 +9,20 @@
 ***************************************/
 #endregion
 
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
 /// <summary>
 /// 强化升级界面
 /// </summary>
 public class StrongWnd : WindowRoot
 {
     #region UIDefine
+    /// <summary>
+    /// 左侧一列按钮图片的父物体
+    /// </summary>
+    public Transform leftImgPos;
 
     #endregion
 
@@ -24,7 +32,30 @@ public class StrongWnd : WindowRoot
     protected override void InitWnd()
     {
         base.InitWnd();
+        RegClickEvts();
     }
+
+    /// <summary>
+    /// 左侧按钮图片添加点击事件监听
+    /// </summary>
+    private void RegClickEvts()
+    {
+        for (int i = 0; i < leftImgPos.childCount; i++)
+        {
+            Image img = leftImgPos.GetChild(i).GetComponent<Image>();
+
+            OnClick(img.gameObject, (PointerEventData evt) =>
+            {
+                ClickPosItem();
+                audioService.PlayUIAudio(Constants.UiClickBtn);
+            });
+        }
+    }
+
+    /// <summary>
+    /// 点击左侧图片Item
+    /// </summary>
+    private void ClickPosItem() { PECommon.Log("ClickItem"); }
 
     /// <summary>
     /// 关闭强化界面

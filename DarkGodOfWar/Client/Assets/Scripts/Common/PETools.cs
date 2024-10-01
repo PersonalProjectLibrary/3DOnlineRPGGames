@@ -9,9 +9,6 @@
 ***************************************/
 #endregion
 
-using System;
-using UnityEngine;
-
 public class PETools
 {
     /// <summary>

@@ -16,11 +16,31 @@ using UnityEngine.EventSystems;
 /// <summary>
 /// 点击、拖拽、松开UI的事件监听
 /// </summary>
-public class PEListener : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler
+public class PEListener : MonoBehaviour,IPointerClickHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler
 {
+    /// <summary>
+    /// 点击事件
+    /// </summary>
+    public Action<PointerEventData> onClick;
+    /// <summary>
+    /// 按下事件
+    /// </summary>
     public Action<PointerEventData> onClickDown;
+    /// <summary>
+    /// 拖拽事件
+    /// </summary>
     public Action<PointerEventData> onDrag;
+    /// <summary>
+    /// 松开事件
+    /// </summary>
     public Action<PointerEventData> onClickUp;
+
+    /// <summary>
+    /// 点击事件
+    /// </summary>
+    /// <param name="eventData"></param>
+    /// <exception cref="NotImplementedException"></exception>
+    public void OnPointerClick(PointerEventData eventData) { if (onClick != null) onClick(eventData); }
 
     /// <summary>
     /// 按下事件
@@ -37,18 +57,12 @@ public class PEListener : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
     /// </summary>
     /// <param name="eventData"></param>
     /// <exception cref="NotImplementedException"></exception>
-    public void OnDrag(PointerEventData eventData)
-    {
-        if (onDrag != null) onDrag(eventData);
-    }
+    public void OnDrag(PointerEventData eventData) { if (onDrag != null) onDrag(eventData); }
 
     /// <summary>
     /// 松开事件
     /// </summary>
     /// <param name="eventData"></param>
     /// <exception cref="NotImplementedException"></exception>
-    public void OnPointerUp(PointerEventData eventData)
-    {
-        if (onClickUp != null) onClickUp(eventData);
-    }
+    public void OnPointerUp(PointerEventData eventData) { if (onClickUp != null) onClickUp(eventData); }
 }

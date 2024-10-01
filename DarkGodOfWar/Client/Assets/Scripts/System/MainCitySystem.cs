@@ -13,6 +13,9 @@ using PEProtocol;
 using UnityEngine;
 using UnityEngine.AI;
 
+/// <summary>
+/// 主城系统
+/// </summary>
 public class MainCitySystem : SystemRoot
 {
     public static MainCitySystem Instance = null;
