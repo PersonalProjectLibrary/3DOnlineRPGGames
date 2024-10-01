@@ -19,10 +19,6 @@ using UnityEngine.EventSystems;
 public class PEListener : MonoBehaviour,IPointerClickHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler
 {
     /// <summary>
-    /// 点击事件
-    /// </summary>
-    public Action<PointerEventData> onClick;
-    /// <summary>
     /// 按下事件
     /// </summary>
     public Action<PointerEventData> onClickDown;
@@ -38,9 +34,20 @@ public class PEListener : MonoBehaviour,IPointerClickHandler, IPointerDownHandle
     /// <summary>
     /// 点击事件
     /// </summary>
+    /// 可在WindowRoot.cs的OnClick事件里查看使用
+    public Action<object> onClick;
+    /// <summary>
+    /// 点击事件辅助参数
+    /// </summary>
+    /// 可在WindowRoot.cs的OnClick事件里查看使用
+    public object args;
+
+    /// <summary>
+    /// 点击事件
+    /// </summary>
     /// <param name="eventData"></param>
     /// <exception cref="NotImplementedException"></exception>
-    public void OnPointerClick(PointerEventData eventData) { if (onClick != null) onClick(eventData); }
+    public void OnPointerClick(PointerEventData eventData) { if (onClick != null) onClick(args); }
 
     /// <summary>
     /// 按下事件

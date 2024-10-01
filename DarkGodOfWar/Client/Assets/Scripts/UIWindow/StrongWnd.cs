@@ -44,18 +44,18 @@ public class StrongWnd : WindowRoot
         {
             Image img = leftImgPos.GetChild(i).GetComponent<Image>();
 
-            OnClick(img.gameObject, (PointerEventData evt) =>
+            OnClick(img.gameObject, (object args) =>
             {
-                ClickPosItem();
+                ClickPosItem((int)args);
                 audioService.PlayUIAudio(Constants.UiClickBtn);
-            });
+            },i);
         }
     }
 
     /// <summary>
     /// 点击左侧图片Item
     /// </summary>
-    private void ClickPosItem() { PECommon.Log("ClickItem"); }
+    private void ClickPosItem(int index) { PECommon.Log("ClickItem：" + index); }
 
     /// <summary>
     /// 关闭强化界面

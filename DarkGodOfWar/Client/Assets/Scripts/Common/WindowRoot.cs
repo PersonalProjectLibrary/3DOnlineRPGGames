@@ -148,15 +148,11 @@ public class WindowRoot : MonoBehaviour
     #endregion
 
     #region Click Evts：点击、触屏事件
-    /// <summary>
-    /// UI触控点击
-    /// </summary>
-    /// <param name="go"></param>
-    /// <param name="callback"></param>
-    protected void OnClick(GameObject go, Action<PointerEventData> callback)
+    protected void OnClick(GameObject go, Action<object> callback,object args)
     {
         PEListener listener = GetOrAddComponent<PEListener>(go);
         listener.onClick = callback;
+        listener.args = args;
     }
 
     /// <summary>

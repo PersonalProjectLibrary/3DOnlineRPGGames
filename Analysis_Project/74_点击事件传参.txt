@@ -1,0 +1,94 @@
+
+一、优化点击事件
+在点击图片时，把图片位置参数传递进去，确认是哪个图片点击，后面方便读取数据库里对应的信息数据
+
+二、实现传参思路：
+1、替换WindowRoot.cs里事件函数的PointEventData参数
+这里用不到点击的位置信息，可将PointEventData换成GameObject，直接获取被点击的物体
+后面可根据点击对象的名字，确定被点击的是哪个对象
+
+2、相对思路一，感觉传递参数更好一些，而不是传递物体对象
+将WindowRoot.cs里事件函数的PointEventData参数，用object替代，并在Onclick里再添加一个参数
+新增的参数为了方便更多类型使用，这里将添加的参数定义为object类型
+同时在PEListener.cs里添加object类型参数定义，方便WindowRoot.cs里参数的指定
+
+后面若还需要使用PointEventData参数，可继续改写Action
+注：Action<>，尖括号里可以添加多个参数，不仅仅添加一个参数，最多可支持16个参数
+
+三、实现传参
+（1）PEListener.cs里
+原：
+public class PEListener : MonoBehaviour,IPointerClickHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler
+{
+    ... ...
+    public Action<PointerEventData> onClick;
+    public void OnPointerClick(PointerEventData eventData) { if (onClick != null) onClick(eventData); }
+    ... ...
+}
+改：
+public class PEListener : MonoBehaviour,IPointerClickHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler
+{
+    ... ...
+    public Action<PointerEventData> onClick;
+    public object args;
+    public void OnPointerClickPointerEventData eventData) { if (onClick != null) onClick(args); }
+    ... ...
+}
+（2）WindowRoot.cs里
+原：
+public class WindowRoot : MonoBehaviour
+{
+    ... ...
+    protected void OnClick(GameObject go, Action<PointerEventData> callback)
+    {
+        PEListener listener = GetOrAddComponent<PEListener>(go);
+        listener.onClick = callback;
+    }
+    ... ...
+}
+改：
+public class WindowRoot : MonoBehaviour
+{
+    ... ...
+    protected void OnClick(GameObject go, Action<object> callback,object args)
+    {
+        PEListener listener = GetOrAddComponent<PEListener>(go);
+        listener.onClick = callback;
+        listener.args = args;
+    }
+    ... ...
+}
+（3）StrongWnd.cs里
+原：
+private void RegClickEvts()
+{
+    for (int i = 0; i < leftImgPos.childCount; i++)
+    {
+        ... ...
+        OnClick(img.gameObject, (PointerEventData evt) =>
+        {
+            ClickPosItem();
+            audioService.PlayUIAudio(Constants.UiClickBtn);
+        });
+    }
+}
+private void ClickPosItem() { PECommon.Log("ClickItem"); }
+改：
+private void RegClickEvts()
+{
+    for (int i = 0; i < leftImgPos.childCount; i++)
+    {
+        ... ...
+        OnClick(img.gameObject, (object args) =>
+        {
+            ClickPosItem((int)args);
+            audioService.PlayUIAudio(Constants.UiClickBtn);
+        },i);
+    }
+}
+private void ClickPosItem(int index) { PECommon.Log("ClickItem：" + index); }
+
+四、运行测试
+
+
+
