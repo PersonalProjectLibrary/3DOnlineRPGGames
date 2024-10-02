@@ -12,6 +12,7 @@
 using MySql.Data.MySqlClient;
 using PEProtocol;
 using System;
+using System.IO;
 
 /// <summary>
 /// 数据库管理层
@@ -88,6 +89,19 @@ public class DBManager
                         critical = reader.GetInt32("critical"),
                         guideid = reader.GetInt32("guideid")
                     };
+                    #region Strong 获取数据库强化升级数据
+                    //解析数据库里的强化数据，数据库里字符格式存储，如：1#2#2#4#3#7#
+                    string[] strongStrArr = reader.GetString("strong").Split('#');
+                    int[] _strongArr = new int[6];
+                    for (int i = 0; i < strongStrArr.Length; i++)
+                    {
+                        if (strongStrArr[i] == "") continue;
+                        if (int.TryParse(strongStrArr[i], out int starLv))
+                            _strongArr[i] = starLv;
+                        else PECommon.Log("Parse strong Data Error", LogType.Error);
+                    }
+                    playerData.strongArr = _strongArr;
+                    #endregion
                 }
             }
         }
@@ -116,7 +130,8 @@ public class DBManager
                     dodge = 7,
                     pierce = 5,
                     critical = 2,
-                    guideid =1001
+                    guideid =1001,
+                    strongArr = new int[6],//新账号默认都是0
                 };
                 //新账号存到数据库，并将返回的id更新到playerData里
                 playerData.id = InsertNewAcctData(acct, pass, playerData);
@@ -139,11 +154,17 @@ public class DBManager
         {
             MySqlCommand cmd = new MySqlCommand("insert into account set acct=@acct,pass=@pass,name=@name,"
                 +"level=@level,exp=@exp,power=@power,coin=@coin,diamond=@diamond,"
-                +"hp=@hp,ad=@ad,ap=@ap,addef=@addef,apdef=@apdef,dodge=@dodge,"
-                +"pierce=@pierce,critical=@critical,guideid=@guideid", SqlConnection);
+                +"hp=@hp,ad=@ad,ap=@ap,addef=@addef,apdef=@apdef,dodge=@dodge,pierce=@pierce,"
+                +"critical=@critical,guideid=@guideid,strong=@strong", SqlConnection);
+
+            #region 玩家账号
             cmd.Parameters.AddWithValue("acct", acct);
             cmd.Parameters.AddWithValue("pass", pass);
             cmd.Parameters.AddWithValue("name", pData.name);
+
+            #endregion
+
+            #region 玩家属性
             cmd.Parameters.AddWithValue("level", pData.lv);
             cmd.Parameters.AddWithValue("exp", pData.exp);
             cmd.Parameters.AddWithValue("power", pData.power);
@@ -158,7 +179,21 @@ public class DBManager
             cmd.Parameters.AddWithValue("pierce", pData.pierce);
             cmd.Parameters.AddWithValue("critical", pData.critical);
 
-            cmd.Parameters.AddWithValue("guideid", pData.guideid);
+            #endregion
+
+            cmd.Parameters.AddWithValue("guideid", pData.guideid);//任务引导
+
+            #region 强化升级
+            string strongInfo = "";
+            for (int i = 0; i < pData.strongArr.Length; i++)
+            {
+                strongInfo += pData.strongArr[i];
+                strongInfo += "#";
+            }
+            cmd.Parameters.AddWithValue("strong", strongInfo);
+
+            #endregion
+
             cmd.ExecuteNonQuery();
             id = (int)cmd.LastInsertedId;
         }
@@ -203,9 +238,15 @@ public class DBManager
             MySqlCommand cmd = new MySqlCommand( "update account set name=@name,"
                 +"level=@level,exp=@exp,power=@power,coin=@coin,diamond=@diamond,"
                 +"hp=@hp,ad=@ad,ap=@ap,addef=@addef,apdef=@apdef,dodge=@dodge,pierce=@pierce,"
-                +"critical=@critical,guideid=@guideid where id =@id", SqlConnection);
+                + "critical=@critical,guideid=@guideid,strong=@strong where id =@id", SqlConnection);
+            
+            #region 玩家账号
             cmd.Parameters.AddWithValue("id", id);
             cmd.Parameters.AddWithValue("name", playerData.name);
+
+            #endregion
+
+            #region 玩家属性
             cmd.Parameters.AddWithValue("level", playerData.lv);
             cmd.Parameters.AddWithValue("exp", playerData.exp);
             cmd.Parameters.AddWithValue("power", playerData.power);
@@ -219,7 +260,22 @@ public class DBManager
             cmd.Parameters.AddWithValue("dodge", playerData.dodge);
             cmd.Parameters.AddWithValue("pierce", playerData.pierce);
             cmd.Parameters.AddWithValue("critical", playerData.critical);
-            cmd.Parameters.AddWithValue("guideid", playerData.guideid);
+
+            #endregion
+
+            cmd.Parameters.AddWithValue("guideid", playerData.guideid);//任务引导
+
+            #region 强化升级
+            string strongInfo = "";
+            for (int i = 0; i < playerData.strongArr.Length; i++)
+            {
+                strongInfo += playerData.strongArr[i];
+                strongInfo += "#";
+            }
+            cmd.Parameters.AddWithValue("strong", strongInfo);
+
+            #endregion
+
             cmd.ExecuteNonQuery();
         }
         catch (Exception e)

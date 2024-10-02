@@ -248,5 +248,13 @@ namespace PEProtocol
         /// 任务引导进度id
         /// </summary>
         public int guideid;
+
+        /// <summary>
+        /// 索引号即pos值，索引号里的数据即starLv
+        /// </summary>
+        /// 索引号，代表强化面板上选择点击了第几个位置的图片/装置/pos，要获取哪个装备数据
+        /// 索引号里的数据，即配置表里对应装备的星级starLv
+        /// 装备pos和装备星级starlv确定唯一的配置数据
+        public int[] strongArr;
     }
 }

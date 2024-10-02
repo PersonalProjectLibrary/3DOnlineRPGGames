@@ -1,0 +1,127 @@
+
+一、必要的获取关键数据：
+1、装备位置信息Pos：点击哪个图片，对应配置表里具体某个pos值，确定是哪个装备
+2、装备的星级starLv：确定装备后，再确定装备要升级的星级，就可以获得唯一的配置数据
+其他数据也可以通过配置数据获取；
+
+所以在网络通信协议里客户端和服务端只传递pos和statLv，这两个数据信息即可
+
+二、只传关键数据的好处：
+1、节省带宽流量的同时还能实现复杂的效果，服务器流量是很贵的
+2、客户端开挂作弊修改数据，核心数据也是存在服务器的，
+不是关键数据修改了没有用，也只是改了客户端的显示，后面跟服务器通信也会被检测到作弊
+
+三、玩家数据添加强化装备的关键/核心/必备数据
+GameMsg.cs的PlayerData{}里添加数组
+1、索引号即pos值，索引号里的数据即starLv值
+2、索引号，代表强化面板上选择点击了第几个位置上的图片/装置/pos，要获取哪个装备数据
+3、索引号里的数据，即配置表里对应装备的星级starLv
+4、装备pos和装备星级starlv确定唯一的配置数据
+public class PlayerData
+{
+    ... ...
+    public int[] strongArr;// 索引号即pos值，索引号里的数据即starLv
+}
+5、重新编译生成PEProcotol.dll
+
+四、数据库里添加强化升级要存储的数据
+由于数据库里没有数组类型，这里要转化为其他类型进行存储
+1、将数组转化为字符串，后面用特殊符号对数据进行分割，再把数据存到字符串里
+使用时，再把字符串取出，根据自己设定的规则进行解析；
+2、数据库里新增varchar类型的属性，命名为：strong，长度255，勾选"不是null"，小数点0；
+其他设置保持默认；
+在数据库数据存储写成：1#2#2#4#3#7#	这种格式
+在服务器获取后根据#来分割成数组存到strongArr里；
+
+3、数据库还可以使用其他类型实现更复杂的格式存储，比如使用二进制存储类
+不过相对没有当前这种格式更加直观，并且也没有当前方式更加快速的实现所需要的效果；
+这里就没有使用更加复杂的手段来进行实现
+
+五、打开服务器DBManager.cs脚本添加强化升级相关配置设置
+1、QueryPlayerData()里
+（1）查询玩家账号时，将数据库存的字符串按规则进行分割后存到玩家数据里
+if (_pass.Equals(pass))
+{
+    playerData = new PlayerData//密码正确，返回玩家数据
+    {
+        id = reader.GetInt32("id"),
+        ... ...
+    };
+    #region Strong 获取数据库强化升级数据
+    string[] strongStrArr = reader.GetString("strong").Split('#');
+    int[] _strongArr = new int[6];
+    for (int i = 0; i < strongStrArr.Length; i++)
+    {
+        if (strongStrArr[i] == "") continue;
+        if (int.TryParse(strongStrArr[i], out int starLv))
+            _strongArr[i] = starLv;
+        else PECommon.Log("Parse strong Data Error", LogType.Error);
+    }
+    playerData.strongArr = _strongArr;
+    #endregion
+}
+（2）新增玩家账号时，默认设置为0
+if (isNew)
+{
+    playerData = new PlayerData
+    {
+        id = -1,
+        ... ...,
+        strongArr = new int[6],//新账号默认都是0
+    };
+    playerData.id = InsertNewAcctData(acct, pass, playerData);
+}
+
+2、InsertNewAcctData()里
+（1）数据库的连接语句里，新增强化升级的strong属性
+（2）插入数据操作里，强化升级的数据在服务器里的是int数组，转化为字符串插入数据库
+private int InsertNewAcctData(string acct, string pass, PlayerData pData)
+{
+    int id = -1;
+    try
+    {
+        MySqlCommand cmd = new MySqlCommand("insert into account set acct=@acct,pass=@pass,name=@name,"
+            +"level=@level,exp=@exp,power=@power,coin=@coin,diamond=@diamond,"
+            +"hp=@hp,ad=@ad,ap=@ap,addef=@addef,apdef=@apdef,dodge=@dodge,pierce=@pierce,"
+            +"critical=@critical,guideid=@guideid,strong=@strong", SqlConnection);
+
+        cmd.Parameters.AddWithValue("acct", acct);
+        ... ...
+        string strongInfo = "";
+        for (int i = 0; i < pData.strongArr.Length; i++)
+        {
+            strongInfo += pData.strongArr[i];
+            strongInfo += "#";
+        }
+        cmd.Parameters.AddWithValue("strong", strongInfo);
+        ... ...
+    }
+    ... ...
+}
+
+3、UpdatePlayerData里
+同InsertNewAcctData()里数据库的连接语句和插入数据操作里，新增对强化升级的数据插入
+public bool UpdatePlayerData(int id,PlayerData playerData)
+{
+    try
+    {
+        MySqlCommand cmd = new MySqlCommand( "update account set name=@name,"
+            +"level=@level,exp=@exp,power=@power,coin=@coin,diamond=@diamond,"
+            +"hp=@hp,ad=@ad,ap=@ap,addef=@addef,apdef=@apdef,dodge=@dodge,pierce=@pierce,"
+            + "critical=@critical,guideid=@guideid,strong=@strong where id =@id", SqlConnection);
+        cmd.Parameters.AddWithValue("id", id);
+        ... ...
+        string strongInfo = "";
+        for (int i = 0; i < playerData.strongArr.Length; i++)
+        {
+            strongInfo += playerData.strongArr[i];
+            strongInfo += "#";
+        }
+        cmd.Parameters.AddWithValue("strong", strongInfo);
+        cmd.ExecuteNonQuery();
+    }
+    ... ...
+}
+
+
+
