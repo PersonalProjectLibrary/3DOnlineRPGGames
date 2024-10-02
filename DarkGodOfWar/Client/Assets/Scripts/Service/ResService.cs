@@ -32,6 +32,7 @@ public class ResService : MonoBehaviour
         InitRdNameCfg(PathDefine.RdNameCfg);
         InitMcMapCfg(PathDefine.McMapCfg);
         InitGuideCfg(PathDefine.TaskGuideCfg);
+        InitStrongCfg(PathDefine.EqptStrongCfg);
     }
 
     #region Load Resource
@@ -160,7 +161,7 @@ public class ResService : MonoBehaviour
     private List<string> womanList = new List<string>();
 
     /// <summary>
-    /// 生成随机姓名的配置文件初始化
+    /// 生成随机姓名的配置文件解析
     /// </summary>
     private void InitRdNameCfg(string path)
     {
@@ -212,7 +213,7 @@ public class ResService : MonoBehaviour
     private Dictionary<int, McMapCfg> mcMapCfgDataDic = new Dictionary<int, McMapCfg>();
 
     /// <summary>
-    /// 主城地图配置初始化
+    /// 主城地图配置解析
     /// </summary>
     private void InitMcMapCfg(string path)
     {
@@ -287,7 +288,7 @@ public class ResService : MonoBehaviour
     private Dictionary<int, AutoGuideCfg> taskGuideDic = new Dictionary<int, AutoGuideCfg>();
 
     /// <summary>
-    /// 任务引导配置文件初始化
+    /// 任务引导配置文件解析
     /// </summary>
     private void InitGuideCfg(string path)
     {
@@ -325,11 +326,81 @@ public class ResService : MonoBehaviour
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public AutoGuideCfg GetAutoGuideData(int id)
+    public AutoGuideCfg GetGuideCfgData(int id)
     {
         AutoGuideCfg agc = null;
         taskGuideDic.TryGetValue(id, out agc);
         return agc;
+    }
+
+    #endregion
+
+    #region 主城_强化升级配置解析——eqptstrong.xml
+    /// <summary>
+    /// 强化升级的字典(装备pos,(装备星级startLv，配置文件esg))
+    /// </summary>
+    private Dictionary<int,Dictionary<int, EqptStrongCfg>> eqptStrongDic;
+
+    /// <summary>
+    /// 强化升级配置文件解析
+    /// </summary>
+    private void InitStrongCfg(string path)
+    {
+        TextAsset nameXml = Resources.Load<TextAsset>(path);
+        if (!nameXml) PECommon.Log("Xml file:" + path + "not exist!", LogType.Error);
+        else
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(nameXml.text);
+            XmlNodeList nodeList = doc.SelectSingleNode("root").ChildNodes;
+            eqptStrongDic = new Dictionary<int, Dictionary<int, EqptStrongCfg>>();
+            for (int i = 0; i < nodeList.Count; i++)
+            {
+                XmlElement element = nodeList[i] as XmlElement;
+                if (element.GetAttributeNode("ID") == null) continue;
+                int id = Convert.ToInt32(element.GetAttributeNode("ID").InnerText);
+                EqptStrongCfg esg = new EqptStrongCfg { ID = id };
+                foreach (XmlElement e in nodeList[i].ChildNodes)
+                {
+                    int val = int.Parse(e.InnerText);
+                    switch (e.Name)
+                    {
+                        case "pos": esg.pos = val; break;
+                        case "starlv": esg.starLv = val; break;
+                        case "addhp": esg.addHp = val; break;
+                        case "addhurt": esg.addHurt = val; break;
+                        case "adddef": esg.addDef = val; break;
+                        case "minlv": esg.minLv = val; break;
+                        case "coin": esg.coin = val; break;
+                        case "crystal": esg.crystal = val; break;
+                    }
+                }
+                Dictionary<int, EqptStrongCfg> sDic =null;
+                if(eqptStrongDic.TryGetValue(esg.pos,out sDic)) 
+                    sDic.Add(esg.starLv, esg);
+                else
+                {
+                    sDic = new Dictionary<int, EqptStrongCfg> { { esg.starLv, esg } };
+                    eqptStrongDic.Add(esg.pos, sDic);
+                };
+            }
+        }
+    }
+
+    /// <summary>
+    /// 获取强化升级的配置文件
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public EqptStrongCfg GetStrongCfgData(int pos,int startLv)
+    {
+        EqptStrongCfg esg = null;
+        Dictionary<int, EqptStrongCfg> sDic = null;
+        if (eqptStrongDic.TryGetValue(pos, out sDic))
+        {
+            if(sDic.ContainsKey(startLv)) sDic.TryGetValue(startLv, out esg);
+        }
+        return esg;
     }
 
     #endregion

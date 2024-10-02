@@ -27,6 +27,10 @@ public class PathDefine
     /// 主城_任务引导配置文件
     /// </summary>
     public const string TaskGuideCfg = "ResConfigs/taskguide";
+    /// <summary>
+    /// 主城_强化升级配置文件
+    /// </summary>
+    public const string EqptStrongCfg = "ResConfigs/eqptstrong";
 
     #endregion
 

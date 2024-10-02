@@ -156,7 +156,7 @@ public class MainCityWnd : WindowRoot
         #endregion
 
         #region Set guideBtn Icon
-        curTaskData = resService.GetAutoGuideData(pData.guideid);
+        curTaskData = resService.GetGuideCfgData(pData.guideid);
         if (curTaskData == null) SetGuideBtnIcon(-1);
         else SetGuideBtnIcon(curTaskData.npcID);
 
