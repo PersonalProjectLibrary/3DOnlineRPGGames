@@ -12,7 +12,6 @@
 using MySql.Data.MySqlClient;
 using PEProtocol;
 using System;
-using System.IO;
 
 /// <summary>
 /// 数据库管理层
@@ -79,6 +78,7 @@ public class DBManager
                         power = reader.GetInt32("power"),
                         coin = reader.GetInt32("coin"),
                         diamond = reader.GetInt32("diamond"),
+                        crystal = reader.GetInt32("crystal"),
                         hp = reader.GetInt32("hp"),
                         ad = reader.GetInt32("ad"),
                         ap = reader.GetInt32("ap"),
@@ -122,6 +122,7 @@ public class DBManager
                     power = 150,
                     coin = 5000,
                     diamond = 500,
+                    crystal = 500,
                     hp = 2000,
                     ad = 275,
                     ap = 265,
@@ -153,8 +154,8 @@ public class DBManager
         try
         {
             MySqlCommand cmd = new MySqlCommand("insert into account set acct=@acct,pass=@pass,name=@name,"
-                +"level=@level,exp=@exp,power=@power,coin=@coin,diamond=@diamond,"
-                +"hp=@hp,ad=@ad,ap=@ap,addef=@addef,apdef=@apdef,dodge=@dodge,pierce=@pierce,"
+                + "level=@level,exp=@exp,power=@power,coin=@coin,diamond=@diamond,crystal=@crystal,"
+                + "hp=@hp,ad=@ad,ap=@ap,addef=@addef,apdef=@apdef,dodge=@dodge,pierce=@pierce,"
                 +"critical=@critical,guideid=@guideid,strong=@strong", SqlConnection);
 
             #region 玩家账号
@@ -164,12 +165,17 @@ public class DBManager
 
             #endregion
 
-            #region 玩家属性
+            #region 玩家财产
             cmd.Parameters.AddWithValue("level", pData.lv);
             cmd.Parameters.AddWithValue("exp", pData.exp);
             cmd.Parameters.AddWithValue("power", pData.power);
             cmd.Parameters.AddWithValue("coin", pData.coin);
             cmd.Parameters.AddWithValue("diamond", pData.diamond);
+            cmd.Parameters.AddWithValue("crystal", pData.crystal);
+
+            #endregion
+
+            #region 玩家属性
             cmd.Parameters.AddWithValue("hp", pData.hp);
             cmd.Parameters.AddWithValue("ad", pData.ad);
             cmd.Parameters.AddWithValue("ap", pData.ap);
@@ -236,8 +242,8 @@ public class DBManager
         try
         {
             MySqlCommand cmd = new MySqlCommand( "update account set name=@name,"
-                +"level=@level,exp=@exp,power=@power,coin=@coin,diamond=@diamond,"
-                +"hp=@hp,ad=@ad,ap=@ap,addef=@addef,apdef=@apdef,dodge=@dodge,pierce=@pierce,"
+                + "level=@level,exp=@exp,power=@power,coin=@coin,diamond=@diamond,crystal=@crystal,"
+                + "hp=@hp,ad=@ad,ap=@ap,addef=@addef,apdef=@apdef,dodge=@dodge,pierce=@pierce,"
                 + "critical=@critical,guideid=@guideid,strong=@strong where id =@id", SqlConnection);
             
             #region 玩家账号
@@ -246,12 +252,17 @@ public class DBManager
 
             #endregion
 
-            #region 玩家属性
+            #region 玩家财产
             cmd.Parameters.AddWithValue("level", playerData.lv);
             cmd.Parameters.AddWithValue("exp", playerData.exp);
             cmd.Parameters.AddWithValue("power", playerData.power);
             cmd.Parameters.AddWithValue("coin", playerData.coin);
             cmd.Parameters.AddWithValue("diamond", playerData.diamond);
+            cmd.Parameters.AddWithValue("crystal", playerData.crystal);
+
+            #endregion
+
+            #region 玩家属性
             cmd.Parameters.AddWithValue("hp", playerData.hp);
             cmd.Parameters.AddWithValue("ad", playerData.ad);
             cmd.Parameters.AddWithValue("ap", playerData.ap);

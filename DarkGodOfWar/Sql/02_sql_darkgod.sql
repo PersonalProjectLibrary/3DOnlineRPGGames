@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50617
 File Encoding         : 65001
 
-Date: 2024-10-02 22:10:15
+Date: 2024-10-03 20:30:29
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -29,6 +29,7 @@ CREATE TABLE `account` (
   `power` int(11) NOT NULL,
   `coin` int(11) NOT NULL,
   `diamond` int(11) NOT NULL,
+  `crystal` int(11) NOT NULL,
   `hp` int(11) NOT NULL,
   `ad` int(11) NOT NULL,
   `ap` int(11) NOT NULL,
@@ -40,4 +41,4 @@ CREATE TABLE `account` (
   `guideid` int(11) NOT NULL,
   `strong` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;

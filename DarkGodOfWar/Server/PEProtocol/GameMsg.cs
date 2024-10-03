@@ -183,6 +183,7 @@ namespace PEProtocol
     [Serializable]
     public class PlayerData
     {
+        #region 用户数据
         /// <summary>
         /// ID
         /// </summary>
@@ -191,6 +192,10 @@ namespace PEProtocol
         /// 玩家名
         /// </summary>
         public string name;
+
+        #endregion
+
+        #region 角色属性
         /// <summary>
         /// 等级
         /// </summary>
@@ -211,6 +216,10 @@ namespace PEProtocol
         /// 钻石
         /// </summary>
         public int diamond;
+        /// <summary>
+        /// 水晶
+        /// </summary>
+        public int crystal;
         /// <summary>
         /// 血量
         /// </summary>
@@ -243,6 +252,8 @@ namespace PEProtocol
         /// 暴击概率
         /// </summary>
         public int critical;
+
+        #endregion
 
         /// <summary>
         /// 任务引导进度id

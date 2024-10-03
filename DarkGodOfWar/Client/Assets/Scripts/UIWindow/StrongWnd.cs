@@ -201,6 +201,7 @@ public class StrongWnd : WindowRoot
             SetText(propHurt2, "+" + nextEsg.addHurt);
             SetText(txtNeedLv, nextEsg.minLv);
             SetText(txtCostCoin, nextEsg.coin);
+            SetText(txtCostCrystal, nextEsg.crystal + "/" + pData.crystal);
         }
         else//升满星，无下一级
         {

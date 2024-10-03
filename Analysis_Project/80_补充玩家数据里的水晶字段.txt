@@ -1,0 +1,141 @@
+
+前面做强化界面，更新新增玩家数据，漏加水晶字段
+这里补充添加
+
+一、在数据库里新增crystal水晶字段
+打开数据库aql_darkgod，选择表account，右键设计表，在diamond字段下面插入新字段crystal
+类型int，长度11，小数点0，勾选 不是null，其他保持默认
+
+二、服务器
+1、GameMsg.cs脚本的PlayerData里新增crystal字段
+public class PlayerData
+{
+    ... ...
+    public int diamond;
+    public int crystal;
+    public int hp;
+    ... ...
+}
+
+2、DBManager.cs脚本添加对crystal字段的设置
+（1）QueryPlayerData()
+public PlayerData QueryPlayerData(string acct,string pass)
+{
+    ... ...
+    if (_pass.Equals(pass))
+    {
+        playerData = new PlayerData//密码正确，返回玩家数据
+        {
+            id = reader.GetInt32("id"),
+            name = reader.GetString("name"),
+            lv = reader.GetInt32("level"),
+            exp = reader.GetInt32("exp"),
+            power = reader.GetInt32("power"),
+            coin = reader.GetInt32("coin"),
+            diamond = reader.GetInt32("diamond"),
+            crystal = reader.GetInt32("crystal"),
+            hp = reader.GetInt32("hp"),
+            ad = reader.GetInt32("ad"),
+            ap = reader.GetInt32("ap"),
+            addef = reader.GetInt32("addef"),
+            apdef = reader.GetInt32("apdef"),
+            dodge = reader.GetInt32("dodge"),
+            pierce = reader.GetInt32("pierce"),
+            critical = reader.GetInt32("critical"),
+            guideid = reader.GetInt32("guideid")
+       };
+   }
+    ... ...
+    if (isNew)
+        {
+            playerData = new PlayerData
+            {
+                id = -1,
+                name = "",
+                lv = 1,
+                exp = 0,
+                power = 150,
+                coin = 5000,
+                diamond = 500,
+                crystal = 500,
+                hp = 2000,
+                ad = 275,
+                ap = 265,
+                addef = 67,
+                apdef = 43,
+                dodge = 7,
+                pierce = 5,
+                critical = 2,
+                guideid =1001,
+                strongArr = new int[6],//新账号默认都是0
+            };
+            playerData.id = InsertNewAcctData(acct, pass, playerData);
+        }
+        ... ...
+}
+（2）InsertNewAcctData()
+private int InsertNewAcctData(string acct, string pass, PlayerData pData)
+{
+    ... ...
+    try
+    {
+        MySqlCommand cmd = new MySqlCommand("insert into account set acct=@acct,pass=@pass,name=@name,"
+            + "level=@level,exp=@exp,power=@power,coin=@coin,diamond=@diamond,crystal=@crystal,"
+            + "hp=@hp,ad=@ad,ap=@ap,addef=@addef,apdef=@apdef,dodge=@dodge,pierce=@pierce,"
+            +"critical=@critical,guideid=@guideid,strong=@strong", SqlConnection);
+        ... ...
+        cmd.Parameters.AddWithValue("diamond", pData.diamond);
+        cmd.Parameters.AddWithValue("crystal", pData.crystal);
+        cmd.Parameters.AddWithValue("hp", pData.hp);
+        ... ...
+    }
+    ... ...
+}
+（3）UpdatePlayerData()
+public bool UpdatePlayerData(int id,PlayerData playerData)
+{
+    try
+    {
+        MySqlCommand cmd = new MySqlCommand( "update account set name=@name,"
+            + "level=@level,exp=@exp,power=@power,coin=@coin,diamond=@diamond,crystal=@crystal,"
+            + "hp=@hp,ad=@ad,ap=@ap,addef=@addef,apdef=@apdef,dodge=@dodge,pierce=@pierce,"
+            + "critical=@critical,guideid=@guideid,strong=@strong where id =@id", SqlConnection);
+        ... ....
+        cmd.Parameters.AddWithValue("diamond", playerData.diamond);
+        cmd.Parameters.AddWithValue("crystal", playerData.crystal);
+        cmd.Parameters.AddWithValue("hp", playerData.hp);
+        ... ...
+    }
+    ... ...
+}
+
+三、重新生成编译运行服务器程序和PEProtocol.dll
+
+四、客户端
+1、BaseData.cs里EqptStrongCfg{}里之前有添加crystal字段，这里不用再添加修改
+
+2、ResService.cs里InitStrongCfg()里解析配置表时，有解析crystal字段，这里也不用添加修改
+
+3、StrongWnd.cs里
+（1）有定义绑定过UI界面上水晶数量组件txtCostCrystal，这里不用再添加设置
+（2）RefreshUI()里添加对界面里水晶的设置
+private void RefreshUI()
+{
+    ... ...
+    if (nextEsg != null)//没升满星
+    {
+        ... ...
+        SetText(txtCostCoin, nextEsg.coin);
+        SetText(txtCostCrystal, nextEsg.crystal + "/" + pData.crystal);
+    }
+    ... ...
+}
+
+
+
+
+
+
+
+
+
