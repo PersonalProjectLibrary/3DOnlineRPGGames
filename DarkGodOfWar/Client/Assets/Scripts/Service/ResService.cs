@@ -388,7 +388,7 @@ public class ResService : MonoBehaviour
     }
 
     /// <summary>
-    /// 获取强化升级的配置文件
+    /// 获取某个装备某个星级下的加成数据
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
@@ -403,6 +403,34 @@ public class ResService : MonoBehaviour
         return esg;
     }
 
+    /// <summary>
+    /// 获取某个装备当前星级下某个属性的所有星级加成
+    /// </summary>
+    /// <param name="pos">位置/装备</param>
+    /// <param name="starlv">星级/等级</param>
+    /// <param name="prop">属性：血值 hp，伤害值 hurt，防御值 def</param>
+    /// <returns></returns>
+    public int GetPropAddValPreLv(int pos,int starlv,string prop)
+    {
+        Dictionary<int, EqptStrongCfg> posDic = null;
+        int val = 0;
+        if(eqptStrongDic.TryGetValue(pos,out posDic)){
+            for(int i = 0; i < starlv; i++)
+            {
+                EqptStrongCfg esg;
+                if(posDic.TryGetValue(i,out esg))
+                {
+                    switch (prop) 
+                    {
+                        case "hp":val += esg.addHp; break;
+                        case "hurt": val += esg.addHurt; break;
+                        case "def": val += esg.addDef; break;
+                    }
+                }
+            }
+        }
+        return val;
+    }
     #endregion
 
     #endregion

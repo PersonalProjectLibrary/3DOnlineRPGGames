@@ -1,0 +1,151 @@
+
+前面数据库和服务器玩家数据新增强化升级字段和相关设置
+这里根据数据设置客户端强化升级界面
+
+一、更新数据库
+前面往数据库添加新字段属性，原账户数据不能用了，这里将角色的数据库做了清空
+数据库里没有账号信息
+
+二、根据数据设置客户端强化升级界面
+在客户端强化升级界面，在窗口初始化时，进行装备强化升级的显示控制
+1、StrongWnd.cs里定义玩家数据的成员变量
+并在初始化时获取玩家数据
+private PlayerData pData;
+protected override void InitWnd()
+{
+    base.InitWnd();
+    pData = GameRoot.Instance.PlayerData;
+    ... ...
+}
+
+2、定义显示强化属性的UI组件
+（1）右侧星级星星的显示也是使用类似左侧btn图片设置方法，使用父物体来设置，
+对星级里的星星组件不单独一一绑定赋值
+（2）对于强化升级界面里，监听的显示也要单独进行设置，后面对其进行控制
+比如装备星级升满后，一些数据图片就不应该显示出来了
+public Image imgCurtPos;// 右侧显示的当前装备图片
+public Text txtStarLv;// 装备星级
+public Transform starTransGrp;// 显示的星级图标的父物体
+public Text propHp1;// 升级前血值
+public Text propHurt1;// 升级前伤害值
+public Text propDef1;// 升级前防御值
+public Text propHp2;// 升级后血值
+public Text propHurt2;// 升级后伤害值
+public Text propDef2;// 升级后防御值
+public Image propArrow1;// 生命值提升箭头
+public Image propArrow2;// 伤害值提升箭头
+public Image propArrow3;// 防御值提升箭头
+
+public Transform costInfo;// 升级消耗面板
+public Text txtNeedLv;// 升级所需最低等级
+public Text txtCostCoin;// 升级所需金币
+public Text txtCostCrystal;// 升级所需水晶
+public Text txtCoin;// 升级后的剩余金币
+
+3、在PathDefine.cs里定义强化界面里显示的当前装备的图片和星级图片
+public const string ItemToukui = "ResImages/toukui";
+public const string ItemBody = "ResImages/body";
+public const string ItemYaobu = "ResImages/yaobu";
+public const string ItemHand = "ResImages/hand";
+public const string ItemLeg = "ResImages/leg";
+public const string ItemFoot = "ResImages/foot";
+
+4、ResService.cs里添加对强化数据的获取
+新增接口获取某个装备当前星级下某个属性的所有星级加成
+pos：位置/装备；starlv：星级/等级
+prop：属性：血值 hp，伤害值 hurt，防御值 def
+public int GetPropAddValPreLv(int pos,int starlv,string prop)
+{
+    Dictionary<int, EqptStrongCfg> posDic = null;
+    int val = 0;
+    if(eqptStrongDic.TryGetValue(pos,out posDic)){
+        for(int i = 0; i < starlv; i++)
+        {
+            EqptStrongCfg esg;
+            if(posDic.TryGetValue(i,out esg))
+            {
+                switch (prop) 
+                {
+                    case "hp":val += esg.addHp; break;
+                    case "hurt": val += esg.addHurt; break;
+                    case "def": val += esg.addDef; break;
+                }
+            }
+        }
+    }
+    return val;
+}
+
+5、将玩家数据里的强化信息拿到放到UI显示控制方法里
+在每次点击左侧按钮图片后，都要显示对应装备的强化信息
+新增UI刷新的函数，在点击左侧图片时调用，即放到ClickPosItem()里进行调用
+注：
+（1）在升级时，升满10个星级后，不能继续升级，不存在第11个星级，也没有相应数据，
+对整个界面的显示控制做修改，关闭升级消耗的相关面板
+（2）装备升满后关闭升级消耗相关面板，
+在切换装备时，对于装备没有升满，还要把升级消耗相关组件UI显示
+private void RefreshUI()
+{
+    SetText(txtCoin, pData.coin);//金币
+    switch (curIndex)//当前装备图片
+    {
+        case 0:SetSprite(imgCurtPos, PathDefine.ItemToukui); break;
+        case 1: SetSprite(imgCurtPos, PathDefine.ItemBody); break;
+        case 2: SetSprite(imgCurtPos, PathDefine.ItemYaobu); break;
+        case 3: SetSprite(imgCurtPos, PathDefine.ItemHand); break;
+        case 4: SetSprite(imgCurtPos, PathDefine.ItemLeg); break;
+        case 5: SetSprite(imgCurtPos, PathDefine.ItemFoot); break;
+    }
+    //星级
+    int curStarLv = pData.strongArr[curIndex];
+    SetText(txtStarLv, curStarLv + "星级");
+    for(int i = 0; i < starTransGrp.childCount; i++)
+    {
+        Image img = starTransGrp.GetChild(i).GetComponent<Image>();
+        if (i < curStarLv) SetSprite(img, PathDefine.SpStar2);
+        else SetSprite(img, PathDefine.SpStar1);
+    }
+    //当前星级属性的总加成
+    int sumAddHp = resService.GetPropAddValPreLv(curIndex, curStarLv, "hp");
+    int sumAddHurt = resService.GetPropAddValPreLv(curIndex, curStarLv, "hurt");
+    int sumAddDef = resService.GetPropAddValPreLv(curIndex, curStarLv, "def");
+    SetText(propHp1, "生命 +" + sumAddHp);
+    SetText(propHurt1, "伤害 +" + sumAddHurt);
+    SetText(propDef1, "防御 +" + sumAddDef);
+    //下一级星级可获得的属性加成
+    int nextStarLv = curStarLv + 1;
+    EqptStrongCfg nextEsg = resService.GetStrongCfgData(curIndex, nextStarLv);
+    if (nextEsg != null)//没升满星
+    {
+        SetActive(propHp2);
+        SetActive(propDef2);
+        SetActive(propHurt2);
+
+        SetActive(costInfo);
+        SetActive(propArrow1);
+        SetActive(propArrow2);
+        SetActive(propArrow3);
+
+        SetText(propHp2, "+" + nextEsg.addHp);
+        SetText(propDef2, "+" + nextEsg.addDef);
+        SetText(propHurt2, "+" + nextEsg.addHurt);
+        SetText(txtNeedLv, nextEsg.minLv);
+        SetText(txtCostCoin, nextEsg.coin);
+    }
+    else//升满星，无下一级
+    {
+        SetActive(propHp2, false);
+        SetActive(propDef2, false);
+        SetActive(propHurt2, false);
+
+        SetActive(costInfo, false);
+        SetActive(propArrow1, false);
+        SetActive(propArrow2, false);
+        SetActive(propArrow3, false);
+    }
+}
+
+
+
+
+
