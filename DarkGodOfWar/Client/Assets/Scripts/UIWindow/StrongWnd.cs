@@ -23,6 +23,10 @@ public class StrongWnd : WindowRoot
     /// 玩家数据
     /// </summary>
     private PlayerData pData;
+    /// <summary>
+    /// 下一星级的强化数据
+    /// </summary>
+    private EqptStrongCfg nextEsg;
 
     #region Left Btns：左侧装备按钮
     /// <summary>
@@ -152,6 +156,70 @@ public class StrongWnd : WindowRoot
     }
 
     /// <summary>
+    /// 点击强化升级按钮
+    /// </summary>
+    public void ClickStrongBtn()
+    {
+        audioService.PlayUIAudio(Constants.UiClickBtn);
+        //对本地数据进行筛选过滤
+        if (pData.strongArr[curIndex] >= 10)
+        {
+            GameRoot.AddTips("满星已经升满");
+            return;
+        }
+        if (pData.lv < nextEsg.minLv)
+        {
+            GameRoot.AddTips("角色等级不够");
+            return;
+        }
+        if (pData.coin < nextEsg.coin)
+        {
+            GameRoot.AddTips("金币数量不够");
+            return;
+        }
+        if (pData.crystal < nextEsg.crystal)
+        {
+            GameRoot.AddTips("水晶数量不够");
+            return;
+        }
+        //通过筛选过滤，发送强化请求
+        netService.SendMsg(new GameMsg
+        {
+            cmd = (int)CMD.ReqStrong,
+            reqStrong = new ReqStrong { pos = curIndex }
+        });
+    }
+
+    /// <summary>
+    /// 关闭强化界面
+    /// </summary>
+    public void ClickCloseBtn()
+    {
+        audioService.PlayUIAudio(Constants.UiClickBtn);
+        SetWndState(false);
+    }
+
+    #region Tools Function
+    /// <summary>
+    /// 左侧按钮图片添加点击事件监听
+    /// </summary>
+    private void RegClickEvts()
+    {
+        for (int i = 0; i < leftImgPos.childCount; i++)
+        {
+            Image img = leftImgPos.GetChild(i).GetComponent<Image>();
+
+            OnClick(img.gameObject, (object args) =>
+            {
+                ClickPosItem((int)args);
+                audioService.PlayUIAudio(Constants.UiClickBtn);
+            }, i);
+
+            leftImgs[i] = img;
+        }
+    }
+
+    /// <summary>
     /// 刷新强化界面
     /// </summary>
     private void RefreshUI()
@@ -159,7 +227,7 @@ public class StrongWnd : WindowRoot
         SetText(txtCoin, pData.coin);//金币
         switch (curIndex)//当前装备图片
         {
-            case 0:SetSprite(imgCurtPos, PathDefine.ItemToukui); break;
+            case 0: SetSprite(imgCurtPos, PathDefine.ItemToukui); break;
             case 1: SetSprite(imgCurtPos, PathDefine.ItemBody); break;
             case 2: SetSprite(imgCurtPos, PathDefine.ItemYaobu); break;
             case 3: SetSprite(imgCurtPos, PathDefine.ItemHand); break;
@@ -169,7 +237,7 @@ public class StrongWnd : WindowRoot
         //星级
         int curStarLv = pData.strongArr[curIndex];
         SetText(txtStarLv, curStarLv + "星级");
-        for(int i = 0; i < starTransGrp.childCount; i++)
+        for (int i = 0; i < starTransGrp.childCount; i++)
         {
             Image img = starTransGrp.GetChild(i).GetComponent<Image>();
             if (i < curStarLv) SetSprite(img, PathDefine.SpStar2);
@@ -184,7 +252,7 @@ public class StrongWnd : WindowRoot
         SetText(propDef1, "防御 +" + sumAddDef);
         //下一级星级可获得的属性加成
         int nextStarLv = curStarLv + 1;
-        EqptStrongCfg nextEsg = resService.GetStrongCfgData(curIndex, nextStarLv);
+        nextEsg = resService.GetStrongCfgData(curIndex, nextStarLv);
         if (nextEsg != null)//没升满星
         {
             SetActive(propHp2);
@@ -216,31 +284,6 @@ public class StrongWnd : WindowRoot
         }
     }
 
-    /// <summary>
-    /// 左侧按钮图片添加点击事件监听
-    /// </summary>
-    private void RegClickEvts()
-    {
-        for (int i = 0; i < leftImgPos.childCount; i++)
-        {
-            Image img = leftImgPos.GetChild(i).GetComponent<Image>();
+    #endregion
 
-            OnClick(img.gameObject, (object args) =>
-            {
-                ClickPosItem((int)args);
-                audioService.PlayUIAudio(Constants.UiClickBtn);
-            }, i);
-
-            leftImgs[i] = img;
-        }
-    }
-
-    /// <summary>
-    /// 关闭强化界面
-    /// </summary>
-    public void ClickCloseBtn()
-    {
-        audioService.PlayUIAudio(Constants.UiClickBtn);
-        SetWndState(false);
-    }
 }

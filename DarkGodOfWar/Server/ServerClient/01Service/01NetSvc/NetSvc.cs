@@ -83,6 +83,7 @@ public class NetSvc
             case CMD.ReqLogin: LoginSys.Instance.ReqLogin(msgPack); break;
             case CMD.ReqReName: LoginSys.Instance.ReqReName(msgPack); break;
             case CMD.ReqGuide:GuideSys.Instance.ReqGuide(msgPack);break;
+            case CMD.ReqStrong:StrongSys.Instance.ReqStrong(msgPack);break;
             default: break;
         }
     }

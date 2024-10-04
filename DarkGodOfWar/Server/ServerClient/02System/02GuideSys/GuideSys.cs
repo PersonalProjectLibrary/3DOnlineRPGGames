@@ -60,7 +60,7 @@ public class GuideSys
              * 像奖励金币经验这种，可以通过配置文件读取，没必要在网络通信时传递；
              * 后续添加模块服务器统一读取配置文件
             //*/
-            GuideCfg guideCfg = cfgSvs.GetGuideData(data.guideid);//获取引导数据
+            GuideCfg guideCfg = cfgSvs.GetGuideCfg(data.guideid);//获取引导数据
             pData.coin += guideCfg.coin;//更新玩家金币数值
             CaculateExp(pData, guideCfg.exp);//更新玩家等级和经验值
             //根据id号，把玩家数据更新到数据库里

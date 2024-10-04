@@ -38,6 +38,7 @@ public class ServerRoot
         //业务系统层
         LoginSys.Instance.Init();
         GuideSys.Instance.Init();
+        StrongSys.Instance.Init();
     }
 
     /// <summary>

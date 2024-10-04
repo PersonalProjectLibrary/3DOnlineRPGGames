@@ -1,0 +1,329 @@
+
+一、服务器GameMsg.cs里定义强化升级的网络协议
+1、客户端发送引导任务完成的请求ReqStrong
+请求引导的id对话，发送pos数据
+服务器里记录了等级星级金币等数据，其他数据都不用客户端请求时传递
+服务器根据传递pos信息，判断是否满足强化升级条件就可以了；
+其他数据传了没必要，还浪费很多流量带宽，还不好做安全方面的处理
+[Serializable]
+public class ReqStrong{ public int pos;}
+
+2、服务器回应引导任务完成的请求RspStrong
+需要定义的数据： 剩余金币数、水晶数； 升级后属性变化；强化数据strongArr的更新
+[Serializable]
+public class RspStrong
+{
+    public int coin;//剩余金币
+    public int crystal;//剩余水晶
+    public int hp;//强化后属性
+    public int ad;
+    public int ap;
+    public int adddef;
+    public int apddef;
+    public int[] strongArr;//更新强化数据
+}
+
+3、定义强化升级的消息包
+[Serializable]
+public class GameMsg : PEMsg
+{
+    public ReqStrong reqStrong;// 客户端发送装备强化升级请求
+    public RspStrong rspStrong;// 服务器回应装备强化升级请求
+    ... ...
+}
+
+4、定义强化升级的网络通信命令号
+注这里更新了下任务引导的编号
+原：
+public enum CMD
+{
+    ... ...
+    //主城相关 200开始
+    ReqGuide = 200,//任务引导请求
+    RspGuide = 201,//任务引导回应
+}
+改：
+public enum CMD
+{
+    ... ...
+    //主城相关 200开始
+    ReqGuide = 201,//任务引导请求
+    RspGuide = 202,//任务引导回应
+    ReqStrong = 203,//装备强化升级请求
+    RspStrong = 204,//装备强化升级回应
+}
+
+5、新增对应错误码
+有可能客户端作弊，资源不够，判断客户端数据非法，把玩家踢下线；
+对应ServerDataError这个错误码
+也有可能玩家等级不够、金币不够、水晶不够等情况，进行回应提醒
+新增LockLevel、LockCoin、LockCrystal错误码
+public enum ErrorCode
+{
+    ... ...
+    LockLevel,// 等级不够
+    LockCoin,// 金币不够
+    LockCrystal,// 水晶不够
+}
+
+6、重新生成编译PEProtocol.dll
+
+二、Unity客户端使用发送引导任务请求
+1、StrongWnd.cs里点击强化升级按钮的功能函数ClickStrongBtn()
+并在场景里对升级按钮进行关联绑定
+
+2、强化升级逻辑
+（1）点击强化按钮后，应客户端先对数据消息进行一个筛选过滤
+大部分的请求操作，请求数据、请求校验、请求验证等操作，应该本地客户端先对数据进行校验，
+客户端修改了一些数据后，就狂按把消息数据上传到上行服务端，服务器压力很大；
+客户端应该对数据要求严格点，不要什么都丢到服务器处理；
+
+（2）数据筛选检查
+1）当前位置星级是否升满
+2）检查资源（等级，金币，水晶）是否够强化
+
+（3）数据校验筛选通过，再发起网络请求
+
+3、这里把之前刷新界面使用的nextStarLv做成全局变量保存下来，方便其他地方使用
+private EqptStrongCfg nextEsg;
+private void RefreshUI()
+{
+    ... ...
+    int nextStarLv = curStarLv + 1;
+    nextEsg = resService.GetStrongCfgData(curIndex, nextStarLv);
+    ... ...
+}
+
+4、实现ClickStrongBtn()里的功能逻辑
+public void ClickStrongBtn()
+{
+    audioService.PlayUIAudio(Constants.UiClickBtn);
+    //对本地数据进行筛选过滤
+    if (pData.strongArr[curIndex] >= 10)
+    {
+        GameRoot.AddTips("满星已经升满");
+        return;
+    }
+    if (pData.lv < nextEsg.minLv)
+    {
+        GameRoot.AddTips("角色等级不够");
+        return;
+    }
+    if (pData.coin < nextEsg.coin)
+    {
+        GameRoot.AddTips("金币数量不够");
+        return;
+    }
+    if (pData.crystal < nextEsg.crystal)
+    {
+        GameRoot.AddTips("水晶数量不够");
+        return;
+    }
+    //通过筛选过滤，发送强化请求
+    netService.SendMsg(new GameMsg
+    {
+        cmd = (int)CMD.ReqStrong,
+        reqStrong = new ReqStrong { pos = curIndex }
+    });
+}
+
+三、服务器处理客户端发来的强化升级的请求
+1、增加强化升级的系统StrongSys.cs
+（1）服务器工程02System文件夹下新建03StrongSys\StrongSys.cs文件
+（2）参照GuideSys.cs，对StrongSys.cs设置为单例，添加初始化函数，添加对缓存层CacheSvc.cs的引用
+（3）在ServerRoot.cs里添加引用和初始化
+public class StrongSys
+{
+    private static StrongSys instance = null;
+    public static StrongSys Instance
+    {
+        get
+        {
+            if (instance == null) instance = new StrongSys();
+            return instance;
+        }
+    }
+    private CacheSvc cacheSvc = null;
+    private CfgSvs cfgSvs = null;
+    public void Init()// 强化升级系统初始化
+    {
+        cacheSvc = CacheSvc.Instance;
+        cfgSvs = CfgSvs.Instance;
+        PECommon.Log("StrongSys Init Done.");
+    }
+}
+public class ServerRoot
+{
+    ... ...
+    public void Init()// 服务器初始化
+    {
+        ... ...
+        StrongSys.Instance.Init();
+    }
+}
+
+2、处理客户端发来的强化升级消息
+（1）StrongSys.cs里添加对客户端强化升级消息的处理方法ReqStrong()
+（2）NetSvc.cs网络服务的HandOutMsg()里新增强化升级消息的的分支处理
+public class NetSvc
+{
+    ... ...
+    private void HandOutMsg(MsgPack msgPack)
+    {
+        switch ((CMD)msgPack.m_Msg.cmd)
+        {
+            ... ...
+            case CMD.ReqStrong:StrongSys.Instance.ReqStrong(msgPack);break;
+            default: break;
+        }
+    }
+}
+
+四、服务器添加强化升级配置文件的数据类和解析
+参考客户端解析强化升级的配置文件，以及引导任务对配置文件的解析
+1、CfgSvs.cs里添加配置数据类StrongCfg {}，
+public class StrongCfg : BaseData<StrongCfg>
+{
+    public int pos;// 几号装备
+    public int starLv;// 星级等级
+    public int addHp;// 可增加的生命加成值
+    public int addHurt;// 可增加的伤害加成值
+    public int addDef;// 可增加的防御加成值
+    public int minLv;// 所需最小等级
+    public int coin;// 所需金币
+    public int crystal;// 所需水晶
+}
+2、CfgSvs.cs里添加强化升级的方法成员
+（1）定义强化升级的字典strongDic (装备pos,(装备星级startLv，配置文件sg))
+private Dictionary<int, Dictionary<int, StrongCfg>> strongDic = new Dictionary<int, Dictionary<int, StrongCfg>>();
+（2）初始化解析配置文件方法InitStrongCfg()，
+private void InitStrongCfg()// 强化升级的配置数据读取
+{
+    XmlDocument doc = new XmlDocument();
+    doc.Load(@"E:\GitLibrary\PersonalProjectLibrary\3DOnlineRPGGames\DarkGodOfWar\Client\Assets\Resources\ResConfigs\eqptstrong.xml");
+    XmlNodeList nodeList = doc.SelectSingleNode("root").ChildNodes;
+    for (int i = 0; i < nodeList.Count; i++)
+    {
+        XmlElement element = nodeList[i] as XmlElement;
+        if (element.GetAttributeNode("ID") == null) continue;
+        int id = Convert.ToInt32(element.GetAttributeNode("ID").InnerText);
+        StrongCfg sg = new StrongCfg { ID = id };
+        foreach (XmlElement e in nodeList[i].ChildNodes)
+        {
+            int val = int.Parse(e.InnerText);
+            switch (e.Name)
+            {
+                case "pos": sg.pos = val; break;
+                case "starlv": sg.starLv = val; break;
+                case "addhp": sg.addHp = val; break;
+                case "addhurt": sg.addHurt = val; break;
+                case "adddef": sg.addDef = val; break;
+                case "minlv": sg.minLv = val; break;
+                case "coin": sg.coin = val; break;
+                case "crystal": sg.crystal = val; break;
+            }
+        }
+        Dictionary<int, StrongCfg> sDic = null;
+        if (strongDic.TryGetValue(sg.pos, out sDic))
+            sDic.Add(sg.starLv, sg);
+        else
+        {
+            sDic = new Dictionary<int, StrongCfg> { { sg.starLv, sg } };
+            strongDic.Add(sg.pos, sDic);
+        };
+    }
+}
+（3）获取配置数据方法GetStrongData()
+public StrongCfg GetStrongData(int pos, int startLv)// 获取强化升级的配置文件
+{
+    StrongCfg sg = null;
+    Dictionary<int, StrongCfg> sDic = null;
+    if (strongDic.TryGetValue(pos, out sDic))
+    {
+        if (sDic.ContainsKey(startLv)) sDic.TryGetValue(startLv, out sg);
+    }
+    return sg;
+}
+
+3、在CfgSvs.cs的初始化里进行解析强化升级的配置文件
+public class CfgSvs
+{
+    ... ...
+    public void Init()// 网络服务初始化
+    {
+        ... ...
+        InitStrongCfg();
+         ... ...
+    }
+    ... ...
+}
+
+五、优化
+1、对读取配置文件后添加日志输出
+（1）任务引导配置文件读取成功后输出日志
+private void InitGuideCfg()
+{
+    ... ...
+    PECommon.Log("GuideCfg Init Done");
+}
+（2）强化升级配置文件读取成功后输出日志文件
+private void InitStrongCfg()
+{
+    ... ...
+    PECommon.Log("StrongCfg Init Done");
+}
+2、将获取配置文件的方法重命名
+GetStrongData()重命名为GetStrongCfg()；
+GetGuideData()重命名为GetGuideCfg()；
+
+六、完善实现服务器对强化升级的请求的处理和回应
+完善StrongSys.cs里的ReqStrong()方法
+1、获取升级所需的条件的数据，判断升级条件，不满足返回错误码
+之前已经在GameMsg.cs里添加强化升级的错误码，这里就不修改增加了
+2、扣除消耗的资源、相关属性值更新
+3、将更新后的数据存到数据库
+4、将更新后的数据返回给客户端玩家
+public void ReqStrong(MsgPack pack)
+{
+    ReqStrong data = pack.m_Msg.reqStrong;//数据转接
+    GameMsg msg = new GameMsg { cmd = (int)CMD.RspGuide };//回应客户端的消息
+    PlayerData pData = cacheSvc.GetPlayDataBySession(pack.m_Session);//获取缓存层里玩家数据
+    //判断升级条件
+    int curStarLv = pData.strongArr[data.pos];
+    StrongCfg nextSg = cfgSvs.GetStrongCfg(data.pos, curStarLv+1);//获取升级所需的条件的数据
+    if (pData.lv < nextSg.minLv) msg.err = (int)ErrorCode.LockLevel;//等级不够
+    else if (pData.coin < nextSg.coin) msg.err = (int)ErrorCode.LockCoin;//金币不够
+    else if (pData.crystal < nextSg.crystal) msg.err = (int)ErrorCode.LockCrystal;//水晶不够
+    else//通过筛选，扣除升级所用的资源，相关属性值更新
+    {
+        pData.coin -= nextSg.coin;
+        pData.crystal -= nextSg.crystal;
+        pData.strongArr[data.pos] += 1;//星级升级
+        pData.hp += nextSg.addHp;
+        pData.ad += nextSg.addHurt;
+        pData.ap += nextSg.addHurt;
+        pData.addef += nextSg.addDef;
+        pData.apdef += nextSg.addDef;
+    }
+    //根据id号，把玩家数据更新到数据库里
+    if (!cacheSvc.UpdatePlayerData(pData.id, pData))
+        msg.err = (int)ErrorCode.UpdateDBaseError;
+    else
+    {
+        msg.rspStrong = new RspStrong
+        {
+            coin = pData.coin,
+            crystal = pData.crystal,
+            hp = pData.hp,
+            ad = pData.ad,
+            ap = pData.ap,
+            addef = pData.addef,
+            apdef = pData.apdef,
+            strongArr = pData.strongArr
+        };
+    }
+    pack.m_Session.SendMsg(msg);//将数据返回客户端
+}
+
+七、重新编译生成对应的程序和dll，并运行服务器
+可看到服务器正常启动

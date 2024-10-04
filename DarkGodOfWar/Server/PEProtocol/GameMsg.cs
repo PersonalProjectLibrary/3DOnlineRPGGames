@@ -37,9 +37,11 @@ namespace PEProtocol
         RspReName = 104,//重命名回应
 
         //主城相关 200开始
-        ReqGuide = 200,//任务引导请求
-        RspGuide = 201,//任务引导回复
+        ReqGuide = 201,//任务引导请求
+        RspGuide = 202,//任务引导回应
 
+        ReqStrong = 203,//装备强化升级请求
+        RspStrong = 204,//装备强化升级回应
     }
 
     /// <summary>
@@ -74,11 +76,35 @@ namespace PEProtocol
         /// 数据库数据更新错误
         /// </summary>
         UpdateDBaseError,
+        /// <summary>
+        /// 等级不够
+        /// </summary>
+        LockLevel,
+        /// <summary>
+        /// 金币不够
+        /// </summary>
+        LockCoin,
+        /// <summary>
+        /// 水晶不够
+        /// </summary>
+        LockCrystal,
     }
 
+    /// <summary>
+    /// 消息包
+    /// </summary>
     [Serializable]
     public class GameMsg : PEMsg
     {
+        /// <summary>
+        /// 客户端发送装备强化升级请求
+        /// </summary>
+        public ReqStrong reqStrong;
+        /// <summary>
+        /// 服务器回应装备强化升级请求
+        /// </summary>
+        public RspStrong rspStrong;
+
         /// <summary>
         /// 客户端发送引导完成请求
         /// </summary>
@@ -109,16 +135,43 @@ namespace PEProtocol
         #endregion
     }
 
+    #region 装备强化升级相关
+    /// <summary>
+    /// 客户端发送装备强化升级的请求的消息
+    /// </summary>
+    /// 只需要传递位置/装备数据，
+    /// 服务器里记录了等级星级金币等数据，其他数据都不用客户端请求时传递
+    /// 服务器根据传递pos信息，判断是否满足强化升级条件就可以了
+    [Serializable]
+    public class ReqStrong { public int pos; }// 位置/装备信息
+
+    /// <summary>
+    /// 服务器回应装备强化升级的请求
+    /// </summary>
+    /// 1、剩余金币数、水晶数；2、升级后属性变化
+    /// 3、强化数据strongArr的更新
+    [Serializable]
+    public class RspStrong
+    {
+        public int coin;//剩余金币
+        public int crystal;//剩余水晶
+        public int hp;//强化后属性
+        public int ad;
+        public int ap;
+        public int addef;
+        public int apdef;
+        public int[] strongArr;//更新强化数据
+    }
+
+    #endregion
+
     #region 任务引导相关
     /// <summary>
     /// 客户端发送引导任务完成的请求的消息
     /// </summary>
     /// 请求引导的id对话，只需发送当前已经完成的引导任务的id
     [Serializable]
-    public class ReqGuide
-    {
-        public int guideid;// 引导任务id
-    }
+    public class ReqGuide { public int guideid; }// 引导任务id
 
     /// <summary>
     /// 服务器回应引导任务完成的请求
@@ -151,30 +204,21 @@ namespace PEProtocol
     /// 服务器回应登录请求的消息
     /// </summary>
     [Serializable]
-    public class RspLogin
-    {
-        public PlayerData playerData;//玩家数据
-    }
+    public class RspLogin { public PlayerData playerData; }//玩家数据
 
     /// <summary>
     /// 客户端发送重命名请求的消息
     /// </summary>
     /// 新玩家登录注册新账号起名时向服务器发送请求
     [Serializable]
-    public class ReqReName
-    {
-        public string name;//重命名的名字
-    }
+    public class ReqReName { public string name; }//重命名的名字
 
     /// <summary>
     /// 服务器回应重命名请求的消息
     /// </summary>
     /// 判断服务器上其他人有没有使用过该名字
     [Serializable]
-    public class RspReName
-    {
-        public string name;//更新后的名字
-    }
+    public class RspReName { public string name; }//更新后的名字
     #endregion
 
     /// <summary>
