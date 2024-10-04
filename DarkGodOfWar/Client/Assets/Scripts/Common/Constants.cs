@@ -25,6 +25,7 @@ public class Constants
     public const string UiClickBtn = "uiClickBtn";//常规UI的点击音效
     public const string UiExtenBtn = "uiExtenBtn";//点击主城里的主菜单按钮的音效
     public const string UiOpenPage = "uiOpenBtn";//打开页面/大的窗口界面的音效
+    public const string FuBenEnter = "fbitem";//强化升级成功后播放的音效
 
     //屏幕标准宽高
     public const int ScreenStandardWidth = 1334;

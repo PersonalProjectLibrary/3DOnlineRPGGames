@@ -46,7 +46,7 @@ public class StrongSys
     public void ReqStrong(MsgPack pack)
     {
         ReqStrong data = pack.m_Msg.reqStrong;//数据转接
-        GameMsg msg = new GameMsg { cmd = (int)CMD.RspGuide };//回应客户端的消息
+        GameMsg msg = new GameMsg { cmd = (int)CMD.RspStrong };//回应客户端的消息
         PlayerData pData = cacheSvc.GetPlayDataBySession(pack.m_Session);//获取缓存层里玩家数据
         //判断升级条件
         int curStarLv = pData.strongArr[data.pos];

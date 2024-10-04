@@ -44,7 +44,6 @@ public class MainCitySystem : SystemRoot
     {
         base.InitSystem();
         Instance = this;
-
         PECommon.Log("Init MainCitySystem...");
     }
 
@@ -76,9 +75,22 @@ public class MainCitySystem : SystemRoot
     /// <summary>
     /// 打开强化升级界面
     /// </summary>
-    public void OpenStrongWnd()
+    public void OpenStrongWnd() { strongWnd.SetWndState(); }
+
+    /// <summary>
+    /// 处理服务器回应引导任务请求的消息
+    /// </summary>
+    /// <param name="msg"></param>
+    public void RspStrong(GameMsg msg)
     {
-        strongWnd.SetWndState();
+        //计算战力
+        int zhanliPre = PECommon.GetFightByProps(GameRoot.Instance.PlayerData);
+        GameRoot.Instance.SetPlayerDataByStrong(msg.rspStrong);
+        int zhanliNow = PECommon.GetFightByProps(GameRoot.Instance.PlayerData);
+        GameRoot.AddTips(Constants.SetTxtColor("战力提升 " + (zhanliNow - zhanliPre), TxtColor.Blue));
+        //更新UI显示
+        strongWnd.UpdateUI();//刷新强化界面UI显示
+        mainCityWnd.RefreshUI();//刷新主城界面UI显示
     }
 
     #endregion
@@ -209,7 +221,6 @@ public class MainCitySystem : SystemRoot
         }
         GameRoot.Instance.SetPlayerDataByGuide(data);//把更新的玩家数据，更新到GameRoot里
         mainCityWnd.RefreshUI();//刷新主城UI显示
-        infoWnd.RefreshUI();//刷新角色UI显示
     }
     #endregion
 

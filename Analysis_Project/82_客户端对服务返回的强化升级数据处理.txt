@@ -1,0 +1,198 @@
+
+客户端处理服务器返回的引导完成请求消息
+
+一、添加网络消息处理里对服务器对强化升级请求回应的消息
+1、MainCitySys.cs里新增处理服务器回应强化升级请求的消息的函数RspStrong()
+并在NetService.cs的ProcessMsg()里调用；
+
+2、NetService.cs的ProcessMsg()里新增对服务器回应引导任务请求的消息的处理分支
+包括新增对应错误码的处理分支
+public void ProcessMsg(GameMsg msg)
+{
+    if (msg.err != (int)ErrorCode.None)//返回的是错误信息
+    {
+        switch ((ErrorCode)msg.err)
+        {
+            ... ...
+            case ErrorCode.LockLevel: GameRoot.AddTips("角色等级不够"); break;
+            case ErrorCode.LockCoin: GameRoot.AddTips("金币数量不够"); break;
+            case ErrorCode.LockCrystal: GameRoot.AddTips("水晶数量不够"); break;
+        }
+        return;
+    }
+    switch ((CMD)msg.cmd)//将信息分发出去
+    {
+        ... ...
+        case CMD.RspStrong: MainCitySystem.Instance.RspStrong(msg); break;
+    }
+}
+
+二、新增根据强化升级更新玩家数据的函数
+在GameRoot.cs里新增根据强化升级更新玩家数据的函数SetPlayerDataByStrong()
+并在MainCitySystem.cs的RspStrong()里进行调用
+public void SetPlayerDataByStrong(RspStrong data)
+{
+    playerData.coin = data.coin;
+    playerData.crystal = data.crystal;
+    playerData.hp = data.hp;
+    playerData.ad = data.ad;
+    playerData.ap = data.ap;
+    playerData.addef = data.addef;
+    playerData.apdef = data.apdef;
+    playerData.strongArr = data.strongArr;
+}
+
+三、在MainCitySystem.cs的RspStrong()里处理服务器返回的数据
+1、添加强化升级成功后播放的音效
+在Constant.cs里定义强化升级成功后播放的音效FuBenEnter
+后面在强化升级成功后刷新强化界面前使用
+public const string FuBenEnter= "fbitem";//强化升级成功后播放的音效
+
+2、更新数据后，刷新UI显示
+更新玩家金币、防御值，伤害值等UI显示，
+在StrongWnd.cs的新增刷新UI的函数UpdateUI()，并在MainCitySys.cs的RspStrong()里进行调用；
+在强化界面里，每次点击不同装备位置pos时，都会获取最新的装备数据显示到强化界面里；
+这里使用这个方法，来更新强化后的装备UI显示；
+public void UpdateUI()
+{
+    audioService.PlayUIAudio(Constants.FuBenEnter);
+    ClickPosItem(curIndex);//点击装备，显示对应装备数据
+}
+
+3、注，之前把角色信息界面InfoWnd.cs里的UI显示的方法RefreshUI改成Public，
+并在任务引导里完成任务后，刷新主城界面时，也设置刷新角色信息界面；
+这个操作是多余的，在角色信息界面打开时，就会自动执行角色信息界面的刷新，没必要在额外设置
+这里该回去
+原改成：
+public class InfoWnd : WindowRoot
+{
+    ... ...
+    public void RefreshUI() {... ...}
+}
+public class MainCitySystem : SystemRoot
+{
+    ... ...
+    public void RspGuide(GameMsg msg)
+    {
+        ... ...
+        mainCityWnd.RefreshUI();//刷新主城UI显示
+        infoWnd.RefreshUI();
+    }
+}
+现改回为：
+public class InfoWnd : WindowRoot
+{
+    ... ...
+    private void RefreshUI() {... ...}
+}
+public class MainCitySystem : SystemRoot
+{
+    ... ...
+    public void RspGuide(GameMsg msg)
+    {
+        ... ...
+        mainCityWnd.RefreshUI();//刷新主城UI显示
+    }
+}
+
+4、实现完善MainCitySystem.cs的RspStrong()
+（1）计算战力变化，并显示提示
+注：避免强化面板遮挡Tips弹窗显示，场景里要把DynamicWnds放到StrongWnd下面
+使Tips弹窗在强化界面上面显示，不被强化面板遮挡；
+（2）刷新强化后的UI显示
+public void RspStrong(GameMsg msg)
+{
+    //计算战力
+    int zhanliPre = PECommon.GetFightByProps(GameRoot.Instance.PlayerData);
+    GameRoot.Instance.SetPlayerDataByStrong(msg.rspStrong);
+    int zhanliNow = PECommon.GetFightByProps(GameRoot.Instance.PlayerData);
+    GameRoot.AddTips(Constants.SetTxtColor("战力提升 " + (zhanliNow - zhanliPre), TxtColor.Blue));
+    //更新UI显示
+    strongWnd.UpdateUI();//刷新强化界面UI显示
+    mainCityWnd.RefreshUI();//刷新主城界面UI显示
+}
+
+四、解决Bug
+1、点击强化提示服务器返回的是任务引导回应
+服务器的StrongSys.cs的ReqStrong()里，将GameMsg的cmd设置成ReqGuide了，
+这里改成RspStrong
+原：
+public void ReqStrong(MsgPack pack)
+{
+    ... ...
+    GameMsg msg = new GameMsg { cmd = (int)CMD.ReqGuide };//回应客户端的消息
+    ... ...
+}
+改：
+public void ReqStrong(MsgPack pack)
+{
+    ... ...
+    GameMsg msg = new GameMsg { cmd = (int)CMD.RspStrong };//回应客户端的消息
+    ... ...
+}
+
+2、获取属性加成错误
+ResService.cs里获取当前星级属性加成GetPropAddValPreLv()里，获取配置数据字典里的配置数据
+配置文件是从1开始的，而遍历获取时，是从0开始的，导致配置数据获取错误
+解决方法，StrongWnd.cs里获取属性加成时，原本传递的是当前星级，改为传递下一星级
+原：
+private void RefreshUI()
+{
+    ... ...
+    //当前星级属性的总加成
+    int sumAddHp = resService.GetPropAddValPreLv(curIndex, curStarLv, "hp");
+    int sumAddHurt = resService.GetPropAddValPreLv(curIndex, curStarLv, "hurt");
+    int sumAddDef = resService.GetPropAddValPreLv(curIndex, curStarLv, "def");
+    SetText(propHp1, "生命 +" + sumAddHp);
+    SetText(propHurt1, "伤害 +" + sumAddHurt);
+    SetText(propDef1, "防御 +" + sumAddDef);
+    //下一级星级可获得的属性加成
+    int nextStarLv = curStarLv + 1;
+    nextEsg = resService.GetStrongCfgData(curIndex, nextStarLv);
+    ... ...
+}
+改：
+private void RefreshUI()
+{
+    ... ...
+    //当前星级属性的总加成
+    int nextStarLv = curStarLv + 1;
+    int sumAddHp = resService.GetPropAddValPreLv(curIndex, nextStarLv, "hp");
+    int sumAddHurt = resService.GetPropAddValPreLv(curIndex, nextStarLv, "hurt");
+    int sumAddDef = resService.GetPropAddValPreLv(curIndex, nextStarLv, "def");
+    SetText(propHp1, "生命 +" + sumAddHp);
+    SetText(propHurt1, "伤害 +" + sumAddHurt);
+    SetText(propDef1, "防御 +" + sumAddDef);
+    //下一级星级可获得的属性加成
+    nextEsg = resService.GetStrongCfgData(curIndex, nextStarLv);
+    ... ...
+}
+
+3、视频课程里，首个装备进行强化时，显示战力显示负数的bug
+原因：服务器StrongSys.cs的ReqStrong()里，传递msg消息的rspStrong里，漏了ap的数据赋值
+自己写的项目里不存在这个问题
+public void ReqStrong(MsgPack pack)
+{
+    ... ...
+    if (!cacheSvc.UpdatePlayerData(pData.id, pData)) msg.err = (int)ErrorCode.UpdateDBaseError;
+    else
+    {
+        msg.rspStrong = new RspStrong
+        {
+            coin = pData.coin,
+            crystal = pData.crystal,
+            hp = pData.hp,
+            ad = pData.ad,
+            ap = pData.ap,
+            addef = pData.addef,
+            apdef = pData.apdef,
+            strongArr = pData.strongArr
+        };
+    }
+    pack.m_Session.SendMsg(msg);//将数据返回客户端
+}
+
+五、方便测试，可以修改数据库，把角色等级提高，进行满星测试
+
+六、保存运行
+正常强化显示无误

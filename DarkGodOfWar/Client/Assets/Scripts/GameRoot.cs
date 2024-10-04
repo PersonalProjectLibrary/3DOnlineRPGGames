@@ -103,6 +103,22 @@ public class GameRoot : MonoBehaviour
         playerData.exp = data.exp;
         playerData.coin = data.coin;
     }
+
+    /// <summary>
+    /// 根据强化升级信息设置玩家的数据
+    /// </summary>
+    /// <param name="data"></param>
+    public void SetPlayerDataByStrong(RspStrong data)
+    {
+        playerData.coin = data.coin;
+        playerData.crystal = data.crystal;
+        playerData.hp = data.hp;
+        playerData.ad = data.ad;
+        playerData.ap = data.ap;
+        playerData.addef = data.addef;
+        playerData.apdef = data.apdef;
+        playerData.strongArr = data.strongArr;
+    }
     #endregion
 
 }

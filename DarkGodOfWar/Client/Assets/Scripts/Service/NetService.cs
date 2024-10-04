@@ -33,9 +33,7 @@ public class NetService : MonoBehaviour
     {
         Instance = this;
         PECommon.Log("Init NetService...");
-
         client = new PESocket<ClientSession, GameMsg>();
-        
         //设置客户端日志接口
         client.SetLog(true, (string msg, int lv) =>
         {
@@ -66,10 +64,7 @@ public class NetService : MonoBehaviour
     {
         if (msgQue.Count > 0)
         {
-            lock (lockObj)
-            {
-                ProcessMsg(msgQue.Dequeue());
-            }
+            lock (lockObj) { ProcessMsg(msgQue.Dequeue()); }
         }
     }
 
@@ -93,10 +88,7 @@ public class NetService : MonoBehaviour
     /// <param name="msg"></param>
     public void AddNetPkg(GameMsg msg)
     {
-        lock (lockObj)
-        {
-            msgQue.Enqueue(msg);
-        }
+        lock (lockObj) { msgQue.Enqueue(msg); }
     }
 
     /// <summary>
@@ -119,14 +111,18 @@ public class NetService : MonoBehaviour
                     PECommon.Log("服务器数据异常", LogType.Error);
                     GameRoot.AddTips("客户端数据异常");
                     break;
+                case ErrorCode.LockLevel: GameRoot.AddTips("角色等级不够"); break;
+                case ErrorCode.LockCoin: GameRoot.AddTips("金币数量不够"); break;
+                case ErrorCode.LockCrystal: GameRoot.AddTips("水晶数量不够"); break;
             }
             return;
         }
         switch ((CMD)msg.cmd)//将信息分发出去
         {
             case CMD.RspLogin: LoginSystem.Instance.RespondLogin(msg); break;
-            case CMD.RspReName:LoginSystem.Instance.RspRename(msg);break;
-            case CMD.RspGuide:MainCitySystem.Instance.RspGuide(msg);break;
+            case CMD.RspReName: LoginSystem.Instance.RspRename(msg); break;
+            case CMD.RspGuide: MainCitySystem.Instance.RspGuide(msg); break;
+            case CMD.RspStrong: MainCitySystem.Instance.RspStrong(msg); break;
         }
     }
 }

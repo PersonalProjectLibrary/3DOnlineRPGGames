@@ -130,7 +130,7 @@ public class StrongWnd : WindowRoot
     }
 
     /// <summary>
-    /// 点击左侧图片Item
+    /// 点击左侧装备图片，刷新UI，显示对应装备数据
     /// </summary>
     private void ClickPosItem(int index)
     {
@@ -201,22 +201,14 @@ public class StrongWnd : WindowRoot
 
     #region Tools Function
     /// <summary>
-    /// 左侧按钮图片添加点击事件监听
+    /// 强化后刷新游戏的UI显示
     /// </summary>
-    private void RegClickEvts()
+    /// 每次点击位置时，都会刷新强化界面的显示，
+    /// 这里也直接使用：点击位置的方式获取最新数据，刷新强化界面
+    public void UpdateUI()
     {
-        for (int i = 0; i < leftImgPos.childCount; i++)
-        {
-            Image img = leftImgPos.GetChild(i).GetComponent<Image>();
-
-            OnClick(img.gameObject, (object args) =>
-            {
-                ClickPosItem((int)args);
-                audioService.PlayUIAudio(Constants.UiClickBtn);
-            }, i);
-
-            leftImgs[i] = img;
-        }
+        audioService.PlayUIAudio(Constants.FuBenEnter);
+        ClickPosItem(curIndex);//点击装备，显示对应装备数据
     }
 
     /// <summary>
@@ -244,14 +236,14 @@ public class StrongWnd : WindowRoot
             else SetSprite(img, PathDefine.SpStar1);
         }
         //当前星级属性的总加成
-        int sumAddHp = resService.GetPropAddValPreLv(curIndex, curStarLv, "hp");
-        int sumAddHurt = resService.GetPropAddValPreLv(curIndex, curStarLv, "hurt");
-        int sumAddDef = resService.GetPropAddValPreLv(curIndex, curStarLv, "def");
+        int nextStarLv = curStarLv + 1;
+        int sumAddHp = resService.GetPropAddValPreLv(curIndex, nextStarLv, "hp");
+        int sumAddHurt = resService.GetPropAddValPreLv(curIndex, nextStarLv, "hurt");
+        int sumAddDef = resService.GetPropAddValPreLv(curIndex, nextStarLv, "def");
         SetText(propHp1, "生命 +" + sumAddHp);
         SetText(propHurt1, "伤害 +" + sumAddHurt);
         SetText(propDef1, "防御 +" + sumAddDef);
         //下一级星级可获得的属性加成
-        int nextStarLv = curStarLv + 1;
         nextEsg = resService.GetStrongCfgData(curIndex, nextStarLv);
         if (nextEsg != null)//没升满星
         {
@@ -281,6 +273,25 @@ public class StrongWnd : WindowRoot
             SetActive(propArrow1, false);
             SetActive(propArrow2, false);
             SetActive(propArrow3, false);
+        }
+    }
+
+    /// <summary>
+    /// 左侧按钮图片添加点击事件监听
+    /// </summary>
+    private void RegClickEvts()
+    {
+        for (int i = 0; i < leftImgPos.childCount; i++)
+        {
+            Image img = leftImgPos.GetChild(i).GetComponent<Image>();
+
+            OnClick(img.gameObject, (object args) =>
+            {
+                ClickPosItem((int)args);
+                audioService.PlayUIAudio(Constants.UiClickBtn);
+            }, i);
+
+            leftImgs[i] = img;
         }
     }
 
