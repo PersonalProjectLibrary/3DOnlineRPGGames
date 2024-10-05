@@ -36,6 +36,10 @@ public class MainCitySystem : SystemRoot
     /// 强化升级界面
     /// </summary>
     public StrongWnd strongWnd;
+    /// <summary>
+    /// 聊天界面
+    /// </summary>
+    public ChatWnd chatWnd;
 
     /// <summary>
     /// 初始化主城系统
@@ -71,6 +75,20 @@ public class MainCitySystem : SystemRoot
         });
     }
 
+    #region Chat Wnd：聊天界面设置
+    /// <summary>
+    /// 打开聊天界面
+    /// </summary>
+    public void OpenChatWnd() { chatWnd.SetWndState(); }
+
+    /// <summary>
+    /// 处理服务器回应聊天消息请求的消息
+    /// </summary>
+    /// <param name="msg"></param>
+    public void RspChat(GameMsg msg) { }
+
+    #endregion
+
     #region Strong Wnd：强化升级界面设置
     /// <summary>
     /// 打开强化升级界面
@@ -100,21 +118,24 @@ public class MainCitySystem : SystemRoot
     /// 当前引导任务数据
     /// </summary>
     private AutoGuideCfg curTaskData;
-    
     /// <summary>
     /// npc位置信息数组
     /// </summary>
     private Transform[] npcPosTrans;
-    
     /// <summary>
     /// 角色自动导航组件
     /// </summary>
     private NavMeshAgent navAgent;
-
     /// <summary>
     /// 是否在自动寻路中
     /// </summary>
     private bool isNavGuide = false;
+
+    /// <summary>
+    /// 获取当前任务数据
+    /// </summary>
+    /// <returns></returns>
+    public AutoGuideCfg GetCurTaskData() { return curTaskData; }
 
     /// <summary>
     /// 执行引导任务
@@ -149,6 +170,33 @@ public class MainCitySystem : SystemRoot
         }
     }
 
+    /// <summary>
+    /// 处理服务器回应引导任务请求的消息
+    /// </summary>
+    /// <param name="msg"></param>
+    public void RspGuide(GameMsg msg)
+    {
+        RspGuide data = msg.rspGuide;//获取服务器数据
+        //Tips弹出提示获取的奖励
+        //GameRoot.AddTips("任务奖励 金币+" + curTaskData.coin + " 经验+" + curTaskData.exp);
+        GameRoot.AddTips(Constants.SetTxtColor("任务奖励 金币+" + curTaskData.coin + " 经验+" + curTaskData.exp, TxtColor.Blue));
+        //读取任务的actID，执行相应的操作
+        switch (curTaskData.actID)
+        {
+            case 0: break;//与智者对话
+            case 1: break;//TODO 进入副本
+            case 2: break;//TODO 进行装备强化
+            case 3: break;//TODO 进行体力购买
+            case 4: break;//TODO 进行金币购买
+            case 5: break;//TODO 进行世界聊天
+        }
+        GameRoot.Instance.SetPlayerDataByGuide(data);//把更新的玩家数据，更新到GameRoot里
+        mainCityWnd.RefreshUI();//刷新主城UI显示
+    }
+
+    /// <summary>
+    /// 进行自动导航
+    /// </summary>
     private void Update()
     {
         if (isNavGuide)
@@ -158,11 +206,11 @@ public class MainCitySystem : SystemRoot
         }
     }
 
+    #region Tools Function
     /// <summary>
-    /// 获取当前任务数据
+    /// 打开引导任务的对话界面
     /// </summary>
-    /// <returns></returns>
-    public AutoGuideCfg GetCurTaskData() { return curTaskData; }
+    private void OpenGuideWnd() { guideWnd.SetWndState(); }
 
     /// <summary>
     /// 判断是否自动导航到目标位置
@@ -193,35 +241,8 @@ public class MainCitySystem : SystemRoot
             playerCtrl.SetBlend(Constants.BlendIdle);
         }
     }
+    #endregion
 
-    /// <summary>
-    /// 打开引导任务的对话界面
-    /// </summary>
-    private void OpenGuideWnd() { guideWnd.SetWndState(); }
-
-    /// <summary>
-    /// 处理服务器回应引导任务请求的消息
-    /// </summary>
-    /// <param name="msg"></param>
-    public void RspGuide(GameMsg msg)
-    {
-        RspGuide data = msg.rspGuide;//获取服务器数据
-        //Tips弹出提示获取的奖励
-        //GameRoot.AddTips("任务奖励 金币+" + curTaskData.coin + " 经验+" + curTaskData.exp);
-        GameRoot.AddTips(Constants.SetTxtColor("任务奖励 金币+" + curTaskData.coin + " 经验+" + curTaskData.exp, TxtColor.Blue));
-        //读取任务的actID，执行相应的操作
-        switch (curTaskData.actID)
-        {
-            case 0: break;//与智者对话
-            case 1: break;//TODO 进入副本
-            case 2: break;//TODO 进行装备强化
-            case 3: break;//TODO 进行体力购买
-            case 4: break;//TODO 进行金币购买
-            case 5: break;//TODO 进行世界聊天
-        }
-        GameRoot.Instance.SetPlayerDataByGuide(data);//把更新的玩家数据，更新到GameRoot里
-        mainCityWnd.RefreshUI();//刷新主城UI显示
-    }
     #endregion
 
     #region Info Wnd：角色信息界面设置

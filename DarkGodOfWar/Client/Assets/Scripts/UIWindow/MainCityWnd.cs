@@ -167,6 +167,15 @@ public class MainCityWnd : WindowRoot
 
     #region ClickEvents
     /// <summary>
+    /// 打开聊天按钮
+    /// </summary>
+    public void ClickChatBtn()
+    {
+        audioService.PlayUIAudio(Constants.UiOpenPage);
+        MainCitySystem.Instance.OpenChatWnd();
+    }
+
+    /// <summary>
     /// 点击打开强化升级界面
     /// </summary>
     public void ClickStrongBtn()
@@ -186,9 +195,8 @@ public class MainCityWnd : WindowRoot
     }
 
     /// <summary>
-    /// 点击角色头像按钮
+    /// 点击头像打开角色信息界面按钮
     /// </summary>
-    /// 打开角色信息面板
     public void ClickHeadBtn()
     {
         audioService.PlayUIAudio(Constants.UiOpenPage);
