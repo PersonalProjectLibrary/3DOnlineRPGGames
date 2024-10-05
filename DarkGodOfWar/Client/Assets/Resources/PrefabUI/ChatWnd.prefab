@@ -443,7 +443,7 @@ RectTransform:
   m_Children:
   - {fileID: 1821008607}
   m_Father: {fileID: 6005121801966112951}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -531,7 +531,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 933074119}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6005121801496920504}
+        m_TargetAssemblyTypeName: ChatWnd, Assembly-CSharp
+        m_MethodName: ClickFriendBtn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1124501648
 GameObject:
   m_ObjectHideFlags: 0
@@ -807,7 +819,7 @@ RectTransform:
   m_Children:
   - {fileID: 1232459666}
   m_Father: {fileID: 6005121801966112951}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -895,7 +907,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1494165275}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6005121801496920504}
+        m_TargetAssemblyTypeName: ChatWnd, Assembly-CSharp
+        m_MethodName: ClicWorldkBtn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1520185388
 GameObject:
   m_ObjectHideFlags: 0
@@ -928,7 +952,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6005121801966112951}
-  m_RootOrder: 1
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1062,7 +1086,7 @@ RectTransform:
   m_Children:
   - {fileID: 92821729}
   m_Father: {fileID: 6005121801966112951}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1150,7 +1174,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1675721107}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6005121801496920504}
+        m_TargetAssemblyTypeName: ChatWnd, Assembly-CSharp
+        m_MethodName: ClickGuildBtn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1821008606
 GameObject:
   m_ObjectHideFlags: 0
@@ -1464,7 +1500,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2141184359}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6005121801496920504}
+        m_TargetAssemblyTypeName: ChatWnd, Assembly-CSharp
+        m_MethodName: ClickSendBtn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &6005121800620006240
 GameObject:
   m_ObjectHideFlags: 0
@@ -1516,6 +1564,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb54804797881694694d76bf1158217f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  imgWorld: {fileID: 1494165275}
+  imgGuild: {fileID: 1675721107}
+  imgFriend: {fileID: 933074119}
+  txtChat: {fileID: 563341191}
+  iptChat: {fileID: 1124501650}
 --- !u!1 &6005121801966112950
 GameObject:
   m_ObjectHideFlags: 0
@@ -1545,10 +1598,10 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 623284422}
-  - {fileID: 1520185389}
   - {fileID: 1494165273}
   - {fileID: 1675721105}
   - {fileID: 933074117}
+  - {fileID: 1520185389}
   - {fileID: 2141184357}
   - {fileID: 1124501649}
   m_Father: {fileID: 6005121800620006241}

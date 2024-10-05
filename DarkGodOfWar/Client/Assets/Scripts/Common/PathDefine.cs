@@ -42,6 +42,48 @@ public class PathDefine
 
     #endregion
 
+    #region Chat Image Path：聊天窗口按钮背景
+    /// <summary>
+    /// 聊天按钮选中时图片
+    /// </summary>
+    public const string SelectChat = "ResImages/btntype1";
+    /// <summary>
+    /// 聊天按钮没选中时图片
+    /// </summary>
+    public const string UnSelectChat = "ResImages/btntype2";
+
+    #endregion
+
+    #region Strong Image Path：强化界面里按钮背景、装备图片、星级的路径
+    //左侧背景图片的路径
+    /// <summary>
+    /// 默认背景版
+    /// </summary>
+    public const string ItemPlateBg = "ResImages/charbg3";
+    /// <summary>
+    /// 选中后箭头背景版
+    /// </summary>
+    public const string ItemArrowBg = "ResImages/btnstrong";
+
+    //右侧当前装备图片的路径
+    public const string ItemToukui = "ResImages/toukui";
+    public const string ItemBody = "ResImages/body";
+    public const string ItemYaobu = "ResImages/yaobu";
+    public const string ItemHand = "ResImages/hand";
+    public const string ItemLeg = "ResImages/leg";
+    public const string ItemFoot = "ResImages/foot";
+
+    //右侧星级图片的路径
+    /// <summary>
+    /// 空星星图片
+    /// </summary>
+    public const string SpStar1 = "ResImages/star1";
+    /// <summary>
+    /// 实星星图片
+    /// </summary>
+    public const string SpStar2 = "ResImages/star2";
+    #endregion
+
     #region Dialog CharacterIcon Path：与npc对话显示的对话的角色图片的路径
     /// <summary>
     /// 刺客角色图标
@@ -94,33 +136,4 @@ public class PathDefine
 
     #endregion
 
-    #region Strong Left BgImg：强化界面里按钮背景、装备图片、星级的路径
-    //左侧背景图片的路径
-    /// <summary>
-    /// 默认背景版
-    /// </summary>
-    public const string ItemPlateBg = "ResImages/charbg3";
-    /// <summary>
-    /// 选中后箭头背景版
-    /// </summary>
-    public const string ItemArrowBg = "ResImages/btnstrong";
-
-    //右侧当前装备图片的路径
-    public const string ItemToukui = "ResImages/toukui";
-    public const string ItemBody = "ResImages/body";
-    public const string ItemYaobu = "ResImages/yaobu";
-    public const string ItemHand = "ResImages/hand";
-    public const string ItemLeg = "ResImages/leg";
-    public const string ItemFoot = "ResImages/foot";
-
-    //右侧星级图片的路径
-    /// <summary>
-    /// 空星星图片
-    /// </summary>
-    public const string SpStar1 = "ResImages/star1";
-    /// <summary>
-    /// 实星星图片
-    /// </summary>
-    public const string SpStar2 = "ResImages/star2";
-    #endregion
 }

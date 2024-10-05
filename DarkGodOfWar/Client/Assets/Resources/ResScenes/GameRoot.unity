@@ -2858,34 +2858,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 56434014, guid: 1debbb7294bb8424d9197e6e27ab34ca, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 56434014, guid: 1debbb7294bb8424d9197e6e27ab34ca, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 56434014, guid: 1debbb7294bb8424d9197e6e27ab34ca, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 319396833}
-    - target: {fileID: 56434014, guid: 1debbb7294bb8424d9197e6e27ab34ca, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 56434014, guid: 1debbb7294bb8424d9197e6e27ab34ca, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: ClickChatBtn
-      objectReference: {fileID: 0}
-    - target: {fileID: 56434014, guid: 1debbb7294bb8424d9197e6e27ab34ca, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: MainCityWnd, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 56434014, guid: 1debbb7294bb8424d9197e6e27ab34ca, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
     - target: {fileID: 206745040, guid: 1debbb7294bb8424d9197e6e27ab34ca, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

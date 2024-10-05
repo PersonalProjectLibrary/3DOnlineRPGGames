@@ -1,0 +1,132 @@
+
+一、实现的功能：
+1、点击聊天界面“世界”“工会”“好友”，按钮进行背景切换显示
+点击“世界”界面时，显示聊天界面，这里不做工会和好友功能，直接显示还没有加入公会，还没有好友；
+
+2、聊天界面里内容的显示：
+显示发消息的人名字，以及所发的消息；
+发消息人的名字的文字蓝色显示，发的消息的文字白色显示；
+当前屏幕内容显示满后，上面的内容截取掉，显示最下面最新的消息
+
+3、聊天输入框存在内容，点击发送按钮，将信息发送到网络服务器；
+服务器把该消息广播给服务器里所有的玩家；
+服务器里所有的玩家都会接收到该消息；
+并且在聊天界面打开的情况下，显示在聊天界面里
+
+二、功能开发——按钮点击切换背景和聊天界面内容显示
+1、在PathDefine.cs里定义聊天按钮切换的图片路径常量
+public const string SelectChat = "ResImages/btntype1";// 聊天按钮选中时图片
+public const string UnSelectChat = "ResImages/btntype2";// 聊天按钮没选中时图片
+
+2、定义获取聊天内容显示的组件、聊天按钮的图片组件和当前选择的聊天类型
+用int变量记录存储当前选中的聊天类型；在窗口初始化时，默认设置当前类型是世界聊天窗口；
+public Text txtChat;// 显示聊天内容的文本
+public Image imgWorld;// 世界聊天按钮图片
+public Image imgGuild;// 工会聊天按钮图片
+public Image imgFriend;// 好友聊天按钮图片
+private int chatType;// 当前聊天类型：世界0，工会1，好友2
+protected override void InitWnd()
+{
+    base.InitWnd();
+    chatType = 0;
+}
+
+3、定义List，存储聊天记录，后面在聊天界面里显示所有的聊天记录
+private List<string> worldChatList = new List<string>();
+
+4、对于聊天内容的显示
+场景里使用一个text来显示所有聊天内容；所有在显示内容前对显示的内容进行处理
+至于使用一个text显示内容，处于性能优化的考虑，
+用多个组件来显示内容，效果是一样的但会多出来很多个组件；
+所以把内容整合到一个text组件里；
+（1）循环遍历worldChatList 里的所有聊天记录
+（2）对每条聊天记录之间添加“/n”换行符号
+for(int i = 0; i < worldChatList.Count; i++) chatMsg += worldChatList[i] + "\n";
+
+5、新增控制聊天界面UI显示的方法RefreshUI()
+并在窗口初始化Init()时就调用
+private void RefreshUI()
+{
+    string chatMsg = "";
+    if (chatType == 0)
+    {
+        //设置显示的聊天消息
+        for(int i = 0; i < worldChatList.Count; i++) chatMsg += worldChatList[i] + "\n";
+        //聊天按钮显示控制
+        SetSprite(imgWorld, PathDefine.SelectChat);
+        SetSprite(imgGuild, PathDefine.UnSelectChat);
+        SetSprite(imgFriend, PathDefine.UnSelectChat);
+    }
+    else if (chatType == 1)
+    {
+        chatMsg = "尚未加入工会";
+        SetSprite(imgWorld, PathDefine.UnSelectChat);
+        SetSprite(imgGuild, PathDefine.SelectChat);
+        SetSprite(imgFriend, PathDefine.UnSelectChat);
+    }
+    else if(chatType == 2)//这里也用else if，后面方便扩展添加其他聊天窗口选项设置
+    {
+        chatMsg = "暂无好友信息";
+        SetSprite(imgWorld, PathDefine.UnSelectChat);
+        SetSprite(imgGuild, PathDefine.UnSelectChat);
+        SetSprite(imgFriend, PathDefine.SelectChat);
+    }
+    SetText(txtChat, chatMsg);
+}
+protected override void InitWnd()
+{
+    ... ...
+    RefreshUI();
+}
+6、新增按钮点击方法，控制聊天按钮点击切换内容显示
+public void ClicWorldkBtn()// 点击世界聊天按钮
+{
+    audioService.PlayUIAudio(Constants.UiClickBtn);
+    chatType = 0;
+    RefreshUI();
+}
+public void ClickGuildBtn()// 点击公会聊天按钮
+{
+    audioService.PlayUIAudio(Constants.UiClickBtn);
+    chatType = 1;
+    RefreshUI();
+}
+public void ClickFriendBtn()// 点击好友聊天按钮
+{
+    audioService.PlayUIAudio(Constants.UiClickBtn);
+    chatType = 2;
+    RefreshUI();
+}
+
+7、对场景里对应组件、按钮进行绑定设置
+
+三、功能开发——点击发送按钮发送消息功能
+1、定义聊天消息输入框组件iptChat
+public InputField iptChat;
+
+2、新增发送聊天消息的功能方法ClickSendBtn()
+（1）先判断聊天输入框里的输入内容是否是合法的
+如是否存在敏感词，输入内容是否为空，或是否是空格等；
+这里简单处理，暂不做敏感词的判断；
+
+（2）输入合法后，判定消息长度
+判定输入内容是否超出输入上限，避免发送的消息包过大；
+
+（3）另外还要设置定时器约束，限制消息发送间隔
+聊天消息在服务器里是群发，消耗性能很大，一般会设定定时，限制多少秒后再能发送第二条消息
+这里先不做处理，后面添加定时器后再补充完善这个功能处理
+
+（4）没有问题后，向服务器发送网络消息，后面做网络通信后补充完成
+public void ClickSendBtn()
+{
+    if (iptChat.text == null || iptChat.text == "" || iptChat.text == " ")
+        GameRoot.AddTips("尚未输入聊天信息");
+    else if (iptChat.text.Length > 12) GameRoot.AddTips("输入信息不能超过12个字");
+    else { }//发送网络消息到服务器
+}
+
+3、对场景里按钮、组件进行绑定
+
+
+
+
