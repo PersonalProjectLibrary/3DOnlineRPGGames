@@ -10,6 +10,7 @@
 #endregion
 
 
+using PEProtocol;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
@@ -133,7 +134,13 @@ public class ChatWnd : WindowRoot
         else if (iptChat.text.Length > 12) GameRoot.AddTips("输入信息不能超过12个字");
         else//发送网络消息到服务器
         {
-
+            GameMsg msg = new GameMsg
+            {
+                cmd = (int)CMD.SndWorldChat,
+                sndWorldChat = new SndWorldChat { chat = iptChat.text }
+            };
+            iptChat.text = "";
+            netService.SendMsg(msg);
         }
     }
 

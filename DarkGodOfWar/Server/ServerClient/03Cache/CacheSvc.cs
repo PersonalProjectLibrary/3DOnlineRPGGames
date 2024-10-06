@@ -117,6 +117,18 @@ public class CacheSvc
     #endregion
 
     /// <summary>
+    /// 获取所有(在线)玩家的连接
+    /// </summary>
+    /// <returns></returns>
+    /// 方便进行对玩家的广播操作
+    public List<ServerSession> GetOnlineServerSessions()
+    {
+        List<ServerSession> list = new List<ServerSession>();
+        foreach (var session in onLineSessionDic) list.Add(session.Key);
+        return list;
+    }
+
+    /// <summary>
     /// 玩家下线清理数据
     /// </summary>
     /// <param name="session"></param>

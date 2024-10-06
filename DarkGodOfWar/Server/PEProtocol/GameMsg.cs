@@ -42,6 +42,9 @@ namespace PEProtocol
 
         ReqStrong = 203,//装备强化升级请求
         RspStrong = 204,//装备强化升级回应
+
+        SndWorldChat = 205,//发送世界聊天消息
+        PshWorldChat = 206,//广播世界聊天消息
     }
 
     /// <summary>
@@ -97,6 +100,15 @@ namespace PEProtocol
     public class GameMsg : PEMsg
     {
         /// <summary>
+        /// 客户端发送世界聊天消息
+        /// </summary>
+        public SndWorldChat sndWorldChat;
+        /// <summary>
+        /// 服务器广播世界聊天消息
+        /// </summary>
+        public PshWorldChat pshWorldChat;
+
+        /// <summary>
         /// 客户端发送装备强化升级请求
         /// </summary>
         public ReqStrong reqStrong;
@@ -134,6 +146,27 @@ namespace PEProtocol
 
         #endregion
     }
+
+    #region 世界聊天
+    /// <summary>
+    /// 客户端发送世界聊天消息
+    /// </summary>
+    /// 服务器知道谁发来的消息，客户端就不用传送发送者名字信息，只要发送消息内容
+    [Serializable]
+    public class SndWorldChat { public string chat; }
+
+    /// <summary>
+    /// 服务器广播世界聊天消息
+    /// </summary>
+    /// 向所有客户端广播消息，得指明发送者是谁，和发送的内容
+    [Serializable]
+    public class PshWorldChat
+    {
+        public string name;
+        public string chat;
+    }
+
+    #endregion
 
     #region 装备强化升级相关
     /// <summary>

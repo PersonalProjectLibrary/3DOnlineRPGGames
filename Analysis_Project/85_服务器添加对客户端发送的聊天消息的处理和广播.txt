@@ -1,0 +1,151 @@
+
+一、补充知识：
+1、服务器成员命名
+（1）之前的任务引导、登录注册、强化功能：
+是用户向服务器发送请求，与服务器对客户端的请求进行回应的关系；
+所以网络协议命名为Req和Rsp作为前缀；
+（2）而世界聊天功能：
+聊天消息发送到服务器，服务器把聊天消息广播到所有客户端，这不是一个请求于回应的关系；
+而是发送本地数据到服务器，服务器进行广播的操作，
+不过也有回应关系：发送消息后，服务器回应给所有客户端；
+这里使用Snd和Psh作为前缀命名；
+
+（3）所以这里定义聊天的网络通信协议，
+不使用ReqChat，RspChat，使用SndWorldChat和PshWorldChat作为聊天消息的接收和广播类；
+
+2、聊天消息广播的优化方法
+（1）对于回应，发送消息的客户端可以不处理回应，因为本地已经有消息；
+（2）这里可以做优化：服务器对除了发送消息以外的客户端进行回应，发送消息的客户端直接使用本地发送的消息
+把本地消息存到消息数组里；
+（3）考虑到优化程度和优化复杂度综合考虑，这里没必要做优化处理，直接对所有客户端进行广播消息；
+
+二、服务器GameMsg.cs里定义广播聊天消息的网络协议
+1、定义聊天广播的网络协议SndWorldChat{}和PshWorldChat{}
+（1）发送的聊天消息：发送者名字，消息内容
+由于服务器缓存层有记录玩家的名字，所以客户端发送的消息只要发送消息内容即可；
+而广播到客户端，则需要指明谁发送的消息，发的什么消息；
+（2）客户端发送世界聊天消息SndWorldChat：消息内容
+（3）服务器向所有客户端广播世界聊天消息PshWorldChat：发送者名字，消息内容
+[Serializable]
+public class SndWorldChat{ public string chat; }
+[Serializable]
+public class PshWorldChat
+{
+    public string name;
+    public string chat;
+}
+
+2、消息包添加聊天的数据包
+[Serializable]
+public class GameMsg : PEMsg
+{
+    public SndWorldChat sndWorldChat;// 客户端发送世界聊天消息
+    public PshWorldChat pshWorldChat;// 服务器广播世界聊天消息
+    ... ...
+}
+
+3、定义广播聊天消息的网络通信命令号CMD
+public enum CMD
+{
+    ... ...
+    SndWorldChat = 205,//发送世界聊天消息
+    PshWorldChat = 206,//广播世界聊天消息
+}
+
+4、重新生成编译PEProtocol.dll
+
+三、Unity客户端使用发送广播聊天消息的请求
+实现ChatWnd.cs里ClickChatBtn()里向服务器发送聊天消息的功能逻辑
+public void ClickSendBtn()
+{
+    if (iptChat.text == null || iptChat.text == "" || iptChat.text == " ")
+        GameRoot.AddTips("尚未输入聊天信息");
+    else if (iptChat.text.Length > 12) GameRoot.AddTips("输入信息不能超过12个字");
+    else//发送网络消息到服务器
+    {
+        GameMsg msg = new GameMsg
+        {
+            cmd = (int)CMD.SndWorldChat,
+            sndWorldChat = new SndWorldChat { chat = iptChat.text }
+        };
+        iptChat.text = "";
+        netService.SendMsg(msg);
+    }
+}
+
+四、服务器处理客户端发来的聊天消息的请求
+1、增加世界聊天消息模块WorldChatSys.cs
+（1）服务器工程02System文件夹下新建04ChatSys\WorldChatSys.cs文件
+（2）参照StrongSys.cs，对WorldChatSys.cs设置为单例，添加初始化函数，添加对缓存层CacheSvc.cs的引用
+（3）在ServerRoot.cs里添加引用和初始化
+
+2、处理客户端发来的聊天消息
+（1）WorldChatSys.cs里添加对客户端聊天消息的处理方法SndWorldChat()
+（2）NetSvc.cs网络服务的HandOutMsg()里新增聊天消息的分支处理
+
+五、缓存服务里添加获取所有在线玩家连接的接口
+这里也可以把在线玩家的连接进行缓存，不过项目里玩家也不会很多，
+每次需要时直接获取就是，也没有很大的性能影响；
+而且这些数据是在内存里的，获取速度是很快的；
+如果这些数据是在数据库里的，遍历数据库查找名字，那就速度更不上了；
+
+CacheSvc.cs里添加GetOnlineServerSessions()方法
+public List<ServerSession> GetOnlineServerSessions()
+{
+    List<ServerSession> list = new List<ServerSession>();
+    foreach (var session in onLineSessionDic) list.Add(session.Key);
+    return list;
+}
+
+六、完善实现服务器对强化升级的请求的处理和回应
+完善WorldChatSys.cs里的SndWorldChat()方法
+1、根据连接信息，获得消息发送者的名字信息
+2、设置广播的内容：赋值发送者姓名和聊天内容
+3、把消息广播给所有在线的玩家客户端
+广播消息，要拿到所有的玩家连接，然后再逐个的发送消息
+public void SndWorldChat(MsgPack pack)
+{
+    SndWorldChat data = pack.m_Msg.sndWorldChat;//数据转接
+    PlayerData pData = cacheSvc.GetPlayDataBySession(pack.m_Session);//获取缓存层里玩家数据
+    GameMsg msg = new GameMsg//广播给客户端的消息
+    {
+        cmd = (int)CMD.PshWorldChat,
+        pshWorldChat = new PshWorldChat
+        {
+            name = pData.name,
+            chat = data.chat
+        }
+    };
+    //把消息广播给所有在线的玩家客户端
+    List<ServerSession> list = cacheSvc.GetOnlineServerSessions();
+    for (int i = 0; i < list.Count; i++) list[i].SendMsg(msg);
+}
+
+七、性能优化
+1、网络里是把msg序列化二进制再进行传输的，但序列化消耗cpu
+2、广播消息，发给所有的客户端，服务器负载几千个玩家；
+直接 for (int i = 0; i < list.Count; i++) list[i].SendMsg(msg);
+如果直接SendMsg(msg)，则会经历几千次序列化，性能消耗大
+3、这里SendMsg()有重载，可以直接发送二进制数据，而不是必须msg类消息
+4、同时这里发送给玩家的消息都是一样的，故可进行下面的优化方法发送消息
+先使用PEProtocol里将msg序列化为二进制的方法，序列化msg，
+再一遍遍把二进制数据发送给各个客户端，减少序列化操作，减少性能消耗
+原：
+public void SndWorldChat(MsgPack pack)
+{
+    ... ...
+    List<ServerSession> list = cacheSvc.GetOnlineServerSessions();
+    for (int i = 0; i < list.Count; i++) list[i].SendMsg(msg);
+}
+改：
+public void SndWorldChat(MsgPack pack)
+{
+    ... ...
+    List<ServerSession> list = cacheSvc.GetOnlineServerSessions();
+    byte[] bytes = PENet.PETool.PackNetMsg(msg);
+    for (int i = 0; i < list.Count; i++) list[i].SendMsg(bytes);
+}
+
+八、重新编译生成对应的程序和dll，并运行服务器
+可看到服务器正常启动
+

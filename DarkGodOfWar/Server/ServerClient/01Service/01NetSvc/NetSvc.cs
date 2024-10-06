@@ -84,6 +84,7 @@ public class NetSvc
             case CMD.ReqReName: LoginSys.Instance.ReqReName(msgPack); break;
             case CMD.ReqGuide:GuideSys.Instance.ReqGuide(msgPack);break;
             case CMD.ReqStrong:StrongSys.Instance.ReqStrong(msgPack);break;
+            case CMD.SndWorldChat:WorldChatSys.Instance.SndWorldChat(msgPack);break;
             default: break;
         }
     }
