@@ -1,0 +1,124 @@
+
+一、添加对服务器广播消息的处理
+1、MainCitySys.cs里新增处理服务器广播世界聊天消息的函数PshWorldChat()
+并在NetService.cs的ProcessMsg()里调用；
+
+2、NetService.cs的ProcessMsg()里新增对服务器回应引导任务请求的消息的处理分支
+public void ProcessMsg(GameMsg msg)
+{
+    ... ...
+    switch ((CMD)msg.cmd)//将信息分发出去
+    {
+        ... ...
+        case CMD.PshWorldChat:MainCitySystem.Instance.PshWorldChat(msg);break;
+    }
+}
+
+二、ChatWnd.cs里新增更新世界聊天消息显示的方法AddWorldChatMsg()
+在主城系统里获取服务器广播的消息后，调用刷新世界聊天面板
+（1）将服务器广播的世界聊天消息添加到世界聊天消息数组里
+（2）整个聊天面板最多能显示12条聊天消息；
+设置当面板消息满了后，去除最早旧的聊天历史记录，只显示最新的历史12条消息信息
+（3）将世界聊天消息显示到世界聊天消息面板里
+public void AddWorldChatMsg(string name,string chat)
+{
+    worldChatList.Add(Constants.SetTxtColor(name + "：", TxtColor.Blue) + chat);
+    if (worldChatList.Count > 12) worldChatList.RemoveAt(0);//超过12条，移除第一条
+    RefreshUI(); //更新聊天面板的消息显示
+}
+
+三、实现完善MainCitySystem.cs的PshWorldChat()
+public void PshWorldChat(GameMsg msg)
+{
+    chatWnd.AddWorldChatMsg(msg.pshWorldChat.name, msg.pshWorldChat.chat);
+}
+
+四、方便测试，可以打包生成客户端，进行多用户测试
+
+五、解决bug和优化
+1、编辑器报：引用不存在的错误
+（1）报错：
+运行编辑器客户端和打包的程序客户端，若打包程序先第一个发送世界聊天消息，
+编辑器报：引用不存在、缺失、丢失的错误
+NullReferenceException: Object reference not set to an instance of an object WindowRoot.SetSprite
+ChatWnd.RefreshUI () (at Assets/Scripts/UIWindow/ChatWnd.cs:76)
+（2）调试：
+进行断点调试，定位到WindowRoot.cs里使用SetSprite()时，resService为空；
+（3）原因：
+因为程序客户端发送消息，编辑器客户端接收消息，但编辑器客户端的聊天窗口还没有打开过没有初始化过；
+编辑器客户端接收其他客户端消息后，执行ChatWnd.cs里SetSprite()，使用到resService资源服务，
+但因为ChatWnd.cs没初始化过，用到的各种服务还是没有赋值，还是空引用状态，所以导致报错缺少引用；
+（4）解决：
+原本是接收到服务器广播的世界聊天消息后，直接进行RefreshUI()刷新聊天面板；
+这里设置界面打开了才刷新，每打开就不刷新不执行；
+原：
+public void AddWorldChatMsg(string name,string chat)
+{
+    ... ...
+    RefreshUI(); //更新聊天面板的消息显示
+}
+改：
+public void AddWorldChatMsg(string name,string chat)
+{
+    ... ...
+    if(gameObject.activeSelf)RefreshUI(); //更新聊天面板的消息显示
+}
+注：不要在MainCitySysem.cs的PshWorldChat()里判断ChatWnd有没有打开，
+因为PshWorldChat()调用ChatWnd.cs里的AddWorldChatMsg()，
+除了刷新聊天面板，还会把聊天消息记录到ChatWnd.cs里的worldChatList数组里；
+如果PshWorldChat()因为ChatWnd没有打开就不执行AddWorldChatMsg()，会导致聊天消息的丢失，
+等ChatWnd打开时，也没有服务器广播的历史过往的世界聊天消息，
+只有ChatWnd一直打开才能接收消息，这样逻辑是不对的；
+
+2、优化
+（1）除了上面因为每打开过界面，但服务器有数据传递，导致因为窗口没有初始化过而出错；
+其他功能界面也可能有这种问题，也需要对该情况进行处理；
+故这里可以在所有窗口的父类WindowRoot.cs里做通用封装处理；
+
+（2）在WindowRoot.cs里新增GetWndState()，获取窗口是否激活的封装方法
+protected bool GetWndState() { return gameObject.activeSelf; }
+
+（3）然后子类窗口判断自身是否激活打开，
+就不直接使用gameObject.activeSelf，而是使用父类的GetWndState()；
+原：
+public class ChatWnd : WindowRoot
+{
+    ... ...
+    public void AddWorldChatMsg(string name,string chat)
+    {
+        ... ...
+        if(gameObject.activeSelf)RefreshUI(); //更新聊天面板的消息显示
+    }
+}
+改：
+public class ChatWnd : WindowRoot
+{
+    ... ...
+    public void AddWorldChatMsg(string name,string chat)
+    {
+        ... ...
+        if(GetWndState())RefreshUI(); //更新聊天面板的消息显示
+    }
+}
+
+3、当输入11条消息后，从第12条消息开始，只有当下一条消息发送后，当前消息才出现在聊天面板里
+原因：估计错面板显示条数，实际面板最多显示11条而不是12条，
+导致"13"条消息后才会移除最上面的第"1"条消息，
+把第"12"条消息显示出来，最新的第"13"条消息还是不显示出来；
+原：
+public void AddWorldChatMsg(string name,string chat)
+{
+    ... ...
+    if (worldChatList.Count > 12) worldChatList.RemoveAt(0);//超过12条，移除第一条
+    ... ...
+}
+改：
+public void AddWorldChatMsg(string name,string chat)
+{
+    ... ...
+    if (worldChatList.Count > 11) worldChatList.RemoveAt(0);//超过12条，移除第一条
+    ... ...
+}
+
+六、运行测试
+多用户聊天，聊天界面正常显示

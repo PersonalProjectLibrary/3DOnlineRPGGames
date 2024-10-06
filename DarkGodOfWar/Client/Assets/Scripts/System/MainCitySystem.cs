@@ -82,10 +82,13 @@ public class MainCitySystem : SystemRoot
     public void OpenChatWnd() { chatWnd.SetWndState(); }
 
     /// <summary>
-    /// 处理服务器回应聊天消息请求的消息
+    /// 处理服务器广播的世界聊天消息
     /// </summary>
     /// <param name="msg"></param>
-    public void RspChat(GameMsg msg) { }
+    public void PshWorldChat(GameMsg msg)
+    {
+        chatWnd.AddWorldChatMsg(msg.pshWorldChat.name, msg.pshWorldChat.chat);
+    }
 
     #endregion
 

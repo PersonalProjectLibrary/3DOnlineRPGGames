@@ -95,6 +95,18 @@ public class ChatWnd : WindowRoot
     }
 
     /// <summary>
+    /// 显示服务器广播的消息
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="chat"></param>
+    public void AddWorldChatMsg(string name,string chat)
+    {
+        worldChatList.Add(Constants.SetTxtColor(name + "：", TxtColor.Blue) + chat);
+        if (worldChatList.Count > 11) worldChatList.RemoveAt(0);//超过12条，移除第一条
+        if(GetWndState())RefreshUI(); //更新聊天面板的消息显示
+    }
+
+    /// <summary>
     /// 点击世界聊天按钮
     /// </summary>
     public void ClicWorldkBtn()
@@ -125,7 +137,7 @@ public class ChatWnd : WindowRoot
     }
 
     /// <summary>
-    /// 发送聊天消息
+    /// 点击发送聊天消息
     /// </summary>
     public void ClickSendBtn()
     {

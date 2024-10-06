@@ -52,6 +52,12 @@ public class WindowRoot : MonoBehaviour
     }
 
     /// <summary>
+    /// 判断获取窗口是否激活
+    /// </summary>
+    /// <returns></returns>
+    protected bool GetWndState() { return gameObject.activeSelf; }
+
+    /// <summary>
     /// 清理界面
     /// </summary>
     protected void ClearWnd()
