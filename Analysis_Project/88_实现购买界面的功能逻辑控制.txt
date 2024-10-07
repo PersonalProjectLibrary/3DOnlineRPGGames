@@ -1,0 +1,76 @@
+实现购买界面功能逻辑控制
+
+一、实现的功能：
+1、购买体力（钻石转为体力）
+2、购买金币（钻石转为金币）
+
+二、功能开发
+BuyWnd.cs里
+1、定义int字段，区分哪种类型购买
+private int buyType;// 购买类型：0 钻石购买体力；1 钻石铸造成金币；
+
+2、设置购买窗口打开时内容显示
+（1）主要差异在购买面板显示的文字内容
+引用文字组件、新增刷新窗口显示的函数RefreshUI()；
+设置不同购买类型的函数SetBuyType()，供外部调用时使用设置购买类型；
+public class BuyWnd : WindowRoot
+{
+    private int buyType =0;// 购买类型，0：钻石购买体力；1：钻石铸造成金币；
+    public Text txtInfo;// 购买窗口显示购买的内容
+    protected override void InitWnd()// 初始化购买交易窗口
+    {
+        base.InitWnd();
+        RefreshUI();
+    }
+    private void RefreshUI()
+    {
+        txtInfo.text = "是否花费" + Constants.SetTxtColor("10钻石", TxtColor.Red);
+        switch (buyType)
+        {
+            case 0://购买体力
+                txtInfo.text += "购买" + Constants.SetTxtColor("100体力", TxtColor.Blue);
+                break;
+            case 1://铸造金币
+                txtInfo.text += "铸造" + Constants.SetTxtColor("1000金币", TxtColor.Blue);
+                break;
+        }
+    }
+    public void SetBuyType(int type) { buyType = type; }// 设置购买类型，0：购买体力；1：购买金币
+}
+（2）注：SetBuyType()在MainCitySystem.cs的OpenBuyWnd()里调用设置购买类型
+为了方便传递和设置购买参数，优化OpenBuyWnd()，原本无参，添加购买类型参数；
+并且在MainCityWnd.cs的ClickBuyPowerBtn()和ClickMakeCoinBtn()执行打开购买窗口时进行传参
+public class MainCitySystem : SystemRoot
+{
+    ... ...
+    public void OpenBuyWnd(int buyType)// 打开购买窗口，0：购买体力；1：购买金币；
+    {
+        buyWnd.SetBuyType(buyType);
+        buyWnd.SetWndState();
+    }
+    ... ...
+}
+public class MainCityWnd : WindowRoot
+{
+    ... ...
+    public void ClickBuyPowerBtn()// 点击购买体力按钮
+    {
+        audioService.PlayUIAudio(Constants.UiOpenPage);
+        MainCitySystem.Instance.OpenBuyWnd(0);
+    }
+    public void ClickMakeCoinBtn()// 点击铸造金币按钮
+    {
+        audioService.PlayUIAudio(Constants.UiOpenPage);
+        MainCitySystem.Instance.OpenBuyWnd(1);
+    }
+    ... ...
+}
+
+3、新增点击确认购买的按钮函数ClickSureBtn()，并在场景中对相应物体组件进行关联绑定
+
+三、点击运行测试界面使用效果
+
+
+
+
+

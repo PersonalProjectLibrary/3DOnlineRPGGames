@@ -172,7 +172,7 @@ public class MainCityWnd : WindowRoot
     public void ClickBuyPowerBtn()
     {
         audioService.PlayUIAudio(Constants.UiOpenPage);
-        MainCitySystem.Instance.OpenBuyWnd();
+        MainCitySystem.Instance.OpenBuyWnd(0);
     }
 
     /// <summary>
@@ -181,7 +181,7 @@ public class MainCityWnd : WindowRoot
     public void ClickMakeCoinBtn()
     {
         audioService.PlayUIAudio(Constants.UiOpenPage);
-        MainCitySystem.Instance.OpenBuyWnd();
+        MainCitySystem.Instance.OpenBuyWnd(1);
     }
 
     /// <summary>

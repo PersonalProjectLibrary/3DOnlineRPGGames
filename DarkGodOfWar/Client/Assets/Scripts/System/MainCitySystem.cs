@@ -81,9 +81,14 @@ public class MainCitySystem : SystemRoot
 
     #region Buy Wnd：购买交易窗口设置
     /// <summary>
-    /// 打开购买交易窗口
+    /// 打开购买窗口，0：购买体力；1：购买金币；
     /// </summary>
-    public void OpenBuyWnd() { buyWnd.SetWndState(); }
+    /// <param name="buyType">0：购买体力；1：购买金币；</param>
+    public void OpenBuyWnd(int buyType)
+    {
+        buyWnd.SetBuyType(buyType);
+        buyWnd.SetWndState();
+    }
 
     #endregion
 
