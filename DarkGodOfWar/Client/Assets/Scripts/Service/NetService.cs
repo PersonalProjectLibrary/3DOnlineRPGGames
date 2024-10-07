@@ -114,6 +114,7 @@ public class NetService : MonoBehaviour
                 case ErrorCode.LockLevel: GameRoot.AddTips("角色等级不够"); break;
                 case ErrorCode.LockCoin: GameRoot.AddTips("金币数量不够"); break;
                 case ErrorCode.LockCrystal: GameRoot.AddTips("水晶数量不够"); break;
+                case ErrorCode.LockDiamond:GameRoot.AddTips("钻石数量不够");break;
             }
             return;
         }

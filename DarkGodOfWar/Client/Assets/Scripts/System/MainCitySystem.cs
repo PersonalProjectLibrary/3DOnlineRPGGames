@@ -96,13 +96,13 @@ public class MainCitySystem : SystemRoot
     /// <param name="msg"></param>
     public void RspBuy(GameMsg msg)
     {
-        //测试
-        string str = "";
-        str += "Type：" + msg.rspBuy.buyType;
-        str += "；diamond：" + msg.rspBuy.diamond;
-        str += "；coin：" + msg.rspBuy.coin;
-        str += "；power：" + msg.rspBuy.power;
-        GameRoot.AddTips(str);
+        //更新玩家数据
+        GameRoot.Instance.SetPlayerDataByBuy(msg.rspBuy);
+        GameRoot.AddTips("购买成功");
+        //更新UI显示，只刷新体力UI即可，直接在主城UI里看不到金币数量
+        //可打开强化界面，强化界面打开时也会根据玩家信息更新金币信息，不用这里设置
+        mainCityWnd.RefreshUI();
+        buyWnd.SetWndState(false);
     }
 
     #endregion

@@ -33,6 +33,10 @@ public class BuyWnd : WindowRoot
     /// 购买窗口显示购买的内容
     /// </summary>
     public Text txtInfo;
+    /// <summary>
+    /// 点击确认购买的确认按钮
+    /// </summary>
+    public Button btnSure;
 
     /// <summary>
     /// 初始化购买交易窗口
@@ -40,6 +44,7 @@ public class BuyWnd : WindowRoot
     protected override void InitWnd()
     {
         base.InitWnd();
+        btnSure.interactable = true;//避免之前点击禁用了btn，开启btn的交互
         pData = GameRoot.Instance.PlayerData;
         RefreshUI();
     }
@@ -89,6 +94,7 @@ public class BuyWnd : WindowRoot
             }
         };
         netService.SendMsg(msg);
+        btnSure.interactable = false;//禁用btn，避免重复点击
     }
 
     /// <summary>

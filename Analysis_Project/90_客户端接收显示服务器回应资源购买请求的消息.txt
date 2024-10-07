@@ -1,0 +1,135 @@
+
+一、添加对服务器回应资源购买请求的消息的处理和分发
+之前测试服务器效果时，
+1、客户端MainCitySystem.cs里添加处理服务器回应资源购买的请求的函数RspBuy()
+public void RspBuy(GameMsg msg)
+{
+    //测试
+    string str = "";
+    str += "Type：" + msg.rspBuy.buyType;
+    str += "；diamond：" + msg.rspBuy.diamond;
+    str += "；coin：" + msg.rspBuy.coin;
+    str += "；power：" + msg.rspBuy.power;
+    GameRoot.AddTips(str);
+}
+2、NetService.cs分发服务器消息的ProcessMsg()里添加对资源购买消息的处理转发
+public void ProcessMsg(GameMsg msg)
+{
+    ... ...
+    switch ((CMD)msg.cmd)//将信息分发出去
+    {
+        ... ...
+        case CMD.RspBuy:MainCitySystem.Instance.RspBuy(msg);break;
+    }
+}
+这里继续完善相应的功能
+3、NetService.cs分发服务器消息的ProcessMsg()里添加对资源购买返回的错误码处理
+public void ProcessMsg(GameMsg msg)
+{
+    if (msg.err != (int)ErrorCode.None)//返回的是错误信息
+    {
+        switch ((ErrorCode)msg.err)
+        {
+            ... ...
+            case ErrorCode.LockDiamond:GameRoot.AddTips("钻石数量不够");break;
+        }
+        return;
+    }
+    ... ...
+}
+4、GameRoot.cs里新增根据资源购买更新玩家数据的函数SetPlayerDataByBuy()
+public void SetPlayerDataByBuy(RspBuy data)
+{
+    playerData.coin = data.coin;
+    playerData.power = data.power;
+    playerData.diamond = data.diamond;
+}
+
+5、完善更新MainCitySystem.cs里的RspBuy()
+public void RspBuy(GameMsg msg)
+{
+    //更新玩家数据
+    GameRoot.Instance.SetPlayerDataByBuy(msg.rspBuy);
+    GameRoot.AddTips("购买成功");
+    //更新UI显示，只刷新体力UI即可，直接在主城UI里看不到金币数量
+    //可打开强化界面，强化界面打开时也会根据玩家信息更新金币信息，不用这里设置
+    mainCityWnd.RefreshUI();
+}
+
+二、优化代码
+1、ResService.cs的GetRdNameData()
+原：没有使用随机种子rd
+public string GetRdNameData(bool woman = true)
+{
+    System.Random rd = new System.Random();
+    string rdName = surNameList[PETools.RandomInt(0, surNameList.Count - 1)];
+    if (woman) rdName += womanList[PETools.RandomInt(0, womanList.Count - 1)];
+    else rdName += manList[PETools.RandomInt(0, manList.Count - 1)];
+    return rdName;
+}
+改：将System.Random rd = new System.Random();语句直接删除注释
+也可以选择将随机种子用起来，传到设置rdName的PETools.RandomInt()里作第三个变量，
+这里选择注释，由PETools.RandomInt()里自己new一个rd
+public string GetRdNameData(bool woman = true)
+{
+    //System.Random rd = new System.Random();
+    string rdName = surNameList[PETools.RandomInt(0, surNameList.Count - 1)];
+    if (woman) rdName += womanList[PETools.RandomInt(0, womanList.Count - 1)];
+    else rdName += manList[PETools.RandomInt(0, manList.Count - 1)];
+    return rdName;
+}
+2、ResService.cs的InitRdNameCfg()
+原：定义获取了id，但没有使用过
+private void InitRdNameCfg(string path)
+{
+    TextAsset nameXml = Resources.Load<TextAsset>(path);
+    if (!nameXml) PECommon.Log("Xml file:" + path + "not exist!", LogType.Error);
+    else
+    {
+        ... ...
+        for (int i = 0; i < nodeList.Count; i++)
+        {
+            ... ...
+            int id = Convert.ToInt32(element.GetAttributeNode("ID").InnerText);
+            foreach (XmlElement e in nodeList[i].ChildNodes) {... ...}
+        }
+    }
+}
+改：没有使用过id，没必要存在，可以直接删除注释掉，这里改为对其注释掉
+private void InitRdNameCfg(string path)
+{
+    TextAsset nameXml = Resources.Load<TextAsset>(path);
+    if (!nameXml) PECommon.Log("Xml file:" + path + "not exist!", LogType.Error);
+    else
+    {
+        ... ...
+        for (int i = 0; i < nodeList.Count; i++)
+        {
+            ... ...
+            //int id = Convert.ToInt32(element.GetAttributeNode("ID").InnerText);
+            foreach (XmlElement e in nodeList[i].ChildNodes) {... ...}
+        }
+    }
+}
+
+三、对于购买点确定购买的优化
+有时因为网络延迟，玩家多次点击确定按钮进行购买，导致重复进行购买的操作；
+优化思路1：添加一个确认弹窗面板：点击确认后，弹出一个再次确认购买的弹窗
+优化思路2：在点击确认按钮后，将确认按钮的交互关闭，禁用按钮，即使再点击按钮也不会有反应；
+BuyWnd.cs里进行设置：
+public Button btnSure;
+protected override void InitWnd()
+{
+    base.InitWnd();
+    btnSure.interactable = true;//避免之前点击禁用了btn，开启btn的交互
+    ... ...
+}
+public void ClickSureBtn()
+{
+    ... ...
+    netService.SendMsg(msg);
+    btnSure.interactable = false;//禁用btn，避免重复点击
+}
+
+四、运行测试
+购买后，除了查看数据库里数据变化，也可以通过打开强化页面，查看金币变化

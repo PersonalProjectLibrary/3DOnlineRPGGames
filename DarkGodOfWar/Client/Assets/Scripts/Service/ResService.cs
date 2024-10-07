@@ -176,7 +176,7 @@ public class ResService : MonoBehaviour
             {
                 XmlElement element = nodeList[i] as XmlElement;
                 if (element.GetAttributeNode("ID") == null) continue;
-                int id = Convert.ToInt32(element.GetAttributeNode("ID").InnerText);
+                //int id = Convert.ToInt32(element.GetAttributeNode("ID").InnerText);
                 foreach (XmlElement e in nodeList[i].ChildNodes)
                 {
                     switch (e.Name)
@@ -197,7 +197,8 @@ public class ResService : MonoBehaviour
     /// <returns></returns>
     public string GetRdNameData(bool woman = true)
     {
-        System.Random rd = new System.Random();
+        //System.Random rd = new System.Random();
+        //string rdName = surNameList[PETools.RandomInt(0, surNameList.Count - 1, rd)];
         string rdName = surNameList[PETools.RandomInt(0, surNameList.Count - 1)];
         if (woman) rdName += womanList[PETools.RandomInt(0, womanList.Count - 1)];
         else rdName += manList[PETools.RandomInt(0, manList.Count - 1)];
