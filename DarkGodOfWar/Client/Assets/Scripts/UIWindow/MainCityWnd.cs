@@ -167,6 +167,24 @@ public class MainCityWnd : WindowRoot
 
     #region ClickEvents
     /// <summary>
+    /// 点击购买体力按钮
+    /// </summary>
+    public void ClickBuyPowerBtn()
+    {
+        audioService.PlayUIAudio(Constants.UiOpenPage);
+        MainCitySystem.Instance.OpenBuyWnd();
+    }
+
+    /// <summary>
+    /// 点击铸造金币按钮
+    /// </summary>
+    public void ClickMakeCoinBtn()
+    {
+        audioService.PlayUIAudio(Constants.UiOpenPage);
+        MainCitySystem.Instance.OpenBuyWnd();
+    }
+
+    /// <summary>
     /// 打开聊天按钮
     /// </summary>
     public void ClickChatBtn()

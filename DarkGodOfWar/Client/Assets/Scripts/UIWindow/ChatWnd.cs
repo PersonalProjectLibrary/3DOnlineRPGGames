@@ -9,7 +9,6 @@
 ***************************************/
 #endregion
 
-
 using PEProtocol;
 using System.Collections.Generic;
 using UnityEngine.UI;

@@ -40,6 +40,10 @@ public class MainCitySystem : SystemRoot
     /// 聊天界面
     /// </summary>
     public ChatWnd chatWnd;
+    /// <summary>
+    /// 购买交易窗口
+    /// </summary>
+    public BuyWnd buyWnd;
 
     /// <summary>
     /// 初始化主城系统
@@ -74,6 +78,14 @@ public class MainCitySystem : SystemRoot
             charaterCam.gameObject.SetActive(false);
         });
     }
+
+    #region Buy Wnd：购买交易窗口设置
+    /// <summary>
+    /// 打开购买交易窗口
+    /// </summary>
+    public void OpenBuyWnd() { buyWnd.SetWndState(); }
+
+    #endregion
 
     #region Chat Wnd：聊天界面设置
     /// <summary>
