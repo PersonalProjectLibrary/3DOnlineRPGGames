@@ -85,6 +85,7 @@ public class NetSvc
             case CMD.ReqGuide:GuideSys.Instance.ReqGuide(msgPack);break;
             case CMD.ReqStrong:StrongSys.Instance.ReqStrong(msgPack);break;
             case CMD.SndWorldChat:WorldChatSys.Instance.SndWorldChat(msgPack);break;
+            case CMD.ReqBuy:BuySys.Instance.ReqBuy(msgPack);break;
             default: break;
         }
     }

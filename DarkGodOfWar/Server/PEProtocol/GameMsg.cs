@@ -24,30 +24,6 @@ namespace PEProtocol
     }
 
     /// <summary>
-    /// 网络通信的命令号, 消息类型
-    /// </summary>
-    /// 对应PEMsg里的cmd字段
-    public enum CMD
-    {
-        None = 0,
-        //登录相关 100开始
-        ReqLogin = 101,//登录请求
-        RspLogin = 102,//登录回应
-        ReqReName = 103,//重命名请求
-        RspReName = 104,//重命名回应
-
-        //主城相关 200开始
-        ReqGuide = 201,//任务引导请求
-        RspGuide = 202,//任务引导回应
-
-        ReqStrong = 203,//装备强化升级请求
-        RspStrong = 204,//装备强化升级回应
-
-        SndWorldChat = 205,//发送世界聊天消息
-        PshWorldChat = 206,//广播世界聊天消息
-    }
-
-    /// <summary>
     /// 错误码，告诉客户端当前有什么问题
     /// </summary>
     /// 对应PEMsg里的err字段
@@ -84,6 +60,10 @@ namespace PEProtocol
         /// </summary>
         LockLevel,
         /// <summary>
+        /// 钻石不够
+        /// </summary>
+        LockDiamond,
+        /// <summary>
         /// 金币不够
         /// </summary>
         LockCoin,
@@ -94,11 +74,47 @@ namespace PEProtocol
     }
 
     /// <summary>
+    /// 网络通信的命令号, 消息类型
+    /// </summary>
+    /// 对应PEMsg里的cmd字段
+    public enum CMD
+    {
+        None = 0,
+        //登录相关 100开始
+        ReqLogin = 101,//登录请求
+        RspLogin = 102,//登录回应
+        ReqReName = 103,//重命名请求
+        RspReName = 104,//重命名回应
+
+        //主城相关 200开始
+        ReqGuide = 201,//任务引导请求
+        RspGuide = 202,//任务引导回应
+
+        ReqStrong = 203,//装备强化升级请求
+        RspStrong = 204,//装备强化升级回应
+
+        SndWorldChat = 205,//发送世界聊天消息
+        PshWorldChat = 206,//广播世界聊天消息
+
+        ReqBuy = 207,//资源购买请求
+        RspBuy = 208,//资源购买回应
+    }
+
+    /// <summary>
     /// 消息包
     /// </summary>
     [Serializable]
     public class GameMsg : PEMsg
     {
+        /// <summary>
+        /// 客户端发送资源购买请求
+        /// </summary>
+        public ReqBuy reqBuy;
+        /// <summary>
+        /// 服务器回应资源购买请求
+        /// </summary>
+        public RspBuy rspBuy;
+
         /// <summary>
         /// 客户端发送世界聊天消息
         /// </summary>
@@ -146,6 +162,54 @@ namespace PEProtocol
 
         #endregion
     }
+
+    #region 资源交易相关
+    /// <summary>
+    /// 客户端发送资源购买的请求消息
+    /// </summary>
+    /// 花费多少钻石进行购买
+    /// 购买的类型数据：购买体力还是金币；
+    [Serializable]
+    public class ReqBuy
+    {
+        /// <summary>
+        /// 购买类型,0：体力；1：金币；
+        /// </summary>
+        public int buyType;
+        /// <summary>
+        /// 花费多少钻石购买
+        /// </summary>
+        public int diamondCost;
+    }
+
+    /// <summary>
+    /// 服务器回应资源购买的请求
+    /// </summary>
+    /// 1、购买返回结果：类型type：买了什么；
+    /// 2、购买后花掉钻石，更新钻石数量；
+    /// 3、购买后金币体力值更新
+    [Serializable]
+    public class RspBuy
+    {
+        /// <summary>
+        /// 购买类型,0：体力；1：金币；
+        /// </summary>
+        public int buyType;
+        /// <summary>
+        /// 剩余钻石数
+        /// </summary>
+        public int diamond;
+        /// <summary>
+        /// 购买后金币数
+        /// </summary>
+        public int coin;
+        /// <summary>
+        /// 购买后体力数
+        /// </summary>
+        public int power;
+    }
+
+    #endregion
 
     #region 世界聊天
     /// <summary>

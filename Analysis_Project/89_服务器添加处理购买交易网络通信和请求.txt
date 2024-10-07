@@ -1,0 +1,178 @@
+
+一、服务器GameMsg.cs里定义网络通信消息
+1、客户端向服务器传递的消息：
+（1）花费多少钻石；
+（2）购买的类型数据：购买体力还是金币；
+
+2、定义资源购买的请求和回应ReqBuy、RspBuy
+[Serializable]
+public class ReqBuy
+{
+    public int buyType;//购买类型
+    public int diamondCost;//花费多少钻石购买
+}
+[Serializable]
+public class RspBuy
+{
+    public int buyType;//购买类型
+    public int diamond;//剩余钻石数
+    public int coin;//购买后金币数
+    public int power;//购买后体力数
+}
+
+3、定义资源购买的GameMsg的消息包和网络通信命令号CMD
+[Serializable]
+public class GameMsg : PEMsg
+{
+    public ReqBuy reqBuy;// 客户端发送资源购买请求
+    public RspBuy rspBuy;// 服务器回应资源购买请求
+    ... ...
+}
+public enum CMD
+{
+    ... ...
+    ReqBuy = 207,//资源购买请求
+    RspBuy = 208,//资源购买回应
+}
+
+4、新增对应错误码ErrorCode
+有可能客户端作弊数据非法，把玩家踢下线；对应已有的ServerDataError错误码
+玩家等级不够、金币不够、水晶不够等情况，进行回应提醒，新增LockDiamond错误码
+public enum ErrorCode
+{
+    ... ...
+    LockDiamond,// 钻石不够
+    ... ...
+}
+
+5、重新生成编译PEProtocol.dll
+
+二、Unity客户端使用发送资源购买请求，完善BuyWnd.cs里ClickSureBtn()
+点击购买界面的确认按钮后，客户端先对数据筛选过滤检查钻石数量是否够，足够钻石再发起网络请求
+private PlayerData pData;
+protected override void InitWnd()
+{
+    base.InitWnd();
+    pData = GameRoot.Instance.PlayerData;
+    RefreshUI();
+}
+public void ClickSureBtn()
+{
+    audioService.PlayUIAudio(Constants.UiClickBtn);
+    if (pData.diamond < 10)//钻石是否足够进行购买
+    {
+        GameRoot.AddTips("钻石数量不够，是否进行充值？");
+        return;
+    }
+    GameMsg msg = new GameMsg//发送资源购买的网络消息
+    {
+        cmd = (int)CMD.ReqBuy,
+        reqBuy = new ReqBuy
+        {
+            buyType = this.buyType,
+            diamondCost = 10,
+        }
+    };
+    netService.SendMsg(msg);
+}
+
+三、服务器处理客户端发来的资源购买的请求
+1、增加资源购买的系统BuySys.cs
+服务器工程02System文件夹下新建05BuySys\BuySys.cs文件
+2、参照StrongSys.cs，对BuySys.cs设置为单例，添加对缓存层CacheSvc.cs的引用
+添加Init()初始化函数，和交易购买消息进行处理方法ReqBuy()
+完善StrongSys.cs里的ReqStrong()方法
+（1）获取玩家钻石数量，判断钻石是否足够，不满足则返回错误码
+（2）扣除消耗的资源、相关属性值更新
+（3）将更新后的数据存到数据库和返回给客户端玩家
+public void ReqBuy(MsgPack pack)
+{
+    ReqBuy data = pack.m_Msg.reqBuy;//数据转接
+    GameMsg msg = new GameMsg { cmd = (int)CMD.RspBuy };//回应客户端的消息
+    PlayerData pData = cacheSvc.GetPlayDataBySession(pack.m_Session);//获取缓存层里玩家数据
+    //判断升级条件
+    if (pData.diamond < data.diamondCost) msg.err = (int)ErrorCode.LockDiamond;//钻石不够
+    else//通过筛选，扣除花费的钻石数，相关属性值更新
+    {
+        pData.diamond -= data.diamondCost;
+        switch (data.buyType)
+        {
+            case 0:pData.power += 100; break;
+            case 1:pData.coin += 1000; break;
+        }
+    }
+    //根据id号，把玩家数据更新到数据库里
+    if (!cacheSvc.UpdatePlayerData(pData.id, pData))
+        msg.err = (int)ErrorCode.UpdateDBaseError;
+    else
+    {
+        msg.rspBuy = new RspBuy
+        {
+            buyType = data.buyType,
+            diamond = pData.diamond,
+            coin = pData.coin,
+            power = pData.power,
+        };
+    }
+    pack.m_Session.SendMsg(msg);//将数据返回客户端
+}
+3、在ServerRoot.cs里的Init()添加对BuySys.cs的引用初始化
+public class ServerRoot
+{
+    ... ...
+    public void Init()// 服务器初始化
+    {
+        ... ...
+        BuySys.Instance.Init();
+    }
+}
+4、NetSvc.cs网络服务的HandOutMsg()里新增资源购买请求的分支处理
+public class NetSvc
+{
+    ... ...
+    private void HandOutMsg(MsgPack msgPack)
+    {
+        switch ((CMD)msgPack.m_Msg.cmd)
+        {
+            ... ...
+            case CMD.ReqBuy:BuySys.Instance.ReqBuy(msgPack);break;
+            default: break;
+        }
+    }
+}
+
+四、为了方便测试，客户端MainCitySystem.cs里添加处理服务器回应资源购买的请求的函数RspBuy()
+NetService.cs分发服务器消息的ProcessMsg()里添加对资源购买消息的处理转发
+public class MainCitySystem : SystemRoot
+{
+    ... ...
+    public void RspBuy(GameMsg msg)// 处理服务器回应资源购买请求的消息
+    {
+        //测试
+        string str = "";
+        str += "Type：" + msg.rspBuy.buyType;
+        str += "；diamond：" + msg.rspBuy.diamond;
+        str += "；coin：" + msg.rspBuy.coin;
+        str += "；power：" + msg.rspBuy.power;
+        GameRoot.AddTips(str);
+    }
+}
+public class NetService : MonoBehaviour
+{
+    ... ...
+    public void ProcessMsg(GameMsg msg)
+    {
+        ... ...
+        switch ((CMD)msg.cmd)//将信息分发出去
+        {
+            ... ...
+            case CMD.RspBuy:MainCitySystem.Instance.RspBuy(msg);break;
+        }
+    }
+}
+
+五、重新编译生成对应的程序和dll，并运行服务器
+可看到服务器正常启动，客户端进行弹窗显示
+
+
+

@@ -40,6 +40,7 @@ public class ServerRoot
         GuideSys.Instance.Init();
         StrongSys.Instance.Init();
         WorldChatSys.Instance.Init();
+        BuySys.Instance.Init();
     }
 
     /// <summary>

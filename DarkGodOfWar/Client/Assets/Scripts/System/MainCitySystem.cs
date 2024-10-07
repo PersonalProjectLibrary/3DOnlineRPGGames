@@ -90,6 +90,21 @@ public class MainCitySystem : SystemRoot
         buyWnd.SetWndState();
     }
 
+    /// <summary>
+    /// 处理服务器回应资源购买请求的消息
+    /// </summary>
+    /// <param name="msg"></param>
+    public void RspBuy(GameMsg msg)
+    {
+        //测试
+        string str = "";
+        str += "Type：" + msg.rspBuy.buyType;
+        str += "；diamond：" + msg.rspBuy.diamond;
+        str += "；coin：" + msg.rspBuy.coin;
+        str += "；power：" + msg.rspBuy.power;
+        GameRoot.AddTips(str);
+    }
+
     #endregion
 
     #region Chat Wnd：聊天界面设置

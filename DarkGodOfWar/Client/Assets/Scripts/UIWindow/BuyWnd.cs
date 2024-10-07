@@ -9,7 +9,7 @@
 ***************************************/
 #endregion
 
-using UnityEngine;
+using PEProtocol;
 using UnityEngine.UI;
 
 /// <summary>
@@ -20,6 +20,11 @@ using UnityEngine.UI;
 /// 这两处地方点击打开购买交易窗口
 public class BuyWnd : WindowRoot
 {
+    /// <summary>
+    /// 玩家数据
+    /// </summary>
+    private PlayerData pData;
+
     /// <summary>
     /// 购买类型，0：钻石购买体力；1：钻石铸造成金币；
     /// </summary>
@@ -35,6 +40,7 @@ public class BuyWnd : WindowRoot
     protected override void InitWnd()
     {
         base.InitWnd();
+        pData = GameRoot.Instance.PlayerData;
         RefreshUI();
     }
 
@@ -68,7 +74,21 @@ public class BuyWnd : WindowRoot
     public void ClickSureBtn()
     {
         audioService.PlayUIAudio(Constants.UiClickBtn);
-        //发送网络购买消息
+        if (pData.diamond < 10)//钻石是否足够进行购买
+        {
+            GameRoot.AddTips("钻石数量不够，是否进行充值？");
+            return;
+        }
+        GameMsg msg = new GameMsg//发送资源购买的网络消息
+        {
+            cmd = (int)CMD.ReqBuy,
+            reqBuy = new ReqBuy
+            {
+                buyType = this.buyType,
+                diamondCost = 10,
+            }
+        };
+        netService.SendMsg(msg);
     }
 
     /// <summary>
