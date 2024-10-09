@@ -1,0 +1,45 @@
+世界聊天里，也应该设置隔多长时间才允许发送第二条消息
+
+这里使用协程进行控制聊天消息发送的频率
+
+ChatWnd.cs里
+1、定义标志变量canSend
+用于标志是否能发送消息，消息发送前为true，发送后为false；
+并在ClickSendBtn()里进行使用；
+private bool canSend = true;
+2、添加协程方法MsgTimer()
+在canSend改为false后，5秒后将canSend置为true；
+private IEnumerator MsgTimer()
+{
+    yield return new WaitForSeconds(0.5f);
+    canSend = true;
+}
+3、设置聊天消息的限制发送
+public void ClickSendBtn()
+{
+    if (canSend)
+    {
+        GameRoot.AddTips("聊天消息每5秒钟才能发送一条");
+        return;
+    }
+    if (iptChat.text == null || iptChat.text == "" || iptChat.text == " ") GameRoot.AddTips("尚未输入聊天信息");
+    else if (iptChat.text.Length > 12) GameRoot.AddTips("输入信息不能超过12个字");
+    else//发送网络消息到服务器
+    {
+        ... ...
+        netService.SendMsg(msg);
+        canSend = false;
+        StartCoroutine(MsgTimer());//开启定时器，5秒后重置canSend
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
