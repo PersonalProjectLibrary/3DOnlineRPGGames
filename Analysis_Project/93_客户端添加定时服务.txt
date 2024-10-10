@@ -1,0 +1,53 @@
+
+Unity客户端添加定时器服务
+
+一、新增和初始化定时器服务
+在在Scripts/Service文件夹里新建TimerService.cs脚本
+初始化TimerService.cs，继承SystemRoot，添加InitService()方法，
+在GameRoot.cs的Init()里调用，在场景的GameRoot身上添加TimerService.cs脚本；
+
+可以参照PETimer的控制台工程ConsoleProjects的Program.cs来完善TimerService.cs脚本
+
+二、将PETimer的PETimer.cs拷贝到Unity工程里
+复制到Scripts/Service文件夹里，也可以编译成dll，放到Scripts/Service文件夹里；
+这里直接使用源码PETimer.cs
+
+三、客户端整合PETimer
+1、在TimerService.cs里定义一个定时器PETimer
+InitService()里实例化出来
+
+2、新增添加定时任务的方法
+方便外部定时相关的任务通过该接口使用定时功能；
+这里使用到PETimer.cs里的AddTimeTask()
+PETimer.cs里有多个AddTask()方法，这里先使用转接AddTimeTask()
+后面也是需要哪个，再转接PETimer.cs里的哪个功能方法函数；
+
+public int AddTimeTask(Action<int> cb,double delay,PETimeUnit timeUnit = PETimeUnit.Millisecond,int count =1)
+{
+    return pTimer.AddTimeTask(cb,delay,timeUnit,count);
+}
+
+3、在InitService()里转接使用定时器的日志输出函数
+使用公共日志输出方式输出定时器日志
+pTimer.SetLog((string info) => { PECommon.Log(info); });
+
+4、设置定时任务的监测
+通过Update调用执行对定时任务的监测
+private void Update() { pTimer.Update(); }
+
+四、GameRoot.cs里设置进行定时器测试
+private void Init()
+{
+    ... ...
+    login.EnterLogin();
+    TestTimer();
+}
+private void TestTimer()
+{
+    TimerService.Instance.AddTimeTask((int tid) => { PECommon.Log("Test Timer"); },1000);
+}
+运行游戏，1000毫秒后，可查看控制台的日志输出
+Log：14:47:35 >> Test Timer
+
+
+

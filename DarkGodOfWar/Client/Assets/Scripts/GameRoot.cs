@@ -12,6 +12,9 @@
 using PEProtocol;
 using UnityEngine;
 
+/// <summary>
+/// 游戏根节点/入口
+/// </summary>
 public class GameRoot : MonoBehaviour
 {
     public static GameRoot Instance=null;
@@ -51,10 +54,10 @@ public class GameRoot : MonoBehaviour
         net.InitService();
         ResService res = GetComponent<ResService>();
         res.InitService();
-
-        //声音播放服务初始化
         AudioService audio = GetComponent<AudioService>();
         audio.InitService();
+        TimerService timer = GetComponent<TimerService>();
+        timer.InitService();
 
         //业务系统初始化
         LoginSystem login = GetComponent<LoginSystem>();
@@ -64,6 +67,8 @@ public class GameRoot : MonoBehaviour
 
         //进入登录场景
         login.EnterLogin();
+
+        TestTimer();
     }
 
     /// <summary>
@@ -133,4 +138,14 @@ public class GameRoot : MonoBehaviour
 
     #endregion
 
+    #region Test Function
+    /// <summary>
+    /// 测试PETimer的使用
+    /// </summary>
+    private void TestTimer()
+    {
+        TimerService.Instance.AddTimeTask((int tid) => { PECommon.Log("Test Timer"); },1000);
+    }
+
+    #endregion
 }
