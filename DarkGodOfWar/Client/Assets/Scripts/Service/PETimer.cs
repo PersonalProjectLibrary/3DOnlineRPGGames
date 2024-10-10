@@ -460,8 +460,16 @@ public class PETimer {
     public int GetWeek() {
         return (int)GetLocalDateTime().DayOfWeek;
     }
-    public DateTime GetLocalDateTime() {
-        DateTime dt = TimeZone.CurrentTimeZone.ToLocalTime(startDateTime.AddMilliseconds(nowTime));
+    //Old
+    //public DateTime GetLocalDateTime()
+    //{
+    //    DateTime dt = TimeZone.CurrentTimeZone.ToLocalTime(startDateTime.AddMilliseconds(nowTime));
+    //    return dt;
+    //}
+    //New
+    public DateTime GetLocalDateTime()
+    {
+        DateTime dt = TimeZoneInfo.ConvertTime(startDateTime.AddMilliseconds(nowTime), TimeZoneInfo.Local);
         return dt;
     }
     public double GetMillisecondsTime() {

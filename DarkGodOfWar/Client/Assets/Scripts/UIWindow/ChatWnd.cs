@@ -122,7 +122,9 @@ public class ChatWnd : WindowRoot
             iptChat.text = "";
             netService.SendMsg(msg);
             canSend = false;
-            StartCoroutine(MsgTimer());//开启定时器，5秒后重置canSend
+            //StartCoroutine(MsgTimer());//使用协程，5秒后重置canSend
+            //使用定时器PETimer，5秒后重置canSend
+            timerService.AddTimeTask((int tid) => { canSend = true; }, 5, PETimeUnit.Second);
         }
     }
 
@@ -183,8 +185,7 @@ public class ChatWnd : WindowRoot
     }
 
     /// <summary>
-    /// 聊天消息间隔计时器
-    /// 发送消息后，隔5秒后重置
+    /// 协程控制聊天消息间隔发送（已被定时器PETimer替代）
     /// </summary>
     /// <returns></returns>
     private IEnumerator MsgTimer()

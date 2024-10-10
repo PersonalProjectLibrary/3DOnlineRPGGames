@@ -1,0 +1,72 @@
+
+1、在WindowRoot.cs里添加对定时服务的引用
+protected TimerService timerService = null;
+protected virtual void InitWnd()
+{
+    ... ...
+    timerService = TimerService.Instance;
+}
+protected void ClearWnd()
+{
+    ... ...
+    timerService = null;
+}
+
+2、聊天消息控制窗口ChatWnd.cs里修改限制消息发送频率的设置
+原：
+private bool canSend = true;
+public void ClickSendBtn()
+{
+    if (canSend)
+    {
+        GameRoot.AddTips("聊天消息每5秒钟才能发送一条");
+        return;
+    }
+    if (iptChat.text == null || iptChat.text == "" || iptChat.text == " ")
+        ... ...
+    else
+    {
+        ... ...
+        canSend = false;
+        StartCoroutine(MsgTimer());//开启定时器，5秒后重置canSend
+    }
+}
+private IEnumerator MsgTimer()
+{
+    yield return new WaitForSeconds(0.5f);
+    canSend = true;
+}
+改：
+private bool canSend = true;
+public void ClickSendBtn()
+{
+    if (canSend)
+    {
+        GameRoot.AddTips("聊天消息每5秒钟才能发送一条");
+        return;
+    }
+    if (iptChat.text == null || iptChat.text == "" || iptChat.text == " ")
+        ... ...
+    else
+    {
+        ... ...
+        canSend = false;
+        timerService.AddTimeTask((int tid) => { canSend = true; }, 5, PETimeUnit.Second);
+    }
+}
+
+3、计时器代码更新
+（1）Unity提示警告：
+PETimer.cs(466,23): warning CS0618: 'TimeZone' is obsolete: 'System.TimeZone has been deprecated.  Please investigate the use of System.TimeZoneInfo instead.'
+（2）问题定位：PETimer.cs脚本里
+public DateTime GetLocalDateTime()
+{
+    DateTime dt = TimeZone.CurrentTimeZone.ToLocalTime(startDateTime.AddMilliseconds(nowTime));
+    return dt;
+}
+（3）这里更新使用方法
+public DateTime GetLocalDateTime()
+{
+    DateTime dt = TimeZoneInfo.ConvertTime(startDateTime.AddMilliseconds(nowTime), TimeZoneInfo.Local);
+    return dt;
+}

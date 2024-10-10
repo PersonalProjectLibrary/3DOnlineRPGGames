@@ -68,7 +68,7 @@ public class GameRoot : MonoBehaviour
         //进入登录场景
         login.EnterLogin();
 
-        TestTimer();
+        //TestTimer();
     }
 
     /// <summary>

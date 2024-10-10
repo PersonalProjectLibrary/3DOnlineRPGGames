@@ -28,6 +28,10 @@ public class WindowRoot : MonoBehaviour
     /// 网络服务
     /// </summary>
     protected NetService netService = null;
+    /// <summary>
+    /// 定时服务
+    /// </summary>
+    protected TimerService timerService = null;
 
     #region Set Wnd：设置界面
     /// <summary>
@@ -38,6 +42,7 @@ public class WindowRoot : MonoBehaviour
         resService = ResService.Instance;
         audioService = AudioService.Instance;
         netService = NetService.Instance;
+        timerService = TimerService.Instance;
     }
 
     /// <summary>
@@ -65,6 +70,7 @@ public class WindowRoot : MonoBehaviour
         resService = null;
         audioService = null;
         netService = null;
+        timerService = null;
     }
 
     #endregion
