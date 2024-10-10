@@ -1,0 +1,64 @@
+
+服务器控制台端添加定时器服务
+
+一、新增和初始化定时器服务
+1、新建定时服务文件夹
+在ScriptsClient/01Service文件夹里新建03TimerSvc文件夹；
+2、将PETimer.cs脚本添加到服务器工程里
+将之前Unity客户端使用PETimer.cs添加到03TimerSvc文件夹里：
+先把复制到03TimerSvc文件夹里，然后服务器工程里，选中03TimerSvc文件夹，
+右键--添加--现有项--找到03TimerSvc文件夹里的PETimer.cs脚本，添加到服务器工程里
+不添加只复制，服务器工程里看不到也引用不到PETimer.cs脚本；
+3、新建初始化TimerSvc.cs脚本
+参考NetSvc.cs，将TimerSvc.cs做成单例，添加Init()初始化方法
+
+二、服务端整合PETimer
+1、在TimerSvc.cs里定义一个定时器PETimer，Init()里实例化出来，
+可参照客户端的初始化来设置TimerSvc.cs，设置日志的输出
+PETimer pTimer = null;
+public void Init()// 定时服务初始化
+{
+    pTimer = new PETimer();
+    pTimer.SetLog((string info) => { PECommon.Log(info); });
+    PECommon.Log("TimerSvc Init Done.");
+}
+public int AddTimeTask(Action<int> cb, double delay, PETimeUnit timeUnit = PETimeUnit.Millisecond, int count = 1)
+{
+    return pTimer.AddTimeTask(cb, delay, timeUnit, count);
+}
+public void Update() { pTimer.Update(); }
+
+2、在ServiceRoot.cs里添加对TimerSvc.cs的引用和初始化
+也将TimerSvc.cs的Update()，放到ServiceRoot.cs的Update里进行执行；
+
+三、进行定时器测试
+在ServiceRoot.cs的Init()里，在初始化最后，添加计时器的测试
+public class ServerRoot
+{
+    ... ...
+    public void Init()// 服务器初始化
+    {
+        ... ...
+        TimerSvc.Instance.Init();
+        ... ...
+        TestTimer();
+    }
+    public void Update()// 服务器里要一直执行的功能
+    {
+        ... ...
+        TimerSvc.Instance.Update();
+    }
+    private void TestTimer()// 测试PETimer定时器
+    {
+        TimerSvc.Instance.AddTimeTask((int tid) => { PECommon.Log("xxxxxxxx"); }, 1000);
+    }
+}
+
+
+
+
+
+
+
+
+

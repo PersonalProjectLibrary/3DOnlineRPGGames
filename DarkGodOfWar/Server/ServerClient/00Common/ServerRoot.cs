@@ -35,12 +35,15 @@ public class ServerRoot
         CfgSvs.Instance.Init();
         NetSvc.Instance.Init();
         CacheSvc.Instance.Init();
+        TimerSvc.Instance.Init();
         //业务系统层
         LoginSys.Instance.Init();
         GuideSys.Instance.Init();
         StrongSys.Instance.Init();
         WorldChatSys.Instance.Init();
         BuySys.Instance.Init();
+
+        TestTimer();
     }
 
     /// <summary>
@@ -49,9 +52,11 @@ public class ServerRoot
     public void Update()
     {
         NetSvc.Instance.Update();
+        TimerSvc.Instance.Update();
     }
 
     private int SessionID = 0;//默认为0，每次调用获取加一
+    
     /// <summary>
     /// 每次调用时，生成一个唯一的id
     /// </summary>
@@ -61,4 +66,15 @@ public class ServerRoot
         if (SessionID == int.MaxValue) SessionID = 0;//避免服务器运行很久后id值越界
         return SessionID += 1;
     }
+
+    #region Test Function
+    /// <summary>
+    /// 测试PETimer定时器
+    /// </summary>
+    private void TestTimer()
+    {
+        TimerSvc.Instance.AddTimeTask((int tid) => { PECommon.Log("xxxxxxxx"); }, 1000);
+    }
+
+    #endregion
 }
