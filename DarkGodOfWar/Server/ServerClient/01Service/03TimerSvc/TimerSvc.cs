@@ -10,6 +10,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 
 /// <summary>
 /// 定时服务
@@ -28,14 +29,27 @@ public class TimerSvc
 
     PETimer pTimer = null;
 
+    Queue<TaskPack> taskPackQue = new Queue<TaskPack>();
+    static readonly string tpqLock = "tpqLock";
+
     /// <summary>
     /// 定时服务初始化
     /// </summary>
     public void Init()
     {
-        pTimer = new PETimer();
+        pTimer = new PETimer(100);
         //使用公共日志输出方式输出定时器日志
         pTimer.SetLog((string info) => { PECommon.Log(info); });
+        //使用SetHandle()处理具体的定时业务逻辑，保证独立线程数据安全性
+        //使用Handle，会把所有已经满足目标时间的定时任务发出来，我们再执行具体的业务逻辑即可
+        pTimer.SetHandle((Action<int> cb, int tid) =>
+        {
+            //把定时任务放到任务队列里，后面主线程里一一处理
+            if (cb != null)
+            {
+                lock (tpqLock) { taskPackQue.Enqueue(new TaskPack(tid, cb)); }
+            }
+        });
         PECommon.Log("TimerSvc Init Done.");
     }
 
@@ -55,6 +69,44 @@ public class TimerSvc
     /// <summary>
     /// 对定时任务进行监测
     /// </summary>
-    public void Update() { pTimer.Update(); }
+    public void Update()
+    {
+        /* 检测任务队列不空，则取任务
+         * 使用if判断，每帧只取出一个任务处理，
+         * 使用while，可在同一帧里把所有满足条件的定时任务取出进行处理
+         */
+        while (taskPackQue.Count > 0)
+        {
+            TaskPack tp = null;
+            lock (tpqLock) { tp = taskPackQue.Dequeue(); }
+            //处理已经满足条件的定时任务
+            if (tp != null) { tp.cb(tp.tid); }
+        }
+    }
 
+    /// <summary>
+    /// 定时任务包
+    /// </summary>
+    /// 负责定时任务具体业务逻辑的包
+    class TaskPack
+    {
+        /// <summary>
+        /// >定时任务的id
+        /// </summary>
+        public int tid;
+        /// <summary>
+        /// 定时任务具体执行的Action
+        /// </summary>
+        public Action<int> cb;
+        /// <summary>
+        /// 定时任务包
+        /// </summary>
+        /// <param name="tId">定时任务的id</param>
+        /// <param name="callback">定时任务具体执行的Action</param>
+        public TaskPack(int tId,Action<int> callback)
+        {
+            tid = tId;
+            cb = callback;
+        }
+    }
 }

@@ -43,7 +43,7 @@ public class ServerRoot
         WorldChatSys.Instance.Init();
         BuySys.Instance.Init();
 
-        TestTimer();
+        TestTimer2();
     }
 
     /// <summary>
@@ -76,5 +76,15 @@ public class ServerRoot
         TimerSvc.Instance.AddTimeTask((int tid) => { PECommon.Log("xxxxxxxx"); }, 1000);
     }
 
+    /// <summary>
+    /// 测试优化后的定时器定时任务
+    /// </summary>
+    private void TestTimer2()
+    {
+        TimerSvc.Instance.AddTimeTask((int tid) =>
+        {
+            PECommon.Log("yyyyy");
+        }, 1000, PETimeUnit.Millisecond, 0);//0表示一直执行
+    }
     #endregion
 }

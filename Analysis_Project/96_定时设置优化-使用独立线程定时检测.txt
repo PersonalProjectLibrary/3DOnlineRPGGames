@@ -1,0 +1,139 @@
+
+服务器控制台端定时器服务定时器优化——使用独立线程定时检测
+
+一、介绍说明：
+1、之前是直接使用PETimer无参定义，是运用线程检测并处理任务，类似于Unity中使用；
+pTimer pt= new PETimer();
+while(ture){pt.Update()}
+
+对于服务器，在ServiceRoot.cs里使用Update驱动定时器监控
+public void Update()
+{
+    ... ...
+    TimerSvc.Instance.Update();
+}
+
+2、还可以使用独立线程检测并处理任务：在PETimer实例化时，传入检测间隔的参数（默认单位毫秒）
+pTimer pt= new PETimer(100);
+
+3、在服务器里，定时任务是非常多的，如
+战斗里计时，体力恢复，日常上线时长发送奖励，进行任务如挖矿多长时间发送奖励等
+
+为了运行的效率，对于定时器的检测，不放到主线程里检测，
+即不使用上面的第一种方式设置定时器，使用第二种独立线程检测处理的方式设置定时器；
+
+二、进行定时器优化设置
+1、在新建实例化PETimer定时器时，传入间隔时长参数
+PETimer有多个重载，有设置默认参数，
+（1）如果不传参数，需要使用PETimer.Update()进行驱动检测定时器；
+（2）如果创建实例化时，有进行传参，则会使用独立线程自行进行检测定时；
+不需要使用PETimer.Update()进行驱动检测
+
+故这里修改TimerSvc.cs的Update()
+原：
+public void Init()
+{
+    pTimer = new PETimer();
+    ... ...
+}
+public void Update() { pTimer.Update(); }
+改：
+public void Init()
+{
+    pTimer = new PETimer(100);//每100毫秒执行一次定时器
+    ... ...
+}
+public void Update() { }
+
+
+2、使用pTimer = new PETimer(100);时，会使用PETimer里的线程池去执行；
+为了保证数据的安全性，这里使用PETimer的SetHand()去处理具体的业务逻辑，对定时器进行处理；
+使用Handle，会把所有已经满足目标时间的定时任务发出来，我们再执行具体的业务逻辑即可；
+
+具体的业务逻辑，我们打成一个包：TaskPack
+class TaskPack
+{
+    public int tid;
+    public Action<int> cb;
+    public TaskPack(int tId,Action<int> callback)
+    {
+        tid = tId;
+        cb = callback;
+    }
+}
+
+3、实际是把任务包，放到队列里，再在主线程里去处理；
+TimerSvc.cs里定义任务包队列：
+Queue<TaskPack> taskPackQue = new Queue<TaskPack>();
+
+4、在TimerSvc.cs初始化时，清空taskPackQue 的数据
+
+5、定义一个锁，在往队列里添加任务时，要加锁保证数据安全
+Handle里处理定时任务包是在多线程的线程池里处理的，每次执行时，线程都是不确定的
+需要加锁，把线程锁到主线程里进行处理；
+static readonly string tpqLock = "tpqLock";
+
+6、在Init()初始化时，将定时任务添加到任务队列里
+public void Init()
+{
+    pTimer = new PETimer(100);
+    ... ...
+    pTimer.SetHandle((Action<int> cb, int tid) =>
+    {
+        if (cb != null)
+        {
+            lock (tpqLock) { taskPackQue.Enqueue(new TaskPack(tid, cb)); }
+        }
+    });
+}
+
+7、在Update()里，检测任务队列
+任务队列里有已经满足条件的定时任务，则执行定时任务
+public void Update()
+{
+    if (taskPackQue.Count > 0)//检测任务队列不空，则取任务
+    {
+        TaskPack tp = null;
+        lock (tpqLock) { tp = taskPackQue.Dequeue(); }       
+        if (tp != null) { tp.cb(tp.tid); }//处理已经满足条件的定时任务
+    }
+}
+
+8、定时任务处理优化
+存在同一时间有多个定时任务满足条件待处理；
+上面if(taskPackQue.Count > 0)检测判断，是每帧只取出一个定时任务处理；
+下个定时任务只能等到下一帧执行Update时处理；
+
+为了时同一时刻可以取多个已经满足条件可以执行的定时任务，可以将if替换成while
+这样同一时刻里就会把所有满足条件的定时任务取出来进行处理，不用等到下一帧再取任务处理；
+public void Update()
+{
+    while (taskPackQue.Count > 0)
+    {
+        TaskPack tp = null;
+        lock (tpqLock) { tp = taskPackQue.Dequeue(); }
+        if (tp != null) { tp.cb(tp.tid); }
+    }
+}
+
+三、测试定时任务
+1、在ServerRoot.cs的Init()里添加定时任务的测试代码
+public void Init()
+{
+    ... ...
+    TestTimer2();
+}
+private void TestTimer2()
+{
+    TimerSvc.Instance.AddTimeTask((int tid) =>
+    {
+        PECommon.Log("yyyyy");
+    }, 1000, PETimeUnit.Millisecond, 0);//0表示一直执行
+}
+
+2、运行服务器测试，查看控制台输出打印
+
+这样就实现了：
+在独立线程去计时，
+在定时结束后，
+在主线程里处理定时任务要执行的任务
