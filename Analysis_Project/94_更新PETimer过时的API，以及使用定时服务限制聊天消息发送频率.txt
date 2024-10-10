@@ -70,3 +70,10 @@ public DateTime GetLocalDateTime()
     DateTime dt = TimeZoneInfo.ConvertTime(startDateTime.AddMilliseconds(nowTime), TimeZoneInfo.Local);
     return dt;
 }
+
+详细文章博客可以查看：
+1、在.NET Core使用TimeZone将客户端时间转服务器本地时间但编译提示已过期
+https://www.cnblogs.com/VAllen/p/TimeZone-Obsolete-Usage-TimeZoneInfo-Convert-ClientTime-To-ServerTime.html
+
+2、TimeZone.CurrentTimeZone 时区缓存的坑：
+https://blog.csdn.net/qq_36440407/article/details/107286685
