@@ -43,7 +43,7 @@ public class ServerRoot
         WorldChatSys.Instance.Init();
         BuySys.Instance.Init();
 
-        TestTimer2();
+        //TestTimer2();
     }
 
     /// <summary>

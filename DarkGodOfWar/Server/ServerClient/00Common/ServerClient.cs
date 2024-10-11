@@ -9,6 +9,8 @@
 ***************************************/
 #endregion
 
+using System.Threading;
+
 /// <summary>
 /// 服务器入口
 /// </summary>
@@ -21,6 +23,7 @@ public class ServerClient
         while (true)
         {
             ServerRoot.Instance.Update();
+            Thread.Sleep(20);
         }
     }
 }

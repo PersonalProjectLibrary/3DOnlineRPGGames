@@ -1,0 +1,40 @@
+
+知识点讲解：
+
+点击运行服务器，打开电脑任务管理器（电脑任务栏--右键--任务管理器）
+任务管理器--点击“性能”模块，可以看到CPU和磁盘的使用情况；
+进程里选择服务器应用程序，右键--转到进程/详细信息，
+可查看服务器进程占用信息：CPU占用25%左右；这个占用比率算比较高的；
+原因：服务器入口ServerClient.cs的Main()方法里，使用While死循环，会尽全力跑循环里的程序；
+导致应用使用某核CPU时，会努力占满某一CPU；
+
+优化：降低CPU的使用
+不需要服务器效率那么高，设置程序休眠，不会一直不停的跑程序
+原：
+public class ServerClient
+{
+    static void Main(string[] args)
+    {
+        ServerRoot.Instance.Init();
+        while (true)//死循环保持服务器一直运行，不退出，同时执行服务器上要一直执行的功能
+        {
+            ServerRoot.Instance.Update();
+        }
+    }
+}
+改：
+while (true)
+{
+    ServerRoot.Instance.Update();
+    Thread.Sleep(20);
+}
+
+再查看CPU的占用，就没那么高了；并且去运行客户端也是正常的；
+
+
+
+
+
+
+
+
