@@ -129,6 +129,12 @@ public class CacheSvc
     }
 
     /// <summary>
+    /// 获取所有（在线）玩家的数据
+    /// </summary>
+    /// <returns>存储在线玩家的连接和数据的字典</returns>
+    public Dictionary<ServerSession,PlayerData> GetOnlineCache() { return onLineSessionDic; }
+
+    /// <summary>
     /// 玩家下线清理数据
     /// </summary>
     /// <param name="session"></param>

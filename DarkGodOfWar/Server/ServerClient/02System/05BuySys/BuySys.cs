@@ -27,7 +27,6 @@ public class BuySys
     }
 
     private CacheSvc cacheSvc = null;
-    private CfgSvs cfgSvs = null;
 
     /// <summary>
     /// 交易购买系统初始化
@@ -35,7 +34,6 @@ public class BuySys
     public void Init()
     {
         cacheSvc = CacheSvc.Instance;
-        cfgSvs = CfgSvs.Instance;
         PECommon.Log("BuySys Init Done.");
     }
 

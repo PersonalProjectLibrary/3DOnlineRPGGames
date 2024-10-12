@@ -42,7 +42,7 @@ public class ServerRoot
         StrongSys.Instance.Init();
         WorldChatSys.Instance.Init();
         BuySys.Instance.Init();
-
+        PowerSys.Instance.Init();
         //TestTimer2();
     }
 

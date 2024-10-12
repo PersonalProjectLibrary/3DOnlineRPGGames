@@ -79,6 +79,17 @@ public class MainCitySystem : SystemRoot
         });
     }
 
+    /// <summary>
+    /// 根据服务器推送的体力消息设置玩家的体力信息
+    /// </summary>
+    /// <param name="msg"></param>
+    public void PshPower(GameMsg msg)
+    {
+        PshPower data = msg.pshPower;
+        GameRoot.Instance.SetPlayerDataByPower(data);
+        mainCityWnd.RefreshUI();
+    }
+
     #region Buy Wnd：购买交易窗口设置
     /// <summary>
     /// 打开购买窗口，0：购买体力；1：购买金币；

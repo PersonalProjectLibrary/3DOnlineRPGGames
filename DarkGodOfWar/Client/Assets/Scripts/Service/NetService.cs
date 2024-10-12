@@ -127,6 +127,7 @@ public class NetService : MonoBehaviour
             case CMD.RspStrong: MainCitySystem.Instance.RspStrong(msg); break;
             case CMD.PshWorldChat:MainCitySystem.Instance.PshWorldChat(msg);break;
             case CMD.RspBuy:MainCitySystem.Instance.RspBuy(msg);break;
+            case CMD.PshPower:MainCitySystem.Instance.PshPower(msg);break;
         }
     }
 }

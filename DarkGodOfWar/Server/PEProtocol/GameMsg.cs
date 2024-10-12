@@ -80,6 +80,7 @@ namespace PEProtocol
     public enum CMD
     {
         None = 0,
+        
         //登录相关 100开始
         ReqLogin = 101,//登录请求
         RspLogin = 102,//登录回应
@@ -89,15 +90,14 @@ namespace PEProtocol
         //主城相关 200开始
         ReqGuide = 201,//任务引导请求
         RspGuide = 202,//任务引导回应
-
         ReqStrong = 203,//装备强化升级请求
         RspStrong = 204,//装备强化升级回应
-
         SndWorldChat = 205,//发送世界聊天消息
         PshWorldChat = 206,//广播世界聊天消息
-
         ReqBuy = 207,//资源购买请求
         RspBuy = 208,//资源购买回应
+
+        PshPower = 209,//服务端向客户端推送体力恢复消息
     }
 
     /// <summary>
@@ -106,6 +106,11 @@ namespace PEProtocol
     [Serializable]
     public class GameMsg : PEMsg
     {
+        /// <summary>
+        /// 服务器向客户端推送体力消息
+        /// </summary>
+        public PshPower pshPower;
+
         /// <summary>
         /// 客户端发送资源购买请求
         /// </summary>
@@ -162,6 +167,15 @@ namespace PEProtocol
 
         #endregion
     }
+
+    #region 体力恢复
+    /// <summary>
+    /// 服务器向客户端推送体力消息
+    /// </summary>
+    [Serializable]
+    public class PshPower { public int power; }
+
+    #endregion
 
     #region 资源交易相关
     /// <summary>

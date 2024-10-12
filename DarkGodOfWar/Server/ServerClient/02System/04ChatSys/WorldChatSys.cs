@@ -28,7 +28,6 @@ public class WorldChatSys
     }
 
     private CacheSvc cacheSvc = null;
-    private CfgSvs cfgSvs = null;
 
     /// <summary>
     /// 世界聊天系统初始化
@@ -36,7 +35,6 @@ public class WorldChatSys
     public void Init()
     {
         cacheSvc = CacheSvc.Instance;
-        cfgSvs = CfgSvs.Instance;
         PECommon.Log("WorldChatSys Init Done.");
     }
 

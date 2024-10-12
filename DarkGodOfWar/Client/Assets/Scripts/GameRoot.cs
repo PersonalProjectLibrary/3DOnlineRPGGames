@@ -77,7 +77,7 @@ public class GameRoot : MonoBehaviour
     /// <param name="tips"></param>
     public static void AddTips(string tips) { Instance.dynamicWnd.AddTips(tips); }
 
-    #region PlayerData
+    #region PlayerData And Set PlayerData
     private PlayerData playerData = null;
     
     /// <summary>
@@ -136,6 +136,12 @@ public class GameRoot : MonoBehaviour
         playerData.diamond = data.diamond;
     }
 
+    /// <summary>
+    /// 根据体力设置玩家的数据
+    /// </summary>
+    /// <param name="data"></param>
+    public void SetPlayerDataByPower(PshPower data) { playerData.power = data.power; }
+    
     #endregion
 
     #region Test Function

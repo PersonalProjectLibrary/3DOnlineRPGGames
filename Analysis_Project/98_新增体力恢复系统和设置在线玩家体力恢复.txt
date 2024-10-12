@@ -1,0 +1,135 @@
+
+一、新增体力恢复系统
+1、增加资源购买的系统PowerSys.cs
+服务器工程02System文件夹下新建06PowerSys\PowerSys.cs文件
+
+2、参照BuySys.cs，对PowerSys.cs设置为单例，添加对缓存层CacheSvc.cs的引用
+添加Init()初始化函数，处理方法ReqPower()
+注：聊天和购买系统里对配置数据服务CfgSvs.cs添加了引用，但实际用不到；
+这里将聊天和购买系统脚本里的引用和初始化的语句删去；
+
+3、在ServerRoot.cs里的Init()添加对PowerSys.cs的引用和初始化
+
+二、计算体力恢复
+在执行PowerSys.cs的Init()时，则代表服务器已经启动了，这时候就要计算体力的恢复；
+1、在PECommon.cs里定义 每一次去执行定时任务 间隔的时间
+在PECommon.cs里定义体力增加的间隙，单位是分钟；和恢复的体力数；
+//每隔5分钟，恢复2点体力
+public const int PowerAddSpace = 5;
+public const int PowerAddCount = 2;
+
+2、新增增加体力计时的函数CalcuatePowerAdd()
+
+3、在Init()里使用计时任务的AddTimeTask()，新增体力计时任务；
+public void Init()
+{
+    cacheSvc = CacheSvc.Instance;
+    TimerSvc.Instance.AddTimeTask(CalcuatePowerAdd, PECommon.PowerAddSpace, PETimeUnit.Minute, 0);
+    PECommon.Log("PowerSys Init Done.");
+}
+
+三、测试
+为了方便测试，这里可以先将单位换成秒，CalcuatePowerAdd()里进行日志输出，然后运行测试 
+public void Init()
+{
+    cacheSvc = CacheSvc.Instance;
+    TimerSvc.Instance.AddTimeTask(CalcuatePowerAdd, PECommon.PowerAddSpace, PETimeUnit.Second, 0);
+    PECommon.Log("PowerSys Init Done.");
+}
+private void CalcuatePowerAdd(int tid)
+{
+    //计算体力的增长 TODO
+    PECommon.Log("Add... Power.");
+}
+
+四、定义体力恢复的网络通信
+体力恢复消息是一个推送，服务器去通知客户端，这里网络通信使用PushPower；
+[Serializable]
+public class PshPower { public int power; }
+public class GameMsg : PEMsg
+{
+    public PshPower pshPower;
+    ... ...
+}
+public enum CMD
+{
+    ... ...
+    PshPower = 209,//服务端向客户端推送体力恢复消息
+}
+
+一般离线玩家远远多于在线玩家数量；两种方式处理体力：
+在线玩家处理体力、离线玩家处理体力；
+
+五、在线玩家体力恢复
+1、获取所有在线玩家的在线缓存
+设置所有在线玩家的体力恢复，需要所有玩家的实时体力和在线连接Session的数据
+在缓存层里添加GetOnlineCache()方法，来获取所有在线玩家的数据
+public Dictionary<ServerSession,PlayerData> GetOnlineCache() { return onLineSessionDic; }
+
+2、CalcuatePowerAdd()里对在线玩家进行体力检测恢复
+private void CalcuatePowerAdd(int tid)
+{
+    //设置体力推送消息
+    PECommon.Log("All Online Player Calc Power Incress...");
+    GameMsg msg = new GameMsg
+    {
+        cmd = (int)CMD.PshPower,
+        pshPower = new PshPower()
+    };
+    //获取在线玩家数据，遍历玩家需不需要恢复体力
+    Dictionary<ServerSession, PlayerData> onlineDic = cacheSvc.GetOnlineCache();
+    foreach (var item in onlineDic)
+    {
+        PlayerData pData = item.Value;
+        ServerSession session = item.Key;
+        //判断增长是否达到上限
+        int powerMax = PECommon.GetPowerLimit(pData.lv);
+        if (pData.power >= powerMax) continue;
+        else
+        {
+            pData.power += PECommon.PowerAddCount;
+            if (pData.power > powerMax) pData.power = powerMax;
+        }
+        //玩家数据更新到缓存，发送到客户端
+        if (!cacheSvc.UpdatePlayerData(pData.id, pData)) msg.err = (int)ErrorCode.UpdateDBaseError;
+        else
+        {
+            msg.pshPower.power = pData.power;
+            session.SendMsg(msg);
+        }
+    }
+}
+
+3、重新生成编译PEProtocol.dll
+
+六、客户端对接体力恢复系统
+1、GameRoot.cs添加根据体力设置玩家数据的函数SetPlayerDataByPower()
+public void SetPlayerDataByPower(PshPower data) { playerData.power = data.power; }
+
+2、MainCitySys.cs里新增处理服务器推送体力消息的函数PshPower()
+public void PshPower(GameMsg msg)
+{
+    PshPower data = msg.pshPower;
+    GameRoot.Instance.SetPlayerDataByPower(data);
+    mainCityWnd.RefreshUI();
+}
+
+3、NetService.cs的ProcessMsg()里新增对服务器推送体力消息的处理分支
+public void ProcessMsg(GameMsg msg)
+{
+    ... ...
+    switch ((CMD)msg.cmd)//将信息分发出去
+    {
+        ... ...
+        case CMD.PshPorwer:MainCitySystem.Instance.PshPower(msg);break;
+    }
+}
+
+七、测试
+为了方便测试，这里：
+1、将数据库的PowerSys.cs的Init()里的计时任务的时间单位从分钟改为秒，
+TimerSvc.Instance.AddTimeTask(CalcuatePowerAdd, PECommon.PowerAddSpace, PETimeUnit.Second, 0);
+2、将数据库里玩家的体力值改小，和改成大一点的数据，测试体力的恢复和体力满后是否继续增长等；
+3、然后运行数据库、服务器和客户端，查看体力的变化
+
+

@@ -49,25 +49,33 @@ public class PECommon
     }
 
     /// <summary>
+    /// 根据等级计算下次升级所需要的经验值
+    /// </summary>
+    /// <param name="level"></param>
+    /// <returns></returns>
+    /// 实际工作也有对应的公式
+    public static int GetExpUpValByLv(int level) { return 100 * level * level; }
+
+    #region Power Recovery：体力恢复系统
+    /* 每隔5分钟，恢复2点体力 
+     */
+
+    /// <summary>
+    /// 体力增加的间隙，单位是分钟
+    /// </summary>
+    public const int PowerAddSpace = 5;
+    /// <summary>
+    /// 每个间隙恢复的体力个数
+    /// </summary>
+    public const int PowerAddCount = 2;
+    /// <summary>
     /// 获取玩家体力值上限
     /// </summary>
     /// <param name="lv"></param>
     /// <returns></returns>
     /// 计算公式一般由策划提供
     /// 等级每上涨10级，体力值获得150的上涨；
-    public static int GetPowerLimit(int lv)
-    {
-        return ((lv - 1) / 10) * 150 + 150;
-    }
+    public static int GetPowerLimit(int lv) { return ((lv - 1) / 10) * 150 + 150; }
 
-    /// <summary>
-    /// 根据等级计算下次升级所需要的经验值
-    /// </summary>
-    /// <param name="level"></param>
-    /// <returns></returns>
-    /// 实际工作也有对应的公式
-    public static int GetExpUpValByLv(int level)
-    {
-        return 100 * level * level;
-    }
+    #endregion
 }
