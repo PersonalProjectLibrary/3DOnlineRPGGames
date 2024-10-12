@@ -422,5 +422,10 @@ namespace PEProtocol
         /// 索引号里的数据，即配置表里对应装备的星级starLv
         /// 装备pos和装备星级starlv确定唯一的配置数据
         public int[] strongArr;
+
+        /// <summary>
+        /// 记录玩家最后在线的某个时间/离线时间
+        /// </summary>
+        public long offlineTime;
     }
 }

@@ -28,6 +28,7 @@ public class PowerSys
     }
 
     private CacheSvc cacheSvc = null;
+    private TimerSvc timerSvc = null;
 
     /// <summary>
     /// 交易购买系统初始化
@@ -35,7 +36,9 @@ public class PowerSys
     public void Init()
     {
         cacheSvc = CacheSvc.Instance;
-        TimerSvc.Instance.AddTimeTask(CalcuatePowerAdd, PECommon.PowerAddSpace, PETimeUnit.Second, 0);
+        timerSvc = TimerSvc.Instance;
+        TimerSvc.Instance.AddTimeTask(CalcuatePowerAdd, PECommon.PowerAddSpace, PETimeUnit.Minute, 0);
+        //TimerSvc.Instance.AddTimeTask(CalcuatePowerAdd, PECommon.PowerAddSpace, PETimeUnit.Minute, 0);//测试用
         PECommon.Log("PowerSys Init Done.");
     }
 
@@ -65,6 +68,7 @@ public class PowerSys
             else
             {
                 pData.power += PECommon.PowerAddCount;
+                pData.offlineTime = timerSvc.GetNowTime();
                 if (pData.power > powerMax) pData.power = powerMax;
             }
             //玩家数据更新到缓存，发送到客户端

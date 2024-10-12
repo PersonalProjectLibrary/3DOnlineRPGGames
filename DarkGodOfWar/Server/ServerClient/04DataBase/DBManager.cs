@@ -87,7 +87,8 @@ public class DBManager
                         dodge = reader.GetInt32("dodge"),
                         pierce = reader.GetInt32("pierce"),
                         critical = reader.GetInt32("critical"),
-                        guideid = reader.GetInt32("guideid")
+                        guideid = reader.GetInt32("guideid"),
+                        offlineTime = reader.GetInt64("offlinetime"),
                     };
                     #region Strong 获取数据库强化升级数据
                     //解析数据库里的强化数据，数据库里字符格式存储，如：1#2#2#4#3#7#
@@ -131,8 +132,9 @@ public class DBManager
                     dodge = 7,
                     pierce = 5,
                     critical = 2,
-                    guideid =1001,
+                    guideid = 1001,
                     strongArr = new int[6],//新账号默认都是0
+                    offlineTime = TimerSvc.Instance.GetNowTime(),//新账号默认使用创建时间
                 };
                 //新账号存到数据库，并将返回的id更新到playerData里
                 playerData.id = InsertNewAcctData(acct, pass, playerData);
@@ -156,7 +158,7 @@ public class DBManager
             MySqlCommand cmd = new MySqlCommand("insert into account set acct=@acct,pass=@pass,name=@name,"
                 + "level=@level,exp=@exp,power=@power,coin=@coin,diamond=@diamond,crystal=@crystal,"
                 + "hp=@hp,ad=@ad,ap=@ap,addef=@addef,apdef=@apdef,dodge=@dodge,pierce=@pierce,"
-                +"critical=@critical,guideid=@guideid,strong=@strong", SqlConnection);
+                + "critical=@critical,guideid=@guideid,strong=@strong,offlinetime = @offlinetime", SqlConnection);
 
             #region 玩家账号
             cmd.Parameters.AddWithValue("acct", acct);
@@ -200,6 +202,8 @@ public class DBManager
 
             #endregion
 
+            cmd.Parameters.AddWithValue("offlinetime", pData.offlineTime);//最后某一上线/离线时间
+
             cmd.ExecuteNonQuery();
             id = (int)cmd.LastInsertedId;
         }
@@ -241,10 +245,10 @@ public class DBManager
     {
         try
         {
-            MySqlCommand cmd = new MySqlCommand( "update account set name=@name,"
-                + "level=@level,exp=@exp,power=@power,coin=@coin,diamond=@diamond,crystal=@crystal,"
-                + "hp=@hp,ad=@ad,ap=@ap,addef=@addef,apdef=@apdef,dodge=@dodge,pierce=@pierce,"
-                + "critical=@critical,guideid=@guideid,strong=@strong where id =@id", SqlConnection);
+            MySqlCommand cmd = new MySqlCommand( "update account set name=@name,level=@level,"
+                +"exp=@exp,power=@power,coin=@coin,diamond=@diamond,crystal=@crystal,hp=@hp,"
+                +"ad=@ad,ap=@ap,addef=@addef,apdef=@apdef,dodge=@dodge,pierce=@pierce,critical=@critical,"
+                + "guideid=@guideid,strong=@strong,offlinetime = @offlinetime where id =@id", SqlConnection);
             
             #region 玩家账号
             cmd.Parameters.AddWithValue("id", id);
@@ -286,6 +290,8 @@ public class DBManager
             cmd.Parameters.AddWithValue("strong", strongInfo);
 
             #endregion
+
+            cmd.Parameters.AddWithValue("offlinetime", playerData.offlineTime);//最后某一上线/离线时间
 
             cmd.ExecuteNonQuery();
         }

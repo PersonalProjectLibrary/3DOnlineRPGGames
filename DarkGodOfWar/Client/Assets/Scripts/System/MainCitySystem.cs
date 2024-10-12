@@ -87,7 +87,7 @@ public class MainCitySystem : SystemRoot
     {
         PshPower data = msg.pshPower;
         GameRoot.Instance.SetPlayerDataByPower(data);
-        mainCityWnd.RefreshUI();
+        if(mainCityWnd.gameObject.activeSelf) mainCityWnd.RefreshUI();
     }
 
     #region Buy Wnd：购买交易窗口设置

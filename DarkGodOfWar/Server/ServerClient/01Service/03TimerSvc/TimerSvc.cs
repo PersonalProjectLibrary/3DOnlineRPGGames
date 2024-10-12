@@ -54,6 +54,13 @@ public class TimerSvc
     }
 
     /// <summary>
+    /// 获取当前时间，单位毫秒
+    /// </summary>
+    /// 获取的时间是非常大的毫秒数：从计算机纪元时间1970年到现在为止的总毫秒数）
+    /// <returns></returns>
+    public long GetNowTime() { return (long)pTimer.GetMillisecondsTime(); }
+
+    /// <summary>
     /// 添加定时任务
     /// </summary>
     /// <param name="cb">新增的定时任务，要传任务id参数</param>
@@ -79,8 +86,7 @@ public class TimerSvc
         {
             TaskPack tp = null;
             lock (tpqLock) { tp = taskPackQue.Dequeue(); }
-            //处理已经满足条件的定时任务
-            if (tp != null) { tp.cb(tp.tid); }
+            if (tp != null) { tp.cb(tp.tid); }//处理已经满足条件的定时任务
         }
     }
 
