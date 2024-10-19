@@ -167,6 +167,15 @@ public class MainCityWnd : WindowRoot
 
     #region ClickEvents
     /// <summary>
+    /// 点击任务按钮
+    /// </summary>
+    public void ClickTaskBtn()
+    {
+        audioService.PlayUIAudio(Constants.UiOpenPage);
+        MainCitySystem.Instance.OpenTaskWnd();
+    }
+
+    /// <summary>
     /// 点击购买体力按钮
     /// </summary>
     public void ClickBuyPowerBtn()

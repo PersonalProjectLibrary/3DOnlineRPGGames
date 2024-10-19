@@ -44,6 +44,10 @@ public class MainCitySystem : SystemRoot
     /// 购买交易窗口
     /// </summary>
     public BuyWnd buyWnd;
+    /// <summary>
+    /// 任务奖励界面
+    /// </summary>
+    public TaskWnd taskWnd;
 
     /// <summary>
     /// 初始化主城系统
@@ -89,6 +93,20 @@ public class MainCitySystem : SystemRoot
         GameRoot.Instance.SetPlayerDataByPower(data);
         if(mainCityWnd.gameObject.activeSelf) mainCityWnd.RefreshUI();
     }
+
+    #region Task Wnd：任务奖励界面设置
+    /// <summary>
+    /// 打开任务奖励界面
+    /// </summary>
+    public void OpenTaskWnd() { taskWnd.SetWndState(); }
+
+    /// <summary>
+    /// 处理服务器回应任务奖励请求的消息
+    /// </summary>
+    /// <param name="msg"></param>
+    public void RspTask(GameMsg msg) { }
+
+    #endregion
 
     #region Buy Wnd：购买交易窗口设置
     /// <summary>
