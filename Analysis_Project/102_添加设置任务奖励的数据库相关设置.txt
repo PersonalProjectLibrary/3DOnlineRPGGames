@@ -1,0 +1,234 @@
+
+一、客户端显示的任务列表、任务条目的数据，有要存储到数据库中：
+任务id号，当前任务进度，是否已经领取奖励；
+
+二、设置存储在数据库里的任务奖励字段
+类似装备的强化数据，在数据库里使用数组转字符串来存储；
+对于任务奖励：任务id、任务进度、是否领取；也可以参考使用字符串表示：
+#做不同任务的分割符，|做具体某个任务的不同数据的分割符；
+如：1|0|0，表示任务1，当前任务进度为0，没有被领取
+2|0|0#3|1|0#6|0|0#7|1|1#8|1|1#9|0|0#，为这几个任务项的任务情况；
+
+也可以使用类存储，然后转为二进制存到数据库里；
+这里需求简单就不做复杂处理，具体项目看项目需求处理；
+
+三、服务端GameMsg.cs里定义数据库/玩家的任务奖励数据字段taskRewardArr
+1、字段设置：
+数据库格式：2|0|0#3|1|0#6|0|0#7|1|1#8|1|1#9|0|0#
+服务器处理转化为数组[2|0|0，3|1|0，6|0|0，7|1|1，8|1|1，9|0|0]
+客户端对应使用：第三条任务，任务id为6，任务进度为0，没有领取奖励
+2、GameMsg.cs的PlayerData{}里添加数组
+public class PlayerData
+{
+    ... ...
+    public int[] taskRewardArr;
+}
+注意修改PEProtocol项目文件后，重新编译生成PEProcotol.dll
+
+四、数据库里添加任务奖励数据要存储的数据taskreward
+数据库里新增varchar类型的属性，命名为：taskreward，长度255，勾选"不是null"，小数点0；
+其他设置保持默认；
+
+五、打开服务器DBManager.cs脚本添加任务奖励数据相关配置设置
+1、QueryPlayerData()里
+（1）查询玩家账号时，将数据库存的字符串按规则进行分割后存到玩家数据里
+... ...
+if (_pass.Equals(pass))
+{
+    ... ...
+    #region TaskRewardArr 获取数据库里的任务奖励数据
+    string[] taskRewardStrArr = reader.GetString("taskreward").Split('#');
+    playerData.taskRewardArr = new string[6];
+    for (int i = 0; i < taskRewardStrArr.Length; i++)
+    {
+        if (taskRewardStrArr[i] != "")
+        {
+            if (taskRewardStrArr[i].Length < 5) throw new Exception("DataError");
+            else playerData.taskRewardArr[i] = taskRewardStrArr[i];
+        }
+    }
+    #endregion
+}
+... ...
+（2）新增玩家账号时，
+1）默认6个任务
+2）和装备强化数据不同，不能直接插入到数据库，还要进行初始化数据
+... ...
+if (isNew)
+{
+    playerData = new PlayerData
+    {
+        ... ...
+        taskRewardArr = new string[6],
+    };
+    //对任务奖励数据进行初始化设置，不能直接插入
+    for (int i = 0; i < playerData.taskRewardArr.Length; i++)
+    {
+        playerData.taskRewardArr[i] = (i + 1) + "|0|0";
+    }
+    playerData.id = InsertNewAcctData(acct, pass, playerData);
+}
+... ...
+
+注：QueryPlayerData()里面代码太长了，
+这里将获取玩家数据和创建新账号内容拆出放到两个独立的函数里
+改：
+public PlayerData QueryPlayerData(string acct,string pass)
+{
+    PlayerData playerData = null;
+    MySqlDataReader reader = null;//存储查询出来的数据
+    bool isNew = true;//区分新旧账号
+    try
+    {
+        MySqlCommand cmd = new MySqlCommand("select * from account where acct = @acct", SqlConnection);
+        cmd.Parameters.AddWithValue("acct", acct);//获取acct对应的数据
+        reader = cmd.ExecuteReader();//执行Sql语句
+        if (reader.Read())//处理数据
+        {
+            isNew = false;//有旧账号
+            string _pass = reader.GetString("pass");
+            if (_pass.Equals(pass)) GetAcctData(reader, ref playerData);
+        }
+    }
+    catch (Exception e) { PECommon.Log("Query PlayerData By Acct&Pass Error：" + e, LogType.Error); }
+    finally
+    {
+        if (reader != null) reader.Close();
+        if (isNew) CreateNewAcct(acct, pass, ref playerData);//没有旧账号，创建新账号
+    }
+    return playerData;
+}
+// 创建新账号
+private void CreateNewAcct(string acct,string pass, ref PlayerData playerData)
+{
+    playerData = new PlayerData
+    {
+        id = -1,
+        name = "",
+        lv = 1,
+        exp = 0,
+        power = 150,
+        coin = 5000,
+        diamond = 500,
+        crystal = 500,
+        hp = 2000,
+        ad = 275,
+        ap = 265,
+        addef = 67,
+        apdef = 43,
+        dodge = 7,
+        pierce = 5,
+        critical = 2,
+        guideid = 1001,
+        strongArr = new int[6],//新账号默认都是0
+        offlineTime = TimerSvc.Instance.GetNowTime(),//新账号默认使用创建时间
+        taskRewardArr = new string[6],
+    };
+    //对任务奖励数据进行初始化设置，不能直接插入
+    for (int i = 0; i < playerData.taskRewardArr.Length; i++)
+    {
+        playerData.taskRewardArr[i] = (i + 1) + "|0|0";
+    }
+    playerData.id = InsertNewAcctData(acct, pass, playerData);
+}
+// 获取账号数据
+private void GetAcctData(MySqlDataReader reader, ref PlayerData playerData)
+{
+    playerData = new PlayerData
+    {
+        id = reader.GetInt32("id"),
+        name = reader.GetString("name"),
+        lv = reader.GetInt32("level"),
+        exp = reader.GetInt32("exp"),
+        power = reader.GetInt32("power"),
+        coin = reader.GetInt32("coin"),
+        diamond = reader.GetInt32("diamond"),
+        crystal = reader.GetInt32("crystal"),
+        hp = reader.GetInt32("hp"),
+        ad = reader.GetInt32("ad"),
+        ap = reader.GetInt32("ap"),
+        addef = reader.GetInt32("addef"),
+        apdef = reader.GetInt32("apdef"),
+        dodge = reader.GetInt32("dodge"),
+        pierce = reader.GetInt32("pierce"),
+        critical = reader.GetInt32("critical"),
+        guideid = reader.GetInt32("guideid"),
+        offlineTime = reader.GetInt64("offlinetime"),
+    };
+    #region StrongArr 获取数据库强化升级数据
+    string[] strongStrArr = reader.GetString("strong").Split('#');
+    int[] _strongArr = new int[6];
+    for (int i = 0; i < strongStrArr.Length; i++)
+    {
+        if (strongStrArr[i] == "") continue;
+        if (int.TryParse(strongStrArr[i], out int starLv))
+            _strongArr[i] = starLv;
+        else PECommon.Log("Parse strong Data Error", LogType.Error);
+    }
+    playerData.strongArr = _strongArr;
+    #endregion
+    #region TaskRewardArr 获取数据库里的任务奖励数据
+    string[] taskRewardStrArr = reader.GetString("taskreward").Split('#');
+    playerData.taskRewardArr = new string[6];
+    for (int i = 0; i < taskRewardStrArr.Length; i++)
+    {
+        if (taskRewardStrArr[i] != "")
+        {
+            if (taskRewardStrArr[i].Length < 5) throw new Exception("DataError");
+            else playerData.taskRewardArr[i] = taskRewardStrArr[i];
+        }
+    }
+    #endregion
+}
+2、InsertNewAcctData()里
+（1）数据库的连接语句里，新增任务奖励数据的taskreward属性
+try
+{
+    MySqlCommand cmd = new MySqlCommand("insert into account set acct=@acct,pass=@pass,name=@name,"
+        + "level=@level,exp=@exp,power=@power,coin=@coin,diamond=@diamond,crystal=@crystal,"
+        + "hp=@hp,ad=@ad,ap=@ap,addef=@addef,apdef=@apdef,dodge=@dodge,pierce=@pierce,"
+        + "critical=@critical,guideid=@guideid,strong=@strong,offlinetime = @offlinetime,"
+        +"taskreward=@taskreward", SqlConnection);
+    ... ...
+}
+（2）插入数据操作里，任务奖励的数据在服务器里的是string数组，转化为字符串插入数据库
+try
+{
+    ... ...
+    #region 任务奖励
+    string taskRewardInfo = "";
+    for (int i = 0; i < pData.taskRewardArr.Length; i++)
+    {
+        taskRewardInfo += pData.taskRewardArr[i];
+        taskRewardInfo += "#";
+    }
+    cmd.Parameters.AddWithValue("taskreward", taskRewardInfo);
+    #endregion
+    ... ...
+}
+3、UpdatePlayerData里
+同InsertNewAcctData()里数据库的连接语句和插入数据操作里，新增对任务奖励数据的数据插入
+try
+{
+    MySqlCommand cmd = new MySqlCommand( "update account set name=@name,level=@level,"
++"exp=@exp,power=@power,coin=@coin,diamond=@diamond,crystal=@crystal,hp=@hp,"
++"ad=@ad,ap=@ap,addef=@addef,apdef=@apdef,dodge=@dodge,pierce=@pierce,"
++"critical=@critical,guideid=@guideid,strong=@strong,offlinetime = @offlinetime,"
++"taskreward=@taskreward where id =@id", SqlConnection);
+    ... ...
+    #region 任务奖励
+    string taskRewardInfo = "";
+    for (int i = 0; i < playerData.taskRewardArr.Length; i++)
+    {
+        taskRewardInfo += playerData.taskRewardArr[i];
+        taskRewardInfo += "#";
+    }
+    cmd.Parameters.AddWithValue("taskreward", taskRewardInfo);
+    #endregion
+    ... ...
+}
+
+六、运行，注册新账号测试
+由于数据库字段更新，这里运行前把数据库清空。
+
+

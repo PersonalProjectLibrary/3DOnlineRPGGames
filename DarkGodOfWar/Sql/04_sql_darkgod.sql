@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50617
 File Encoding         : 65001
 
-Date: 2024-10-21 00:38:47
+Date: 2024-10-20 22:16:37
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -43,9 +43,4 @@ CREATE TABLE `account` (
   `offlinetime` bigint(11) NOT NULL,
   `taskreward` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Records of account
--- ----------------------------
-INSERT INTO `account` VALUES ('5', '123', '335', '苏兰雅', '1', '0', '150', '5000', '500', '500', '2000', '275', '265', '67', '43', '7', '5', '2', '1001', '0#0#0#0#0#0#', '1729442051908', '1|0|0#2|0|0#3|0|0#4|0|0#5|0|0#6|0|0#');
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;

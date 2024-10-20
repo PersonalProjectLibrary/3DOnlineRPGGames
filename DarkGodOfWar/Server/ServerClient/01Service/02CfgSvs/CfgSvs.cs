@@ -39,7 +39,7 @@ public class CfgSvs
         PECommon.Log("CfgSvs Init Done.");
     }
 
-    #region Task Reward Cfg And Data：任务奖励数据配置
+    #region 任务奖励配置文件获取解析
     /// <summary>
     /// 任务奖励_任务固定数据
     /// </summary>
