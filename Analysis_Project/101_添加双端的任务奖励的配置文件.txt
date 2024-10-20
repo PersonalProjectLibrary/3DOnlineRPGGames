@@ -1,0 +1,55 @@
+
+
+
+一、配置与拆分任务奖励系统的数据结构
+分析任务条目：
+1、任务名字、任务奖励是固定的，可以配置到表格数据里；
+2、任务的进度、任务完成几次、任务奖励是否被领取是玩家操控的；这里要进行数据分离下；
+
+二、添加读取双端的任务奖励的配置文件
+1、客户端添加数据配置
+设置Assets/Scriptsd/Common里的BaseData.cs里添加任务奖励的配置类
+（1）任务的固定数据：任务名字、任务奖励，任务要完成几次；
+public class TaskRewardCfg : BaseData<TaskRewardCfg>// 任务奖励_任务固定数据配置
+{
+    public string taskName;// 任务名称
+    public int count;// 任务计数-需要完成次数
+    public int exp;// 任务奖励-经验值
+    public int coin;// 任务奖励-金币
+}
+
+（2）记录某一任务里的任务状态：是否被领取奖励，任务进度；
+public class TaskRewardData : BaseData<TaskRewardData>// 任务奖励_任务状态数据
+{
+    public int prgs;// 任务完成进度-已完成多少次
+    public bool taked;// 任务奖励是否被领取
+}
+
+2、客户端添加配置文件
+（1）这里直接使用课程项目里提供的taskreward.xml配置文件
+（2）这里把相关的excel和xml文件放到"GameResources/ResConfigs/任务奖励系统的配置文件"文件里做备份
+（3）将taskreward.xml配置文件放到Unity工程的Assets/Resources/ResConfigs文件夹里
+
+3、服务器上添加配置数据
+根据客户端BaseData.cs里任务奖励的TaskReward配置数据类设置，
+对照着设置服务器上任务奖励的配置数据类
+（1）在CfgSvs.cs的脚本里添加任务奖励的配置数据类
+class TaskRewardCfg{}，class TaskRewardData{}
+
+（2）在CfgSvs.cs类里参考自动引导配置设置，设置任务奖励的配置设置，读取配置文件
+taskRewardCfgDic，taskRewardDataDic，
+InitTaskRewardCfg()，GetTaskRewardCfg()，GetTaskRewardData()；
+
+（3）在CfgSvs.cs的Init()里对任务奖励进行初始化
+public void Init()
+{
+    ... ...
+    InitTaskRewardCfg();
+    PECommon.Log("CfgSvs Init Done.");
+}
+
+
+
+
+
+

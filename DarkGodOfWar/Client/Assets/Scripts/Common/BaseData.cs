@@ -23,6 +23,47 @@ public class BaseData<T>
     public int ID;
 }
 
+#region Task Reward Cfg And Data：任务奖励数据配置
+/// <summary>
+/// 任务奖励_任务固定数据配置
+/// </summary>
+public class TaskRewardCfg : BaseData<TaskRewardCfg>
+{
+    /// <summary>
+    /// 任务名称
+    /// </summary>
+    public string taskName;
+    /// <summary>
+    /// 任务计数-需要完成次数
+    /// </summary>
+    public int count;
+    /// <summary>
+    /// 任务奖励-经验值
+    /// </summary>
+    public int exp;
+    /// <summary>
+    /// 任务奖励-金币
+    /// </summary>
+    public int coin;
+}
+
+/// <summary>
+/// 任务奖励_任务状态数据
+/// </summary>
+public class TaskRewardData : BaseData<TaskRewardData>
+{
+    /// <summary>
+    /// 任务完成进度-已完成多少次
+    /// </summary>
+    public int prgs;
+    /// <summary>
+    /// 任务奖励是否被领取
+    /// </summary>
+    public bool taked;
+}
+
+#endregion
+
 /// <summary>
 /// 主城地图角色初始化的配置表数据类
 /// </summary>

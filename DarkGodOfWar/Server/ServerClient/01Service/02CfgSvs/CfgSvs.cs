@@ -35,8 +35,74 @@ public class CfgSvs
     {
         InitGuideCfg();
         InitStrongCfg();
+        InitTaskRewardCfg();
         PECommon.Log("CfgSvs Init Done.");
     }
+
+    #region Task Reward Cfg And Data：任务奖励数据配置
+    /// <summary>
+    /// 任务奖励_任务固定数据
+    /// </summary>
+    private Dictionary<int, TaskRewardCfg> taskRewardCfgDic = new Dictionary<int, TaskRewardCfg>();
+    
+    /// <summary>
+    /// 任务奖励_任务状态数据
+    /// </summary>
+    private Dictionary<int, TaskRewardData> taskRewardDataDic = new Dictionary<int, TaskRewardData>();
+    
+    /// <summary>
+    /// 任务引导的配置数据读取
+    /// </summary>
+    private void InitTaskRewardCfg()
+    {
+        XmlDocument doc = new XmlDocument();
+        doc.Load(@"E:\GitLibrary\PersonalProjectLibrary\3DOnlineRPGGames\DarkGodOfWar\Client\Assets\Resources\ResConfigs\taskreward.xml");
+        XmlNodeList nodeList = doc.SelectSingleNode("root").ChildNodes;
+        for (int i = 0; i < nodeList.Count; i++)
+        {
+            XmlElement element = nodeList[i] as XmlElement;
+            if (element.GetAttributeNode("ID") == null) continue;
+            int id = Convert.ToInt32(element.GetAttributeNode("ID").InnerText);
+            TaskRewardCfg trc = new TaskRewardCfg { ID = id };
+            foreach (XmlElement e in nodeList[i].ChildNodes)
+            {
+                switch (e.Name)
+                {
+                    case "coin": trc.coin = int.Parse(e.InnerText); break;
+                    case "exp": trc.exp = int.Parse(e.InnerText); break;
+                    case "count": trc.count = int.Parse(e.InnerText); break;
+                }
+            }
+            taskRewardCfgDic.Add(id, trc);
+        }
+        PECommon.Log("TaskCfg Init Done");
+    }
+    
+    /// <summary>
+    /// 获取任务奖励_任务固定数据
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public TaskRewardCfg GetTaskRewardCfg(int id)
+    {
+        TaskRewardCfg trc = null;
+        if (taskRewardCfgDic.TryGetValue(id, out trc)) return trc;
+        return null;
+    }
+    
+    /// <summary>
+    /// 获取任务奖励_任务状态数据
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public TaskRewardData GetTaskRewardData(int id)
+    {
+        TaskRewardData trd = null;
+        if (taskRewardDataDic.TryGetValue(id, out trd)) return trd;
+        return null;
+    }
+    
+    #endregion
 
     #region 强化升级配置文件获取解析
     /// <summary>
@@ -162,6 +228,43 @@ public class BaseData<T>
     /// </summary>
     public int ID;
 }
+
+#region Task Reward Cfg And Data：任务奖励数据配置
+/// <summary>
+/// 任务奖励_任务固定数据
+/// </summary>
+public class TaskRewardCfg : BaseData<TaskRewardCfg>
+{
+    /// <summary>
+    /// 任务计数-需要完成次数
+    /// </summary>
+    public int count;
+    /// <summary>
+    /// 任务奖励-经验值
+    /// </summary>
+    public int exp;
+    /// <summary>
+    /// 任务奖励-金币
+    /// </summary>
+    public int coin;
+}
+
+/// <summary>
+/// 任务奖励_任务状态数据
+/// </summary>
+public class TaskRewardData : BaseData<TaskRewardData>
+{
+    /// <summary>
+    /// 任务完成进度-已完成多少次
+    /// </summary>
+    public int prgs;
+    /// <summary>
+    /// 任务奖励是否被领取
+    /// </summary>
+    public bool taked;
+}
+
+#endregion
 
 /// <summary>
 /// 强化升级配置表
