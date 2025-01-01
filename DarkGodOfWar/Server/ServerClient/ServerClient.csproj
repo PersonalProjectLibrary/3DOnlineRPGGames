@@ -45,6 +45,7 @@
     <Compile Include="02System\04ChatSys\WorldChatSys.cs" />
     <Compile Include="02System\05BuySys\BuySys.cs" />
     <Compile Include="02System\06PowerSys\PowerSys.cs" />
+    <Compile Include="02System\07TaskSys\TaskRewardSys.cs" />
     <Compile Include="03Cache\CacheSvc.cs" />
     <Compile Include="04DataBase\DBManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -72,5 +73,6 @@
       <Name>PEProtocol</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
