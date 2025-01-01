@@ -1,0 +1,51 @@
+
+读取任务奖励的配置数据
+
+1、PathDefine.cs里添加任务奖励配置文件的读取路径：
+public const string TaskRewardCfg = "ResConfigs/taskreward";
+
+2、ResService.cs里添加对任务奖励配置数据的解析，并在InitService()里执行对配置文件的读取
+可参考自动引导配置文件的解析函数，添加解析任务奖励配置数据的相关函数、字典
+注：前面已经在BaseData.cs里添加任务奖励配置表相关的数据类了
+public void InitService()
+{
+    ... ...
+    InitTaskRewardCfg(PathDefine.TaskRewardCfg);
+}
+
+private Dictionary<int, TaskRewardCfg> taskRewardDic = new Dictionary<int, TaskRewardCfg>();
+private void InitTaskRewardCfg(string path)
+{
+    TextAsset nameXml = Resources.Load<TextAsset>(path);
+    if (!nameXml) PECommon.Log("Xml file:" + path + "not exist!", LogType.Error);
+    else
+    {
+        XmlDocument doc = new XmlDocument();
+        doc.LoadXml(nameXml.text);
+        XmlNodeList nodeList = doc.SelectSingleNode("root").ChildNodes;
+        for (int i = 0; i < nodeList.Count; i++)
+        {
+            XmlElement element = nodeList[i] as XmlElement;
+            if (element.GetAttributeNode("ID") == null) continue;
+            int id = Convert.ToInt32(element.GetAttributeNode("ID").InnerText);
+            TaskRewardCfg trc = new TaskRewardCfg { ID = id };
+            foreach (XmlElement e in nodeList[i].ChildNodes)
+            {
+                switch (e.Name)
+                {
+                    case "taskName": trc.taskName = e.InnerText; break;
+                    case "count": trc.count = int.Parse(e.InnerText); break;
+                    case "coin": trc.coin = int.Parse(e.InnerText); break;
+                    case "exp": trc.exp = int.Parse(e.InnerText); break;
+                }
+            }
+            taskRewardDic.Add(id, trc);
+        }
+    }
+}
+public TaskRewardCfg GetTaskRewardCfgData(int id)
+{
+    TaskRewardCfg trc = null;
+    taskRewardDic.TryGetValue(id, out trc);
+    return trc;
+}

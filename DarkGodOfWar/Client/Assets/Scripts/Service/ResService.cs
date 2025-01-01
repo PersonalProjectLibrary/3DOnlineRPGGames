@@ -33,6 +33,7 @@ public class ResService : MonoBehaviour
         InitMcMapCfg(PathDefine.McMapCfg);
         InitGuideCfg(PathDefine.TaskGuideCfg);
         InitStrongCfg(PathDefine.EqptStrongCfg);
+        InitTaskRewardCfg(PathDefine.TaskRewardCfg);
     }
 
     #region Load Resource
@@ -432,6 +433,57 @@ public class ResService : MonoBehaviour
         }
         return val;
     }
+    #endregion
+
+    #region 主城_任务奖励配置解析——taskreward.xml
+    /// <summary>
+    /// 任务奖励的字典(任务ID，奖励配置文件)
+    /// </summary>
+    private Dictionary<int, TaskRewardCfg> taskRewardDic = new Dictionary<int, TaskRewardCfg>();
+    /// <summary>
+    /// 任务奖励配置文件解析
+    /// </summary>
+    private void InitTaskRewardCfg(string path)
+    {
+        TextAsset nameXml = Resources.Load<TextAsset>(path);
+        if (!nameXml) PECommon.Log("Xml file:" + path + "not exist!", LogType.Error);
+        else
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(nameXml.text);
+            XmlNodeList nodeList = doc.SelectSingleNode("root").ChildNodes;
+            for (int i = 0; i < nodeList.Count; i++)
+            {
+                XmlElement element = nodeList[i] as XmlElement;
+                if (element.GetAttributeNode("ID") == null) continue;
+                int id = Convert.ToInt32(element.GetAttributeNode("ID").InnerText);
+                TaskRewardCfg trc = new TaskRewardCfg { ID = id };
+                foreach (XmlElement e in nodeList[i].ChildNodes)
+                {
+                    switch (e.Name)
+                    {
+                        case "taskName": trc.taskName = e.InnerText; break;
+                        case "count": trc.count = int.Parse(e.InnerText); break;
+                        case "coin": trc.coin = int.Parse(e.InnerText); break;
+                        case "exp": trc.exp = int.Parse(e.InnerText); break;
+                    }
+                }
+                taskRewardDic.Add(id, trc);
+            }
+        }
+    }
+    /// <summary>
+    /// 获取任务奖励的配置文件
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public TaskRewardCfg GetTaskRewardCfgData(int id)
+    {
+        TaskRewardCfg trc = null;
+        taskRewardDic.TryGetValue(id, out trc);
+        return trc;
+    }
+    
     #endregion
 
     #endregion

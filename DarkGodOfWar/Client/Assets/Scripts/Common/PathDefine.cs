@@ -31,7 +31,10 @@ public class PathDefine
     /// 主城_强化升级配置文件
     /// </summary>
     public const string EqptStrongCfg = "ResConfigs/eqptstrong";
-
+    /// <summary>
+    /// 主程_任务奖励配置文件
+    /// </summary>
+    public const string TaskRewardCfg = "ResConfigs/taskreward";
     #endregion
 
     #region PlayerPrefab Path：角色预制体的路径
