@@ -654,7 +654,7 @@ GameObject:
   - component: {fileID: 3028649086791285129}
   - component: {fileID: 5652961155428974045}
   m_Layer: 0
-  m_Name: btnTask
+  m_Name: btnReward
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -926,7 +926,7 @@ GameObject:
   - component: {fileID: 713656209493172485}
   - component: {fileID: 3129082358885750691}
   m_Layer: 0
-  m_Name: ItemTask
+  m_Name: ItemTReward
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

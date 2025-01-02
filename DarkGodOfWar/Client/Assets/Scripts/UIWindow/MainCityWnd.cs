@@ -172,7 +172,7 @@ public class MainCityWnd : WindowRoot
     public void ClickTaskBtn()
     {
         audioService.PlayUIAudio(Constants.UiOpenPage);
-        MainCitySystem.Instance.OpenTaskWnd();
+        MainCitySystem.Instance.OpenTRewardWnd();
     }
 
     /// <summary>

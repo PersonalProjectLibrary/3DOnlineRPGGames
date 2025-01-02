@@ -47,7 +47,7 @@ public class MainCitySystem : SystemRoot
     /// <summary>
     /// 任务奖励界面
     /// </summary>
-    public TaskWnd taskWnd;
+    public TRewardWnd tRewardWnd;
 
     /// <summary>
     /// 初始化主城系统
@@ -98,7 +98,7 @@ public class MainCitySystem : SystemRoot
     /// <summary>
     /// 打开任务奖励界面
     /// </summary>
-    public void OpenTaskWnd() { taskWnd.SetWndState(); }
+    public void OpenTRewardWnd() { tRewardWnd.SetWndState(); }
 
     /// <summary>
     /// 处理服务器回应任务奖励请求的消息

@@ -45,6 +45,14 @@ public class PathDefine
 
     #endregion
 
+    #region TaskRewardItem Prefab Path：任务奖励条目预制体的路径
+    /// <summary>
+    /// 任务奖励条目
+    /// </summary>
+    public const string TRewardItemPrefab = "PrefabUI/ItemTReward";
+
+    #endregion
+
     #region Chat Image Path：聊天窗口按钮背景
     /// <summary>
     /// 聊天按钮选中时图片

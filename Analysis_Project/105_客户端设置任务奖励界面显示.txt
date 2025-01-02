@@ -1,0 +1,129 @@
+
+设置客户端任务奖励界面UI显示
+
+任务奖励数据是一个字符串数组。如：2|0|0#3|1|0#6|0|0#7|1|1#8|1|1#9|0|0#
+每个任务数据：任务id号，任务进度，是否被领取
+
+一、获取玩家数据，并对玩家的任务奖励数据进行解析
+1、获取玩家数据
+TaskWnd.cs里添加对玩家数据的引用
+private PlayerData pData = null;
+protected override void InitWnd()
+{
+    base.InitWnd();
+    pData = GameRoot.Instance.PlayerData;
+    RefreshUI();
+}
+2、根据玩家数据，记录玩家的任务奖励信息
+（1）使用List记录任务奖励信息
+（2）对任务奖励进行排序，在界面刷新时更新玩家的任务奖励信息列表
+这里简单只分为：未领取奖励的，已领取奖励；
+这里将列表排序的功能单独放到一个函数里，就不直接放到RefreshUI（），使各个功能清晰明了；
+private List<TaskRewardData> taskRewardList = new List<TaskRewardData>();
+private void RefreshUI() { SortTRDataList(); }
+private void SortTRDataList()// 对任务奖励数据进行排序
+{
+    taskRewardList.Clear();
+    List<TaskRewardData> todoList = new List<TaskRewardData>();//待完成的任务
+    List<TaskRewardData> doneList = new List<TaskRewardData>();//已经完成的任务
+    for(int i = 0; i < pData.taskRewardArr.Length; i++)//遍历解析玩家的任务奖励数据
+    {
+        string[] taskInfo = pData.taskRewardArr[i].Split('|');
+        TaskRewardData trd = new TaskRewardData
+        {
+            ID = int.Parse(taskInfo[0]),
+            prgs = int.Parse(taskInfo[1]),
+            taked = taskInfo[2].Equals("1")//0是没被领取，1是被领取
+        };
+        if (trd.taked) doneList.Add(trd);
+        else todoList.Add(trd);
+    }
+    taskRewardList.AddRange(todoList);
+    taskRewardList.AddRange(doneList);
+}
+
+二、设置在界面上显示的任务奖励条目
+1、整理相关资源重命名
+这里把预制体ItemTask重命名为ItemTReward，其中的btnTask对象重命名为btnReward
+把TaskWnd.prefab重命名TRewardWnd.prefab
+把TaskWnd.cs重命名为TRewardWnd.cs
+把MainCitySystem.cs里对TRewardWnd.cs的引用名taskWnd，重命名为tRewardWnd；
+MainCitySystem.cs里OpenTaskWnd()方法重命名为OpenTRewardWnd()
+注意任务奖励界面和相关脚本重命名后，主场景GameRoot身上的MainCitySystem脚本，
+重新绑定丢失的任务奖励界面/脚本对对象
+
+2、在PathDefine.cs里添加玩家任务奖励条目的预制体位置，
+public const string TRewardItemPrefab = "PrefabUI/ItemTReward";
+
+3、在WindowRoot.cs里进行封装根据父物体查找物体的方法，方便后面查找子物体使用公共方法
+protected Transform FindAndGetTrans(Transform pTrans, string cName)// 获取(子)物体
+{
+    return pTrans != null ? pTrans.Find(cName) :transform.Find(cName);
+}
+
+4、在TRewardWnd.cs设置实例化出来的奖励条目Item
+//奖励条目的父物体
+public Transform itemContentTrans;
+//每个任务奖励条目里的奖励按钮动态绑定领取奖励的函数
+private void ClickRewardBtn(string btnName)//点击奖励按钮
+{
+    //TODO 发送网络消息
+    Debug.Log("Click RewardBtn："+ btnName);
+}
+//设置界面上的所有任务奖励条目
+private void ShowAllTRItem()
+{
+    int c = itemContentTrans.childCount;//清除旧条目
+    for (int i = c; i > 0; i--) Destroy(itemContentTrans.GetChild(i - 1).gameObject);
+    for (int i = 0; i < taskRewardList.Count; i++)//生成新条目
+    {
+        GameObject item = resService.LoadPrefab(PathDefine.TRewardItemPrefab);
+        item.transform.SetParent(itemContentTrans);
+        item.transform.localPosition = Vector3.zero;
+        item.transform.localScale = Vector3.one;
+        item.name = "TRewardItem_" + i;
+        TaskRewardData trd = taskRewardList[i];//根据奖励id找到对应配置信息cfg
+        TaskRewardCfg trc = resService.GetTaskRewardCfgData(trd.ID);
+        SetTRItem(item.transform, trd, trc);
+    }
+}
+//设置具体某个任务奖励条目
+private void SetTRItem(Transform item, TaskRewardData trd, TaskRewardCfg trc)
+{
+    SetText(FindAndGetTrans(item, "txtName"), trc.taskName);
+    SetText(FindAndGetTrans(item, "txtPrg"), trd.prgs + "/" + trc.count);
+    SetText(FindAndGetTrans(item, "txtExp"), "奖励：    经验" + trc.exp);
+    SetText(FindAndGetTrans(item, "txtCoin"), "金币" + trc.coin);
+    Image imgPrg = FindAndGetTrans(item, "prgBar/prgVal").GetComponent<Image>();
+    float prgVal = trd.prgs * 0.1f / trc.count;
+    imgPrg.fillAmount = prgVal;
+    Button btnTake = FindAndGetTrans(item, "btnReward").GetComponent<Button>();
+    Transform isTakeImg = FindAndGetTrans(item, "imgComp");
+    btnTake.onClick.AddListener(() => { ClickRewardBtn(item.name); });
+    if (trd.taked)
+    {
+        SetActive(isTakeImg);
+        btnTake.interactable = false;
+    }
+    else
+    {
+        SetActive(isTakeImg, false);
+        if (trd.prgs == trc.count) btnTake.interactable = true;
+        else btnTake.interactable = true;
+    }
+}
+//在界面上加载任务奖励条目
+private void RefreshUI()
+{
+    SortTRDataList();
+    ShowAllTRItem();
+}
+
+三、运行测试
+任务奖励界面及其任务奖励条目正常显示加载
+
+
+
+
+
+

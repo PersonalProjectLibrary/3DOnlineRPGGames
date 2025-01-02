@@ -197,8 +197,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 74354642}
   m_HandleRect: {fileID: 74354641}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.6730769
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -385,7 +385,7 @@ GameObject:
   - component: {fileID: 1239713288}
   - component: {fileID: 1239713289}
   m_Layer: 0
-  m_Name: Scroll View
+  m_Name: TRewardItems
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -643,7 +643,7 @@ GameObject:
   - component: {fileID: 2137188403277147264}
   - component: {fileID: 8485227799786704621}
   m_Layer: 0
-  m_Name: TaskWnd
+  m_Name: TRewardWnd
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -683,6 +683,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d76d2c1118cc2d459609a5efe4defa5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  itemContentTrans: {fileID: 966658598}
 --- !u!1 &2137188403800411413
 GameObject:
   m_ObjectHideFlags: 0

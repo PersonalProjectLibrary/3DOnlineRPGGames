@@ -75,16 +75,59 @@ public class WindowRoot : MonoBehaviour
 
     #endregion
 
-    #region Tools Functions：设置物体的显掩、设置文本内容、获取组件、设置图片
-    /// <summary>
-    /// 设置图片
-    /// </summary>
-    /// <param name="img"></param>
-    /// <param name="path"></param>
-    protected void SetSprite(Image img,string path)
+    #region Click Evts：点击、触屏事件
+    protected void OnClick(GameObject go, Action<object> callback, object args)
     {
-        Sprite sp = resService.LoadSprite(path, true);//加载图片
-        img.sprite = sp;//替换图片
+        PEListener listener = GetOrAddComponent<PEListener>(go);
+        listener.onClick = callback;
+        listener.args = args;
+    }
+
+    /// <summary>
+    /// UI触控按下
+    /// </summary>
+    /// <param name="go">触控的物体</param>
+    /// <param name="callback">回调事件</param>
+    protected void OnClickDown(GameObject go, Action<PointerEventData> callback)
+    {
+        PEListener listener = GetOrAddComponent<PEListener>(go);
+        listener.onClickDown = callback;
+    }
+
+    /// <summary>
+    ///  UI触控拖拽
+    /// </summary>
+    /// <param name="go"></param>
+    /// <param name="callback"></param>
+    protected void OnDrag(GameObject go, Action<PointerEventData> callback)
+    {
+        PEListener listener = GetOrAddComponent<PEListener>(go);
+        listener.onDrag = callback;
+    }
+
+    /// <summary>
+    ///  UI触控松开
+    /// </summary>
+    /// <param name="go"></param>
+    /// <param name="callback"></param>
+    protected void OnClickUp(GameObject go, Action<PointerEventData> callback)
+    {
+        PEListener listener = GetOrAddComponent<PEListener>(go);
+        listener.onClickUp = callback;
+    }
+
+    #endregion
+
+    #region Tools Functions：获取(子)物体，获取组件，设置图片，设置物体的显掩，设置文本内容
+    /// <summary>
+    /// 获取(子)物体
+    /// </summary>
+    /// <param name="pTrans">父物体</param>
+    /// <param name="cName">待查找获取的（子）物体名</param>
+    /// <returns></returns>
+    protected Transform FindAndGetTrans(Transform pTrans, string cName)
+    {
+        return pTrans != null ? pTrans.Find(cName) :transform.Find(cName);
     }
 
     /// <summary>
@@ -99,6 +142,17 @@ public class WindowRoot : MonoBehaviour
         T t = go.GetComponent<T>();
         if (t == null) t = go.AddComponent<T>();
         return t;
+    }
+
+    /// <summary>
+    /// 设置图片
+    /// </summary>
+    /// <param name="img"></param>
+    /// <param name="path"></param>
+    protected void SetSprite(Image img,string path)
+    {
+        Sprite sp = resService.LoadSprite(path, true);//加载图片
+        img.sprite = sp;//替换图片
     }
 
     /// <summary>
@@ -157,49 +211,6 @@ public class WindowRoot : MonoBehaviour
         SetText(trans.GetComponent<Text>(), num);
     }
 
-    #endregion
-
-    #region Click Evts：点击、触屏事件
-    protected void OnClick(GameObject go, Action<object> callback,object args)
-    {
-        PEListener listener = GetOrAddComponent<PEListener>(go);
-        listener.onClick = callback;
-        listener.args = args;
-    }
-
-    /// <summary>
-    /// UI触控按下
-    /// </summary>
-    /// <param name="go">触控的物体</param>
-    /// <param name="callback">回调事件</param>
-    protected void OnClickDown(GameObject go,Action<PointerEventData> callback)
-    {
-        PEListener listener = GetOrAddComponent<PEListener>(go);
-        listener.onClickDown = callback;
-    }
-    
-    /// <summary>
-    ///  UI触控拖拽
-    /// </summary>
-    /// <param name="go"></param>
-    /// <param name="callback"></param>
-    protected void OnDrag(GameObject go, Action<PointerEventData> callback)
-    {
-        PEListener listener = GetOrAddComponent<PEListener>(go);
-        listener.onDrag = callback;
-    }
-    
-    /// <summary>
-    ///  UI触控松开
-    /// </summary>
-    /// <param name="go"></param>
-    /// <param name="callback"></param>
-    protected void OnClickUp(GameObject go, Action<PointerEventData> callback)
-    {
-        PEListener listener = GetOrAddComponent<PEListener>(go);
-        listener.onClickUp = callback;
-    }
-    
     #endregion
 
 }
