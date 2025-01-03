@@ -94,7 +94,7 @@ public class MainCitySystem : SystemRoot
         if(mainCityWnd.gameObject.activeSelf) mainCityWnd.RefreshUI();
     }
 
-    #region Task Wnd：任务奖励界面设置
+    #region TaskReward Wnd：任务奖励界面设置
     /// <summary>
     /// 打开任务奖励界面
     /// </summary>
@@ -104,7 +104,10 @@ public class MainCitySystem : SystemRoot
     /// 处理服务器回应任务奖励请求的消息
     /// </summary>
     /// <param name="msg"></param>
-    public void RspTask(GameMsg msg) { }
+    public void RspTReward(GameMsg msg)
+    {
+        //TODO
+    }
 
     #endregion
 

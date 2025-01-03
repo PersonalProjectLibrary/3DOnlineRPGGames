@@ -89,7 +89,7 @@ public void ReqTaskReward(MsgPack pack)
     //TODO
 }
 
-四、在NetSvc.cs网络服务添加对任务奖励及新增错误码的分支处理
+四、在NetSvc.cs网络服务添加对任务奖励消息的分支处理
 1、HandOutMsg()里新增任务奖励请求消息的分支处理
 private void HandOutMsg(MsgPack msgPack)
 {

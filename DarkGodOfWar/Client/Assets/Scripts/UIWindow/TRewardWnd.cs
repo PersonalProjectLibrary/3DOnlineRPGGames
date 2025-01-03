@@ -48,8 +48,22 @@ public class TRewardWnd : WindowRoot
     /// <param name="btnName"></param>
     private void ClickRewardBtn(string btnName)
     {
-        //TODO 发送网络消息
-        Debug.Log("Click RewardBtn：" + btnName);
+        //点击的是哪个Item
+        string[] nameArr = btnName.Split('_');
+        int index = int.Parse(nameArr[1]);
+        //发送网络消息
+        GameMsg msg = new GameMsg
+        {
+            cmd = (int)CMD.ReqTaskReward,
+            reqTaskReward = new ReqTaskReward
+            {
+                rewardid = taskRewardList[index].ID
+            }
+        };
+        netService.SendMsg(msg);
+        //根据配置文件信息，显示成功领取奖励的提示
+        TaskRewardCfg trc = resService.GetTaskRewardCfgData(taskRewardList[index].ID);
+        GameRoot.AddTips(Constants.SetTxtColor("获得奖励：", TxtColor.Blue) + Constants.SetTxtColor(" 金币 + " + trc.coin + " 经验 + " + trc.exp, TxtColor.Green));
     }
 
     /// <summary>

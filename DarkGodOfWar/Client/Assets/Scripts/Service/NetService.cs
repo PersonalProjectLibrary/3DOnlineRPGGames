@@ -111,6 +111,9 @@ public class NetService : MonoBehaviour
                     PECommon.Log("服务器数据异常", LogType.Error);
                     GameRoot.AddTips("客户端数据异常");
                     break;
+                case ErrorCode.ClientDataError:
+                    GameRoot.AddTips("客户端数据异常");
+                    break;
                 case ErrorCode.LockLevel: GameRoot.AddTips("角色等级不够"); break;
                 case ErrorCode.LockCoin: GameRoot.AddTips("金币数量不够"); break;
                 case ErrorCode.LockCrystal: GameRoot.AddTips("水晶数量不够"); break;
@@ -128,6 +131,8 @@ public class NetService : MonoBehaviour
             case CMD.PshWorldChat:MainCitySystem.Instance.PshWorldChat(msg);break;
             case CMD.RspBuy:MainCitySystem.Instance.RspBuy(msg);break;
             case CMD.PshPower:MainCitySystem.Instance.PshPower(msg);break;
+            case CMD.RspTaskReward:MainCitySystem.Instance.RspTReward(msg);break;
+            default:break;
         }
     }
 }

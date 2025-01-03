@@ -41,5 +41,6 @@ public class TaskRewardSys
     public void ReqTaskReward(MsgPack pack)
     {
         //TODO
+        PECommon.Log("TaskRewardSys coin：" + pack.m_Msg.reqTaskReward.rewardid);
     }
 }
