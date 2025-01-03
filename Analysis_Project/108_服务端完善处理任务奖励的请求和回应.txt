@@ -1,0 +1,104 @@
+
+服务端这里：
+任务奖励进度数据格式为class TaskRewardData{}类
+玩家数据里记录的任务奖励数据是字符串数组string[] taskRewardArr；
+无论是查找解析玩家数据的某个目标任务奖励，还是将任务奖励数据更新到玩家数据里，
+都不方便直接转换，查找；故这里新增两个方法来专门处理，方便代码管理整理；
+
+1、在TaskRewardSys.cs里新增查找玩家数据的某个任务奖励数据的函数
+public TaskRewardData GetTReward(PlayerData pData,int tRewardId)
+{
+    TaskRewardData trd = null;
+    for (int i = 0; i < pData.taskRewardArr.Length; i++)
+    {
+        string[] taskInfo = pData.taskRewardArr[i].Split('|');//1|0|0
+        if (int.Parse(taskInfo[0]) == tRewardId)
+        {
+            trd = new TaskRewardData
+            {
+                ID = tRewardId,
+                prgs = int.Parse(taskInfo[1]),
+                taked = taskInfo[2].Equals("1"),
+            };
+            break;
+        }
+    }
+    return trd;
+}
+
+2、在TaskRewardSys.cs里新增更新玩家数据的任务奖励值的函数
+public void TRewardToPlayer(PlayerData pData,TaskRewardData tRData)
+{
+    string res = tRData.ID + "|" + tRData.prgs + "|" + (tRData.taked ? 1 : 0);
+    int index = -1;
+    for (int i = 0; i < pData.taskRewardArr.Length; i++)
+    {
+        string[] taskInfo = pData.taskRewardArr[i].Split('|');
+        if (int.Parse(taskInfo[0]) == tRData.ID)
+        {
+            index = i;
+            break;
+        }
+    }
+    pData.taskRewardArr[index] = res;
+}
+
+3、补充说明：
+（1）领取奖励，会有经验变化，也可能导致等级变化；
+前面有把 经验增加后可能导致等级数据变化的 处理函数AddExpAndUpdateLv()，放到PECommon.cs脚本里，
+更新数据，涉及到经验等级数据变化，可以直接使用该方法；
+（2）在不满足领取奖励条件时，返回客户端数据有问题的错误码；
+客户端里处理错误码时，服务器控制台也数据错误码的提示，之前只是客户端弹窗提示；
+这里更新下客户端的NetService.cs里ProcessMsg里对ClientDataError错误码的处理
+public void ProcessMsg(GameMsg msg)
+{
+    if (msg.err != (int)ErrorCode.None)//返回的是错误信息
+    {
+        switch ((ErrorCode)msg.err)
+        {
+            ... ...
+            case ErrorCode.ClientDataError:
+                PECommon.Log("客户端数据异常", LogType.Error);
+                GameRoot.AddTips("客户端数据异常");
+                break;
+            ... ...
+        }
+        return;
+    }
+    ... ...
+}
+
+4、完成服务器对客户端任务奖励请求的处理
+public void ReqTaskReward(MsgPack pack)
+{
+    ReqTaskReward data = pack.m_Msg.reqTaskReward;
+    GameMsg msg = new GameMsg { cmd = (int)CMD.RspTaskReward };
+    PlayerData pData = cacheSvc.GetPlayDataBySession(pack.m_Session);
+    TaskRewardCfg trc = cfgSvs.GetTaskRewardCfg(data.rewardid);
+    TaskRewardData trd = GetTReward(pData, data.rewardid);
+    if (trd.prgs == trc.count && !trd.taked)//安全校验，满足领取条件
+    {
+        pData.coin += trc.coin;
+        PECommon.AddExpAndUpdateLv(pData, trc.exp);
+        trd.taked = true;
+        TRewardToPlayer(pData, trd);//更新玩家的任务进度数据
+                                      //更新数据库
+        if (!cacheSvc.UpdatePlayerData(pData.id, pData))
+            msg.err = (int)ErrorCode.UpdateDBaseError;
+        else
+        {
+            RspTaskReward rspTaskReward = new RspTaskReward
+            {
+                coin = pData.coin,
+                lv = pData.lv,
+                exp = pData.exp,
+                taskArr = pData.taskRewardArr,
+            };
+            msg.rspTaskReward = rspTaskReward;
+        }
+    }
+    else msg.err = (int)ErrorCode.ClientDataError;//客户端数据不满领取奖励条件
+    pack.m_Session.SendMsg(msg);//将数据返回客户端
+}
+
+

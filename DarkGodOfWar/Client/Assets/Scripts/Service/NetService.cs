@@ -112,6 +112,7 @@ public class NetService : MonoBehaviour
                     GameRoot.AddTips("客户端数据异常");
                     break;
                 case ErrorCode.ClientDataError:
+                    PECommon.Log("客户端数据异常", LogType.Error);
                     GameRoot.AddTips("客户端数据异常");
                     break;
                 case ErrorCode.LockLevel: GameRoot.AddTips("角色等级不够"); break;
