@@ -1,0 +1,105 @@
+
+一、GameMsg.cs里添加任务奖励的请求和回应
+1、根据任务奖励列表推算
+（1）领取的奖励：金币和经验值变化
+（2）任务奖励进度的数据：已完成/总共需要完成任务数变化
+即要把整个任务奖励数据返回回去
+（3）领取经验值，可能会导致等级变化，等级数据也要返回回去
+[Serializable]
+public class ReqTaskReward { public int rewardid; }
+[Serializable]
+public class RspTaskReward
+{
+    public int coin;//获得的金币奖励
+    public int exp;//获得的经验值奖励
+    public int lv;//获得奖励后当前等级
+    public string[] taskArr;//任务完成进度
+}
+
+2、添加任务奖励请求回应的相关命令号、错误码和消息包
+请求奖励时，不满足获取奖励条件，这时候给客户端返回错误码信息
+public enum ErrorCode
+{
+    ... ...
+    ClientDataError,// 客户端数据异常
+    ... ...
+}
+public enum CMD
+{
+    ... ...
+    ReqTaskReward = 210,//任务奖励请求
+    RspTaskReward = 211,//任务奖励回应
+}
+public class GameMsg : PEMsg
+{
+    public ReqTaskReward reqTaskReward;
+    public RspTaskReward rspTaskReward;
+    ... ...
+}
+
+二、将经验更新的方法放到PECommon.cs里，方法其他地方统一使用；
+领取奖励会增加经验值，可能导致角色等级变化，同任务引导里领取奖励；
+这里将任务引导的CaculateExp()放到PECommon.cs里，并重命名为AddExpAndUpdateLv()
+public class PECommon
+{
+    ... ...
+    public static void AddExpAndUpdateLv(PlayerData pData, int addExp)// 经验升级计算
+    {
+        int curLv = pData.lv;//当前级别
+        int curExp = pData.exp;//当前经验值
+        int addRestExp = addExp;//剩余经验值
+        while (true)//循环判断是否升级
+        {
+            int upNeedExp = GetExpUpValByLv(curLv) - curExp;//当前升级所需要的经验值
+            if (addRestExp >= upNeedExp)//进行升级
+            {
+                curLv += 1;//升级
+                curExp = 0;
+                addRestExp -= upNeedExp;
+            }
+            else//更新数据，结束升级
+            {
+                pData.lv = curLv;
+                pData.exp = curExp + addRestExp;
+                break;
+            }
+        }
+    }
+    ... ...
+}
+public class GuideSys
+{
+    ... ...
+    public void ReqGuide(MsgPack pack)
+    {
+        ... ...
+        if (pData.guideid == data.guideid)//确认客户端数据和玩家数据相等同步
+        {
+            ... ...
+            PECommon.AddExpAndUpdateLv(pData, guideCfg.exp);//更新玩家等级和经验值
+            ... ...
+        }
+        ... ...
+    }
+}
+
+三、TaskRewardSys.cs里添加NetSvc里分发过来的领取任务奖励消息处理的响应方法
+public void ReqTaskReward(MsgPack pack)
+{
+    //TODO
+}
+
+四、在NetSvc.cs网络服务添加对任务奖励及新增错误码的分支处理
+1、HandOutMsg()里新增任务奖励请求消息的分支处理
+private void HandOutMsg(MsgPack msgPack)
+{
+    switch ((CMD)msgPack.m_Msg.cmd)
+    {
+        ... ...
+        case CMD.ReqTaskReward:TaskRewardSys.Instance.ReqTaskReward(msgPack);break;
+        default: break;
+    }
+}
+
+五、重新生成PEProtocol.dll，运行测试
+

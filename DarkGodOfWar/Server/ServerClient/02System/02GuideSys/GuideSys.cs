@@ -62,7 +62,7 @@ public class GuideSys
             //*/
             GuideCfg guideCfg = cfgSvs.GetGuideCfg(data.guideid);//获取引导数据
             pData.coin += guideCfg.coin;//更新玩家金币数值
-            CaculateExp(pData, guideCfg.exp);//更新玩家等级和经验值
+            PECommon.AddExpAndUpdateLv(pData, guideCfg.exp);//更新玩家等级和经验值
             //根据id号，把玩家数据更新到数据库里
             if (!cacheSvc.UpdatePlayerData(pData.id, pData))
                 msg.err = (int)ErrorCode.UpdateDBaseError;
@@ -79,33 +79,5 @@ public class GuideSys
         }
         else msg.err = (int)ErrorCode.ServerDataError;
         pack.m_Session.SendMsg(msg);//将数据返回客户端
-    }
-
-    /// <summary>
-    /// 经验升级计算
-    /// </summary>
-    /// <param name="pData">玩家数据</param>
-    /// <param name="addExp">新增经验值</param>
-    private void CaculateExp(PlayerData pData,int addExp)
-    {
-        int curLv = pData.lv;//当前级别
-        int curExp = pData.exp;//当前经验值
-        int addRestExp = addExp;//剩余经验值
-        while (true)//循环判断是否升级
-        {
-            int upNeedExp = PECommon.GetExpUpValByLv(curLv) - curExp;//当前升级所需要的经验值
-            if (addRestExp >= upNeedExp)//进行升级
-            {
-                curLv += 1;//升级
-                curExp = 0;
-                addRestExp -= upNeedExp;
-            }
-            else//更新数据，结束升级
-            {
-                pData.lv = curLv;
-                pData.exp = curExp + addRestExp;
-                break;
-            }
-        }
     }
 }

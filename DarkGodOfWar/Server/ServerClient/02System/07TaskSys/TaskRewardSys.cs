@@ -33,4 +33,13 @@ public class TaskRewardSys
         cfgSvs = CfgSvs.Instance;
         PECommon.Log("TaskRewardSys Init Done.");
     }
+
+    /// <summary>
+    /// 对NetSvc里分发过来的领取任务奖励消息进行处理响应
+    /// </summary>
+    /// <param name="pack"></param>
+    public void ReqTaskReward(MsgPack pack)
+    {
+        //TODO
+    }
 }

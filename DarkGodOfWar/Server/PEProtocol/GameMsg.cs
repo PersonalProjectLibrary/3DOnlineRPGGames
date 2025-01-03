@@ -40,6 +40,10 @@ namespace PEProtocol
         /// 解决方法：强制把客户端踢下线
         ServerDataError,
         /// <summary>
+        /// 客户端数据异常
+        /// </summary>
+        ClientDataError,
+        /// <summary>
         /// 账号已经上线(重复登录)
         /// </summary>
         AcctIsOnline,
@@ -98,6 +102,9 @@ namespace PEProtocol
         RspBuy = 208,//资源购买回应
 
         PshPower = 209,//服务端向客户端推送体力恢复消息
+
+        ReqTaskReward = 210,//任务奖励请求
+        RspTaskReward = 211,//任务奖励回应
     }
 
     /// <summary>
@@ -106,6 +113,15 @@ namespace PEProtocol
     [Serializable]
     public class GameMsg : PEMsg
     {
+        /// <summary>
+        /// 客户端发送领取任务奖励请求
+        /// </summary>
+        public ReqTaskReward reqTaskReward;
+        /// <summary>
+        /// 服务器回应领取任务奖励请求
+        /// </summary>
+        public RspTaskReward rspTaskReward;
+
         /// <summary>
         /// 服务器向客户端推送体力消息
         /// </summary>
@@ -167,6 +183,38 @@ namespace PEProtocol
 
         #endregion
     }
+
+    #region 任务奖励
+    [Serializable]
+    public class ReqTaskReward
+    {
+        /// <summary>
+        /// 任务奖励Id
+        /// </summary>
+        public int rewardid;
+    }
+    [Serializable]
+    public class RspTaskReward
+    {
+        /// <summary>
+        /// 获得的金币奖励
+        /// </summary>
+        public int coin;
+        /// <summary>
+        /// 获得的经验值奖励
+        /// </summary>
+        public int exp;
+        /// <summary>
+        /// 获得奖励后当前等级
+        /// </summary>
+        public int lv;
+        /// <summary>
+        /// 任务完成进度
+        /// </summary>
+        public string[] taskArr;
+    }
+
+    #endregion
 
     #region 体力恢复
     /// <summary>

@@ -56,6 +56,34 @@ public class PECommon
     /// 实际工作也有对应的公式
     public static int GetExpUpValByLv(int level) { return 100 * level * level; }
 
+    /// <summary>
+    /// 增加经验并更新等级
+    /// </summary>
+    /// <param name="pData"></param>
+    /// <param name="addExp"></param>
+    public static void AddExpAndUpdateLv(PlayerData pData, int addExp)
+    {
+        int curLv = pData.lv;//当前级别
+        int curExp = pData.exp;//当前经验值
+        int addRestExp = addExp;//剩余经验值
+        while (true)//循环判断是否升级
+        {
+            int upNeedExp = GetExpUpValByLv(curLv) - curExp;//当前升级所需要的经验值
+            if (addRestExp >= upNeedExp)//进行升级
+            {
+                curLv += 1;//升级
+                curExp = 0;
+                addRestExp -= upNeedExp;
+            }
+            else//更新数据，结束升级
+            {
+                pData.lv = curLv;
+                pData.exp = curExp + addRestExp;
+                break;
+            }
+        }
+    }
+
     #region Power Recovery：体力恢复系统
     /* 每隔5分钟，恢复2点体力 
      */
