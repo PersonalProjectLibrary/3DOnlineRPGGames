@@ -101,7 +101,7 @@ public class GameRoot : MonoBehaviour
     /// 根据任务引导信息设置玩家的数据
     /// </summary>
     /// <param name="data"></param>
-    public void SetPlayerDataByGuide(RspGuide data)
+    public void SetPlayerData(RspGuide data)
     {
         PlayerData.guideid = data.guideid;
         playerData.lv = data.lv;
@@ -113,7 +113,7 @@ public class GameRoot : MonoBehaviour
     /// 根据强化升级信息设置玩家的数据
     /// </summary>
     /// <param name="data"></param>
-    public void SetPlayerDataByStrong(RspStrong data)
+    public void SetPlayerData(RspStrong data)
     {
         playerData.coin = data.coin;
         playerData.crystal = data.crystal;
@@ -129,7 +129,7 @@ public class GameRoot : MonoBehaviour
     /// 根据资源购买设置玩家的数据
     /// </summary>
     /// <param name="data"></param>
-    public void SetPlayerDataByBuy(RspBuy data)
+    public void SetPlayerData(RspBuy data)
     {
         playerData.coin = data.coin;
         playerData.power = data.power;
@@ -140,8 +140,29 @@ public class GameRoot : MonoBehaviour
     /// 根据体力设置玩家的数据
     /// </summary>
     /// <param name="data"></param>
-    public void SetPlayerDataByPower(PshPower data) { playerData.power = data.power; }
+    public void SetPlayerData(PshPower data) { playerData.power = data.power; }
     
+    /// <summary>
+    /// 根据领取的任务奖励数据设置玩家的数据
+    /// </summary>
+    /// <param name="data"></param>
+    public void SetPlayerData(RspTaskReward data)
+    {
+        playerData.coin = data.coin;
+        playerData.lv = data.lv;
+        playerData.exp = data.exp;
+        playerData.taskRewardArr = data.taskArr;
+    }
+
+    /// <summary>
+    /// 根据任务进度数据设置玩家的数据
+    /// </summary>
+    /// <param name="data"></param>
+    public void SetPlayerData(PshTaskPrgs data)
+    {
+        playerData.taskRewardArr = data.taskArr;
+    }
+
     #endregion
 
     #region Test Function

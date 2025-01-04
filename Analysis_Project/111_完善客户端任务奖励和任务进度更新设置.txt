@@ -1,0 +1,66 @@
+
+设置客户端任务奖励的任务进度显示设置开发
+
+一、GameRoot.cs里新增更新玩家数据的方法
+注，这里将原先的根据任务引导数据，强化升级信息，资源购买数据，和体力数据更新玩家数据的方法
+SetPlayerDataByGuide()、SetPlayerDataByStrong()、SetPlayerDataByBuy()、SetPlayerDataByPower()，
+都重命名为SetPlayerData()
+1、通过任务奖励数据更新玩家数据
+public void SetPlayerData(RspTaskReward data)
+{
+    playerData.coin = data.coin;
+    playerData.lv = data.lv;
+    playerData.exp = data.exp;
+    playerData.taskRewardArr = data.taskArr;
+}
+2、通过任务进度数据更新玩家数据
+public void SetPlayerData(PshTaskPrgs data)
+{
+    playerData.taskRewardArr = data.taskArr;
+}
+
+二、MainCitySys.cs里添加相关处理函数
+1、完善对服务器返回的领取任务奖励请求的回应的处理方法RspTReward()
+方便将更新的数据显示到任务奖励面板，这里将TRewardWnd.cs里的RefreshUI()改为public修饰
+public void RspTReward(GameMsg msg)
+{
+    RspTaskReward data = msg.rspTaskReward;
+    GameRoot.Instance.SetPlayerData(data);
+    tRewardWnd.RefreshUI();
+    mainCityWnd.RefreshUI();
+}
+
+2、添加对服务器推送的任务进度更新的消息的处理方法RspTReward()
+public void PshTaskPrgs(GameMsg msg)
+{
+    PshTaskPrgs data = msg.pshTaskPrgs;
+    GameRoot.Instance.SetPlayerData(data);
+    tRewardWnd.RefreshUI();
+}
+
+三、NetService.cs里添加对相关网络消息的分发处理
+1、ProcessMsg()里添加对任务进度消息的分发处理分支
+前面添加过对领取奖励请求回应的分发处理分支
+public void ProcessMsg(GameMsg msg)
+{
+    ... ...
+    switch ((CMD)msg.cmd)//将信息分发出去
+    {
+        ... ...
+        case CMD.RspTaskReward:MainCitySystem.Instance.RspTReward(msg);break;
+        case CMD.PshTaskPrgs:MainCitySystem.Instance.PshTaskPrgs(msg);break;
+        default:break;
+    }
+}
+
+四、运行测试
+待解决问题
+1、初始任务奖励界面显示，奖励领取状态是可领取状态
+2、完成智者点拨的任务，任务奖励进度并没有更新
+
+
+
+
+
+
+

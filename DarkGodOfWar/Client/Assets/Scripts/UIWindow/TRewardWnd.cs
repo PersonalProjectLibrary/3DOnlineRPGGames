@@ -36,7 +36,7 @@ public class TRewardWnd : WindowRoot
     /// <summary>
     /// 刷新界面显示
     /// </summary>
-    private void RefreshUI()
+    public void RefreshUI()
     {
         SortTRDataList();
         ShowAllTRItem();

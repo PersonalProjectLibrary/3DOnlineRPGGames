@@ -133,6 +133,7 @@ public class NetService : MonoBehaviour
             case CMD.RspBuy:MainCitySystem.Instance.RspBuy(msg);break;
             case CMD.PshPower:MainCitySystem.Instance.PshPower(msg);break;
             case CMD.RspTaskReward:MainCitySystem.Instance.RspTReward(msg);break;
+            case CMD.PshTaskPrgs:MainCitySystem.Instance.PshTaskPrgs(msg);break;
             default:break;
         }
     }

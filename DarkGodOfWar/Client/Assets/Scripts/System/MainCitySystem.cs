@@ -90,7 +90,7 @@ public class MainCitySystem : SystemRoot
     public void PshPower(GameMsg msg)
     {
         PshPower data = msg.pshPower;
-        GameRoot.Instance.SetPlayerDataByPower(data);
+        GameRoot.Instance.SetPlayerData(data);
         if(mainCityWnd.gameObject.activeSelf) mainCityWnd.RefreshUI();
     }
 
@@ -106,7 +106,21 @@ public class MainCitySystem : SystemRoot
     /// <param name="msg"></param>
     public void RspTReward(GameMsg msg)
     {
-        //TODO
+        RspTaskReward data = msg.rspTaskReward;
+        GameRoot.Instance.SetPlayerData(data);
+        tRewardWnd.RefreshUI();
+        mainCityWnd.RefreshUI();
+    }
+
+    /// <summary>
+    /// 处理服务器推送的任务进度更新的消息
+    /// </summary>
+    /// <param name="msg"></param>
+    public void PshTaskPrgs(GameMsg msg)
+    {
+        PshTaskPrgs data = msg.pshTaskPrgs;
+        GameRoot.Instance.SetPlayerData(data);
+        tRewardWnd.RefreshUI();
     }
 
     #endregion
@@ -129,7 +143,7 @@ public class MainCitySystem : SystemRoot
     public void RspBuy(GameMsg msg)
     {
         //更新玩家数据
-        GameRoot.Instance.SetPlayerDataByBuy(msg.rspBuy);
+        GameRoot.Instance.SetPlayerData(msg.rspBuy);
         GameRoot.AddTips("购买成功");
         //更新UI显示，只刷新体力UI即可，直接在主城UI里看不到金币数量
         //可打开强化界面，强化界面打开时也会根据玩家信息更新金币信息，不用这里设置
@@ -170,7 +184,7 @@ public class MainCitySystem : SystemRoot
     {
         //计算战力
         int zhanliPre = PECommon.GetFightByProps(GameRoot.Instance.PlayerData);
-        GameRoot.Instance.SetPlayerDataByStrong(msg.rspStrong);
+        GameRoot.Instance.SetPlayerData(msg.rspStrong);
         int zhanliNow = PECommon.GetFightByProps(GameRoot.Instance.PlayerData);
         GameRoot.AddTips(Constants.SetTxtColor("战力提升 " + (zhanliNow - zhanliPre), TxtColor.Blue));
         //更新UI显示
@@ -257,7 +271,7 @@ public class MainCitySystem : SystemRoot
             case 4: break;//TODO 进行金币购买
             case 5: break;//TODO 进行世界聊天
         }
-        GameRoot.Instance.SetPlayerDataByGuide(data);//把更新的玩家数据，更新到GameRoot里
+        GameRoot.Instance.SetPlayerData(data);//把更新的玩家数据，更新到GameRoot里
         mainCityWnd.RefreshUI();//刷新主城UI显示
     }
 
