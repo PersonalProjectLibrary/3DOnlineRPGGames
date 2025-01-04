@@ -129,6 +129,25 @@ public class CacheSvc
     }
 
     /// <summary>
+    /// 根据玩家id获取对应玩家的连接
+    /// </summary>
+    /// <param name="playerId"></param>
+    /// <returns></returns>
+    public ServerSession GetOnlineServerSession(int playerId)
+    {
+        ServerSession session = null;
+        foreach (var item in onLineSessionDic)
+        {
+            if (item.Value.id == playerId)
+            {
+                session = item.Key;
+                break;
+            }
+        }
+        return session;
+    }
+
+    /// <summary>
     /// 获取所有（在线）玩家的数据
     /// </summary>
     /// <returns>存储在线玩家的连接和数据的字典</returns>

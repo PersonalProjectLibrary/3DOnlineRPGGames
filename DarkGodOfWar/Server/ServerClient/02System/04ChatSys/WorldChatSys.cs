@@ -45,6 +45,7 @@ public class WorldChatSys
     {
         SndWorldChat data = pack.m_Msg.sndWorldChat;//数据转接
         PlayerData pData = cacheSvc.GetPlayDataBySession(pack.m_Session);//获取缓存层里玩家数据
+        UpdateTaskPrgs(pData);
         GameMsg msg = new GameMsg//广播给客户端的消息
         {
             cmd = (int)CMD.PshWorldChat,
@@ -73,5 +74,16 @@ public class WorldChatSys
         //先将msg序列化为二进制，再发送给所有在线玩家
         byte[] bytes = PENet.PETool.PackNetMsg(msg);
         for (int i = 0; i < list.Count; i++) list[i].SendMsg(bytes);
+    }
+
+    /// <summary>
+    /// 任务进度数据更新
+    /// </summary>
+    /// <param name="pData"></param>
+    public void UpdateTaskPrgs(PlayerData pData)
+    {
+        //对应在任务奖励配置里能言善辩任务的id
+        int tid = int.Parse(pData.taskRewardArr[5].Split('|')[0]);
+        TaskRewardSys.Instance.CalcuteTaskPrgs(pData, tid);
     }
 }

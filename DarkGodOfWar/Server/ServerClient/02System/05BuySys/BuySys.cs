@@ -53,9 +53,10 @@ public class BuySys
             pData.diamond -= data.diamondCost;
             switch (data.buyType)
             {
-                case 0:pData.power += 100; break;
-                case 1:pData.coin += 1000; break;
+                case 0: pData.power += 100; break;
+                case 1: pData.coin += 1000; break;
             }
+            UpdateTaskPrgs(pData, data);
         }
         //根据id号，把玩家数据更新到数据库里
         if (!cacheSvc.UpdatePlayerData(pData.id, pData))
@@ -71,5 +72,29 @@ public class BuySys
             };
         }
         pack.m_Session.SendMsg(msg);//将数据返回客户端
+    }
+
+    /// <summary>
+    /// 任务进度数据更新
+    /// </summary>
+    /// <param name="pData"></param>
+    /// <param name="data"></param>
+    public void UpdateTaskPrgs(PlayerData pData, ReqBuy data)
+    {
+        int tid;
+        switch (data.buyType)
+        {
+            case 0:
+                //对应在任务奖励配置里购买体力任务的id
+                tid = int.Parse(pData.taskRewardArr[3].Split('|')[0]);
+                TaskRewardSys.Instance.CalcuteTaskPrgs(pData, tid);
+                break;
+            case 1:
+                //对应在任务奖励配置里购买金币任务的id
+                tid = int.Parse(pData.taskRewardArr[4].Split('|')[0]);
+                TaskRewardSys.Instance.CalcuteTaskPrgs(pData, tid);
+                break;
+            default:break;
+        }
     }
 }

@@ -1,0 +1,138 @@
+
+任务进度更新后，服务端向客户端推送任务数据；
+服务端添加新的推送任务进度的协议；
+
+一、GameMsg.cs里添加任务进度推送相关设置
+1、服务器推送任务进度消息
+[Serializable]
+public class PshTaskPrgs
+{
+    public string[] taskArr;// 任务完成进度
+}
+
+2、添加任务奖励请求回应的相关命令号和消息包
+public enum CMD
+{
+    ... ...
+    PshTaskPrgs =212,//服务端向客户端推送任务进度消息
+}
+public class GameMsg : PEMsg
+{
+    ... ...
+    public PshTaskPrgs pshTaskPrgs;// 服务器推送任务进度消息
+    ... ...
+}
+
+3、修改GameMsg.cs后记得重新生成PEProtocol.dll
+
+二、向客户端发送任务进度推送消息
+1、需要向指定客户端发送对应的任务进度推送，故在CacheSvc.cs脚本里添加：
+根据当前玩家的id号，获取对应客户端Session连接 的方法GetOnlineServerSession()
+public ServerSession GetOnlineServerSession(int playerId)// 根据玩家id获取对应玩家的连接
+{
+    ServerSession session = null;
+    foreach (var item in onLineSessionDic)
+    {
+        if (item.Value.id == playerId)
+        {
+            session = item.Key;
+            break;
+        }
+    }
+    return session;
+}
+
+2、完善任务奖励系统TaskRewardSys.cs的任务进度计算方法，向客户端推送任务进度消息
+public void CalcuteTaskPrgs(PlayerData pData,int taskId)
+{
+    ... ...
+    if (trd.prgs < trc.count)//已完成的任务进度小于需要完成的任务进度
+    {
+        ... ...
+        //通知客户端任务进度更新
+        ServerSession session = cacheSvc.GetOnlineServerSession(pData.id);
+        if (session != null)
+        {
+            session.SendMsg(new GameMsg
+            {
+                cmd = (int)CMD.PshTaskPrgs,
+                pshTaskPrgs = new PshTaskPrgs { taskArr = pData.taskRewardArr }
+            });
+        }
+    }
+}
+
+三、根据任务奖励的奖励列表，给其他任务也添加任务检测
+任务副本还没做，暂时就不添加，
+同时这里将任务引导里TaskDetection()重命名为UpdateTaskPrgs()
+1、StrongSys.cs强化升级的ReqStrong()里，在资源扣除时检测设置
+public void ReqStrong(MsgPack pack)
+{
+    ... ...
+    if (pData.lv < nextSg.minLv) msg.err = (int)ErrorCode.LockLevel;//等级不够
+    ... ...
+    else//通过筛选，扣除升级所用的资源，相关属性值更新
+    {
+        ... ...
+        TaskDetection(pData);//进行任务进度检测
+    }
+    ... ...
+}
+public void UpdateTaskPrgs(PlayerData pData)
+{
+    //对应在任务奖励配置里强化升级任务的id
+    int tid = int.Parse(pData.taskRewardArr[2].Split('|')[0]);
+    TaskRewardSys.Instance.CalcuteTaskPrgs(pData, tid);
+}
+
+2、BuySys.cs购买系统的ReqBuy()里对购买体力和购买金币任务添加任务检测更新设置
+public void ReqBuy(MsgPack pack)
+{
+    ... ...
+    if (pData.diamond < data.diamondCost) msg.err = (int)ErrorCode.LockDiamond;//钻石不够
+    else//通过筛选，扣除花费的钻石数，相关属性值更新
+    {
+        ... ...
+        switch (data.buyType)
+        {
+            case 0: pData.power += 100; break;
+            case 1: pData.coin += 1000; break;
+        }
+        UpdateTaskPrgs(pData, data);
+    }
+    ... ...
+}
+public void UpdateTaskPrgs(PlayerData pData, ReqBuy data)// 任务进度数据更新
+{
+    int tid;
+    switch (data.buyType)
+    {
+        case 0:
+            //对应在任务奖励配置里购买体力任务的id
+            tid = int.Parse(pData.taskRewardArr[3].Split('|')[0]);
+            TaskRewardSys.Instance.CalcuteTaskPrgs(pData, tid);
+            break;
+        case 1:
+            //对应在任务奖励配置里购买金币任务的id
+            tid = int.Parse(pData.taskRewardArr[4].Split('|')[0]);
+            TaskRewardSys.Instance.CalcuteTaskPrgs(pData, tid);
+            break;
+        default:break;
+    }
+}
+
+3、WorldChatSys.cs聊天系统的SndWorldChat()里添加对 能言善辩 任务进度的检测更新
+public void SndWorldChat(MsgPack pack)
+{
+    ... ...
+    UpdateTaskPrgs(pData);
+    ... ...
+}
+public void UpdateTaskPrgs(PlayerData pData)
+{
+    //对应在任务奖励配置里能言善辩任务的id
+    int tid = int.Parse(pData.taskRewardArr[5].Split('|')[0]);
+    TaskRewardSys.Instance.CalcuteTaskPrgs(pData, tid);
+}
+
+

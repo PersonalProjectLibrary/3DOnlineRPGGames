@@ -133,7 +133,16 @@ public class TaskRewardSys
         {
             trd.prgs += 1;//任务进度加一
             TRewardToPlayer(pData, trd);//更新任务进度
-            //TODO：通知客户端任务进度更新
+            //通知客户端任务进度更新
+            ServerSession session = cacheSvc.GetOnlineServerSession(pData.id);
+            if (session != null)
+            {
+                session.SendMsg(new GameMsg
+                {
+                    cmd = (int)CMD.PshTaskPrgs,
+                    pshTaskPrgs = new PshTaskPrgs { taskArr = pData.taskRewardArr }
+                });
+            }
         }
     }
 }

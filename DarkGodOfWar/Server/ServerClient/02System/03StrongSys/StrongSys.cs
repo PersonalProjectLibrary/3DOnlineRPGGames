@@ -64,6 +64,7 @@ public class StrongSys
             pData.ap += nextSg.addHurt;
             pData.addef += nextSg.addDef;
             pData.apdef += nextSg.addDef;
+            UpdateTaskPrgs(pData);//进行任务进度检测
         }
         //根据id号，把玩家数据更新到数据库里
         if (!cacheSvc.UpdatePlayerData(pData.id, pData))
@@ -83,5 +84,16 @@ public class StrongSys
             };
         }
         pack.m_Session.SendMsg(msg);//将数据返回客户端
+    }
+
+    /// <summary>
+    /// 任务进度数据更新
+    /// </summary>
+    /// <param name="pData"></param>
+    public void UpdateTaskPrgs(PlayerData pData)
+    {
+        //对应在任务奖励配置里强化升级任务的id
+        int tid = int.Parse(pData.taskRewardArr[2].Split('|')[0]);
+        TaskRewardSys.Instance.CalcuteTaskPrgs(pData, tid);
     }
 }

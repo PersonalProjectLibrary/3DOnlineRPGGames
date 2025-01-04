@@ -105,6 +105,8 @@ namespace PEProtocol
 
         ReqTaskReward = 210,//任务奖励请求
         RspTaskReward = 211,//任务奖励回应
+
+        PshTaskPrgs =212,//服务端向客户端推送任务进度消息
     }
 
     /// <summary>
@@ -121,6 +123,10 @@ namespace PEProtocol
         /// 服务器回应领取任务奖励请求
         /// </summary>
         public RspTaskReward rspTaskReward;
+        /// <summary>
+        /// 服务器推送任务进度消息
+        /// </summary>
+        public PshTaskPrgs pshTaskPrgs;
 
         /// <summary>
         /// 服务器向客户端推送体力消息
@@ -185,6 +191,9 @@ namespace PEProtocol
     }
 
     #region 任务奖励
+    /// <summary>
+    /// 客户端发送领取任务奖励的请求消息
+    /// </summary>
     [Serializable]
     public class ReqTaskReward
     {
@@ -193,6 +202,10 @@ namespace PEProtocol
         /// </summary>
         public int rewardid;
     }
+
+    /// <summary>
+    /// 服务器回应领取任务奖励的请求
+    /// </summary>
     [Serializable]
     public class RspTaskReward
     {
@@ -214,6 +227,17 @@ namespace PEProtocol
         public string[] taskArr;
     }
 
+    /// <summary>
+    /// 服务器推送任务进度消息
+    /// </summary>
+    [Serializable]
+    public class PshTaskPrgs
+    {
+        /// <summary>
+        /// 任务完成进度
+        /// </summary>
+        public string[] taskArr;
+    }
     #endregion
 
     #region 体力恢复
