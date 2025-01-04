@@ -51,6 +51,7 @@ public class GuideSys
         if (pData.guideid == data.guideid)//确认客户端数据和玩家数据相等同步
         {
             pData.guideid += 1;//更新任务id
+            TaskDetection(pData);
             /* 读取配置表文件，更新玩家数据：
              * 获取当前任务的奖励，并把奖励数据更新到数据库里，最后把更新的结果发回给客户端
              * 当前服务器只有任务id，没有任务对应的奖励信息，奖励信息在配置文件里，服务器里不存在；
@@ -79,5 +80,19 @@ public class GuideSys
         }
         else msg.err = (int)ErrorCode.ServerDataError;
         pack.m_Session.SendMsg(msg);//将数据返回客户端
+    }
+
+    /// <summary>
+    /// 任务检测
+    /// </summary>
+    /// <param name="pData"></param>
+    public void TaskDetection(PlayerData pData)
+    {
+        if(pData.guideid== 1001)//如果是智者点拨任务
+        {
+            //对应在任务奖励配置里的任务id
+            int tid = int.Parse(pData.taskRewardArr[0].Split('|')[0]);
+            TaskRewardSys.Instance.CalcuteTaskPrgs(pData, tid);
+        }
     }
 }

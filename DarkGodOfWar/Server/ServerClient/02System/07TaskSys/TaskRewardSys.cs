@@ -121,4 +121,19 @@ public class TaskRewardSys
         pData.taskRewardArr[index] = res;
     }
 
+    /// <summary>
+    /// 计算任务进度
+    /// </summary>
+    public void CalcuteTaskPrgs(PlayerData pData,int taskId)
+    {
+        TaskRewardData trd = GetTReward(pData, taskId);//获取对应任务数据
+        TaskRewardCfg trc = cfgSvs.GetTaskRewardCfg(taskId);//获取对应任务配置
+        //判断当前任务进度是否满足领取奖励条件
+        if (trd.prgs < trc.count)//已完成的任务进度小于需要完成的任务进度
+        {
+            trd.prgs += 1;//任务进度加一
+            TRewardToPlayer(pData, trd);//更新任务进度
+            //TODO：通知客户端任务进度更新
+        }
+    }
 }

@@ -1,0 +1,62 @@
+
+任务的触发是在各个系统之间，副本、聊天、引导、强化升级等各个模块里触发；
+
+以“智者点拨”任务为示例，进行开发：
+前提：
+引导任务里，第一个引导任务是：智者点拨，对应的引导任务id为1001，引导任务的id是逐一递增的；
+
+在服务端的引导系统GuideSys.cs里，请求回应ReqGuid()时，向服务端发送引导任务的id，
+如果玩家数据的引导任务id等于当前引导任务的任务id，就把玩家数据里的任务引导的id+1；
+
+这里添加个任务判断，检测是否为智者点拨任务；如果是1001智者点拨的任务，这时候同步更新任务进度；
+在任务奖励系统TaskRewardSys.cs里新增任务进度检测的函数CalcuteTaskPrgs()；
+任务引导对任务的判断检测，这里也放到统一的检测函数TaskDetection()里；
+任务里有很多种不同的id号，不好确定更新哪个，检测哪个；
+在任务奖励系统TaskRewardSys.cs的CalcuteTaskPrgs()，传递任务的id参数；
+
+public class GuideSys
+{
+    ... ...
+    public void ReqGuide(MsgPack pack)// 对NetSvc里分发过来的引导消息进行处理响应
+    {
+        ... ...
+        if (pData.guideid == data.guideid)//确认客户端数据和玩家数据相等同步
+        {
+            pData.guideid += 1;//更新任务id
+            TaskDetection(pData);
+            ... ...
+        }
+        ... ...
+    }
+    ... ...
+    public void TaskDetection(PlayerData pData)
+    {
+        if(pData.guideid== 1001)//如果是智者点拨任务
+        {
+            //对应在任务奖励配置里的任务id
+            int tid = int.Parse(pData.taskRewardArr[0].Split('|')[0]);
+            TaskRewardSys.Instance.CalcuteTaskPrgs(pData, tid);
+        }
+    }
+}
+
+
+public class TaskRewardSys
+{
+    ... ...
+    public void CalcuteTaskPrgs(PlayerData pData,int taskId)
+   {
+       TaskRewardData trd = GetTReward(pData, taskId);//获取对应任务数据
+       TaskRewardCfg trc = cfgSvs.GetTaskRewardCfg(taskId);//获取对应任务配置
+       //判断当前任务进度是否满足领取奖励条件
+       if (trd.prgs < trc.count)//已完成的任务进度小于需要完成的任务进度
+       {
+           trd.prgs += 1;//任务进度加一
+           TRewardToPlayer(pData, trd);//更新任务进度
+           //TODO：通知客户端任务进度更新
+       }
+   }
+}
+
+
+
